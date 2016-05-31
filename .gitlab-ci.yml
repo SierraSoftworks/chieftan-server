@@ -1,0 +1,54 @@
+stages:
+  - dependencies
+  - build
+  - test
+  - release
+  - deploy
+
+npm:install:
+  stage: dependencies
+  script:
+    - npm install
+  cache:
+    paths:
+      - node_modules
+  artifacts:
+    name: $CI_BUILD_REF-dependencies
+    paths:
+      - node_modules/
+  tags:
+    - production
+
+npm:build:
+  stage: build
+  dependencies:
+    - npm:install
+  script:
+    - npm run build
+  artifacts:
+    name: $CI_BUILD_REF-app
+    paths:
+      - dist/
+      - package.json
+
+npm:test:
+  stage: test
+  dependencies:
+    - npm:install
+    - npm:build
+  script:
+    - npm test
+
+gitlab:release:
+  stage: release
+  dependencies:
+    - npm:install
+    - npm:build
+  script:
+    - echo 'Building Release Package'
+  artifacts:
+    name: $CI_BUILD_REF
+    paths:
+      - dist/
+      - node_modules
+      - package.json
