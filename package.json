@@ -1,0 +1,22 @@
+{
+  "name": "chief",
+  "version": "1.0.0",
+  "description": "A deployment management tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.emss.co.za:chief/server.git"
+  },
+  "author": "Benjamin Pannell <admin@sierrasoftworks.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.4.0",
+    "iridium": "^7.0.0-alpha.7",
+    "lodash": "^4.13.1",
+    "restify": "^4.1.0",
+    "typescript": "^1.8.10"
+  }
+}
