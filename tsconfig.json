@@ -1,6 +1,16 @@
 {
     "compilerOptions": {
         "target": "es5",
-        "experimentalDecorators": true
-    }
+        "experimentalDecorators": true,
+        "sourceMap": true,
+        "outDir": "dist",
+        "moduleResolution": "node",
+        "module": "commonjs"
+    },
+    "exclude": [
+        "typings/globals",
+        "typings/modules",
+        "node_modules",
+        "dist"
+    ]
 }

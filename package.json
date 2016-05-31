@@ -2,7 +2,7 @@
   "name": "chief",
   "version": "1.0.0",
   "description": "A deployment management tool",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "clean": "rm -R dist/ || true",
     "test": "mocha",
