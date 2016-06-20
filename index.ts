@@ -1,17 +1,12 @@
-import * as restify from "restify";
-import * as Iridium from "iridium";
-import {Database} from "./models/Database";
+import {Application} from "./Application";
 
-let server = restify.createServer({
-    name: "Chief Server"
+let application = new Application({
+    connectionString: "mongodb://localhost/chief",
+    port: process.env.port || 80 
 });
 
-let db = new Database("mongodb://localhost/chief");
-
-db.connect().then(() => {
-    server.listen(process.env.port || 80, () => {
-        console.log("%s listening at %s", server.name, server.url);
-    });
+application.start().then(() => {
+    console.log("Listening on %s", application.url);
 }).catch(err => {
-    console.error(err);
+    console.log(err);
 });

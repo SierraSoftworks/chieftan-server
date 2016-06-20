@@ -20,7 +20,8 @@
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.4.0",
-    "iridium": "^7.0.0-alpha.7",
+    "handlebars": "^4.0.5",
+    "iridium": "^7.0.0-alpha.9",
     "lodash": "^4.13.1",
     "restify": "^4.1.0",
     "typescript": "^1.8.10"
