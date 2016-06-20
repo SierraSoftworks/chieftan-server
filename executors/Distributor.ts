@@ -1,31 +1,20 @@
-import {Database} from "../models/Database";
+import {Application} from "../Application";
 import {ExecutorBase} from "./Executor";
-import {HttpExecutor} from "./Http";
 import {Action} from "../models/Action";
-import {Task, TaskState} from "../models/Task";
-
-const executors: typeof ExecutorBase[] = [
-    HttpExecutor
-];
+import {Task} from "../models/Task";
 
 export class Distributor {
-    constructor(protected db: Database) {
-        for(const executor of executors) {
-            this.executors[executor.config] = executor;
-        }
-    }
+    constructor(protected app: Application) {
 
-    executors : {
-        [configProperty: string]: typeof ExecutorBase
-    } = {};
+    }
 
     getExecutors(action: Action, task: Task, vars: { [key: string]: string; } = {}): ExecutorBase[] {
         let executors: ExecutorBase[] = [];
 
-        for(let configProperty in this.executors) {
+        for(let configProperty in this.app.executors) {
             if(action[configProperty]) {
-                const Executor = this.executors[configProperty];
-                executors.push(new Executor(this.db, action, task, vars));
+                const Executor = this.app.executors[configProperty];
+                executors.push(new Executor(this.app.db, action, task, vars));
             }
         }
 

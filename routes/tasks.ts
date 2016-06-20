@@ -4,7 +4,7 @@ import {Distributor} from "../executors/Distributor";
 import {TaskState} from "../models/Task";
 
 export class Tasks extends RouteBase {
-    distributor = new Distributor(this.db);
+    distributor = new Distributor(this.app);
 
     register() {
         this.server.get("/api/v1/tasks", (req, res) => {

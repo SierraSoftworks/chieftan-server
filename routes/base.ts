@@ -1,8 +1,9 @@
+import {Application} from "../Application";
 import {Database} from "../models/Database";
 import {Server, Response} from "restify";
 
 export class RouteBase {
-    constructor(protected server: Server, protected db: Database) {
+    constructor(protected app: Application, protected server: Server, protected db: Database) {
         
     }
     

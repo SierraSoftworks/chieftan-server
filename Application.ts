@@ -2,6 +2,8 @@ import * as restify from "restify";
 import * as Iridium from "iridium";
 import {Database} from "./models/Database";
 import {AllRoutes} from "./routes/all";
+import {ExecutorBase} from "./executors/Executor";
+import {RegisterExecutors} from "./executors/all";
 
 export class Application {
     constructor(protected options: ApplicationOptions) {
@@ -11,14 +13,18 @@ export class Application {
         });
 
         this.server
-        .use(restify.queryParser())
-        .use(restify.bodyParser());
+            .use(restify.queryParser())
+            .use(restify.bodyParser());
 
-        new AllRoutes(this.server, this.db).register();
+        new AllRoutes(this, this.server, this.db).register();
+        RegisterExecutors(this);
     }
 
     public server: restify.Server;
     public db: Database;
+    public executors: {
+        [configProperty: string]: typeof ExecutorBase
+    } = {};
 
     get url(): string {
         return this.server.url;
@@ -33,6 +39,14 @@ export class Application {
                 });
             });
         });
+    }
+
+    use(executor: typeof ExecutorBase) {
+        if (!executor.config)
+            throw new Error("Your executor should specify a config field name.");
+
+        this.executors[executor.config] = executor;
+        return this;
     }
 
     stop() {

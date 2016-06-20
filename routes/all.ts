@@ -10,7 +10,7 @@ export class AllRoutes extends RouteBase {
         Tasks
     ];
 
-    routes: RouteBase[] = AllRoutes.routeTypes.map(R => new R(this.server, this.db));
+    routes: RouteBase[] = AllRoutes.routeTypes.map(R => new R(this.app, this.server, this.db));
 
     register() {
         this.routes.forEach(r => r.register());
