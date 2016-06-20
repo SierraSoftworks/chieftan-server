@@ -7,6 +7,7 @@
     "clean": "rm -R dist/ || true",
     "test": "mocha",
     "build": "tsc",
+    "start": "node dist/index",
     "build:watch": "tsc --watch",
     "test:watch": "mocha --watch",
     "prewatch": "npm run build",
