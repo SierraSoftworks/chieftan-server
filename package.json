@@ -1,5 +1,5 @@
 {
-  "name": "chief",
+  "name": "chieftan",
   "version": "1.0.0",
   "description": "A deployment management tool",
   "main": "dist/index.js",

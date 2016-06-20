@@ -5,7 +5,7 @@ import {Task} from "../../models/Task";
 
 export class TestApplication extends Application {
     constructor(options: ApplicationOptions = {
-        connectionString: "mongodb://localhost/chief_test"
+        connectionString: "mongodb://localhost/chieftan_test"
     }) {
         super(options);
     }

@@ -24,4 +24,4 @@ npm start
 ### Configuration
 
  - **PORT** can be used to set the port that Chieftan listens on, it defaults to port `80`.
- - **CHIEF_MONGODB** can be used to set the MongoDB database URL, it defaults to `mongodb://localhost/chief`.
+ - **CHIEFTAN_MONGODB** can be used to set the MongoDB database URL, it defaults to `mongodb://localhost/chief`.
