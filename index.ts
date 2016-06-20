@@ -1,7 +1,7 @@
 import {Application} from "./Application";
 
 let application = new Application({
-    connectionString: "mongodb://localhost/chief",
+    connectionString: process.env.CHIEF_MONGODB || "mongodb://localhost/chief",
     port: process.env.port || 80 
 });
 
