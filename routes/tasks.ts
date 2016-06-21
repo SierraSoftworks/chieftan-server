@@ -21,45 +21,31 @@ export class Tasks extends RouteBase {
             }).catch(err => this.catch(err).databaseError(res, err));
         });
         
-        this.server.get("/api/v1/project/:project/action/:action/tasks", (req, res) => {
+        this.server.get("/api/v1/action/:action/tasks", (req, res) => {
             this.db.Tasks.find({
-                "project.id": req.params.project,
                 'action.id': req.params.action
             }).toArray().then(tasks => {
                 res.send(200, tasks);
             }).catch(err => this.catch(err).databaseError(res, err));
         });
         
-        this.server.post("/api/v1/project/:project/action/:action/tasks", (req, res) => {
-            this.db.Projects.get(req.params.project).then(project => {
-                if (!project) return this.notFound(res);
+        this.server.post("/api/v1/action/:action/tasks", (req, res) => {
+            this.db.Actions.get(req.params.action).then(action => {
+                if (!action) return this.notFound(res);
 
-                return this.db.Actions.get(req.params.action).then(action => {
-                    if (!action) return this.notFound(res);
-                    if (action.project.id !== project._id) return this.notFound(res);
+                let newTask: TaskDoc = {
+                    action: action.summary,
+                    project: action.project,
+                    metadata: {
+                        description: req.body.metadata.description,
+                        url: req.body.metadata.url
+                    },
+                    vars: req.body.vars
+                };
 
-                    let newTask: TaskDoc = {
-                        action: {
-                            id: action._id,
-                            name: action.name,
-                            description: action.description
-                        },
-                        project: {
-                            id: project._id,
-                            name: project.name,
-                            url: project.url
-                        },
-                        metadata: {
-                            description: req.body.metadata.description,
-                            url: req.body.metadata.url
-                        },
-                        vars: req.body.vars
-                    };
-
-                    return this.db.Tasks.insert(newTask);
-                }).then(task => {
-                    res.send(200, task);
-                });
+                return this.db.Tasks.insert(newTask);
+            }).then(task => {
+                res.send(200, task);
             }).catch(err => this.catch(err).databaseError(res, err));
         });
         

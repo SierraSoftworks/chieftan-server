@@ -11,10 +11,9 @@ export class Actions extends RouteBase {
             }).catch(err => this.catch(err).databaseError(res, err));
         });
 
-        this.server.get("/api/v1/project/:project/action/:id", (req, res) => {
+        this.server.get("/api/v1/action/:id", (req, res) => {
             this.db.Actions.get(req.params.id).then(action => {
                 if(!action) return this.notFound(res);
-                if (action.project.id !== req.params.project) return this.notFound(res);
                 res.send(200, action);
             }).catch(err => this.catch(err).databaseError(res, err));
         });

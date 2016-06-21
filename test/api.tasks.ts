@@ -54,7 +54,7 @@ describe("api", () => {
         
         it("should return the list of tasks for a project and action", () => {
             return request(app.server)
-                .get(`/api/v1/project/${app.testProject._id}/action/${app.testAction._id}/tasks`)
+                .get(`/api/v1/action/${app.testAction._id}/tasks`)
                 .expect(200)
                 .toPromise()
                 .then(res => {
@@ -112,9 +112,9 @@ describe("api", () => {
                 .toPromise();
         });
 
-        it("should allow you to create a new task for a project and action", () => {
+        it("should allow you to create a new task for an action", () => {
             return request(app.server)
-                .post(`/api/v1/project/${app.testProject._id}/action/${app.testAction._id}/tasks`)
+                .post(`/api/v1/action/${app.testAction._id}/tasks`)
                 .send({
                     metadata: {
                         description: "This is a quick test task",

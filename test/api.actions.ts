@@ -28,9 +28,9 @@ describe("api", () => {
                 });
         });
 
-        it("should allow you to get a specific action for a project", () => {
+        it("should allow you to get a specific action by its ID", () => {
             return request(app.server)
-                .get(`/api/v1/project/${app.testProject._id}/action/${app.testAction._id}`)
+                .get(`/api/v1/action/${app.testAction._id}`)
                 .expect(200)
                 .toPromise()
                 .then(res => {
@@ -45,7 +45,7 @@ describe("api", () => {
 
         it("should return 404 if the action doesn't exist", () => {
             return request(app.server)
-                .get(`/api/v1/project/${app.testProject._id}/action/000000000000000000000000`)
+                .get(`/api/v1/action/000000000000000000000000`)
                 .expect(404)
                 .toPromise();
         });
