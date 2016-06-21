@@ -106,6 +106,8 @@ export class Tasks extends RouteBase {
                             console.log(`STOP ${task.project.name}:${task.action.name}:${task._id} - ${executor.toString()} (${TaskState[task.state]})`);
                         });
                     });
+
+                    res.send(200, task);
                 });
             }).catch(err => this.catch(err).databaseError(res, err));
         });
