@@ -21,6 +21,7 @@ describe("api", () => {
                     res.body.forEach(item => {
                         chai.expect(item).to.have.property("id", app.testProject._id);
                         chai.expect(item).to.have.property("name", app.testProject.name);
+                        chai.expect(item).to.have.property("description", app.testProject.description);
                         chai.expect(item).to.have.property("url", app.testProject.url);
                     });
                 });
@@ -51,6 +52,7 @@ describe("api", () => {
                 .post(`/api/v1/projects`)
                 .send({
                     name: "Test Project",
+                    description: "This is a test project",
                     url: "http://localhost:9000/"
                 })
                 .expect(200)
@@ -58,6 +60,7 @@ describe("api", () => {
                     chai.expect(res.body).to.exist;
                     chai.expect(res.body).to.have.property("id");
                     chai.expect(res.body).to.have.property("name", "Test Project");
+                    chai.expect(res.body).to.have.property("description", "This is a test project");
                     chai.expect(res.body).to.have.property("url", "http://localhost:9000/");
                 });
         });
