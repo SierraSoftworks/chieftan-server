@@ -37,6 +37,7 @@ export class TestApplication extends Application {
     protected seedDB() {
         return this.db.Projects.insert({
             name: "Test Project",
+            description: "This is a quick test project",
             url: "https://github.com/SierraSoftworks/Chief"
         })
         .then(project => this.testProject = project)
