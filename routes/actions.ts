@@ -1,5 +1,6 @@
 import {RouteBase} from "./base";
 import {ActionDoc} from "../models/Action";
+import {assign, pick} from "lodash";
 
 export class Actions extends RouteBase {
     register() {
@@ -14,6 +15,17 @@ export class Actions extends RouteBase {
         this.server.get("/api/v1/action/:id", (req, res) => {
             this.db.Actions.get(req.params.id).then(action => {
                 if(!action) return this.notFound(res);
+                res.send(200, action);
+            }).catch(err => this.catch(err).databaseError(res, err));
+        });
+
+        this.server.put("/api/v1/action/:id", (req, res) => {
+            this.db.Actions.get(req.params.id).then(action => {
+                if (!action) return this.notFound(res);
+
+                assign(action, pick(req.body, "name", "description", "vars", "http"));
+                return action.save();
+            }).then(action => {
                 res.send(200, action);
             }).catch(err => this.catch(err).databaseError(res, err));
         });

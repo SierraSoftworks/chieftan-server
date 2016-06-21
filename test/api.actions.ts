@@ -83,5 +83,19 @@ describe("api", () => {
                 .expect(404)
                 .toPromise();
         });
+
+        it("should allow you to update an action by id", () => {
+            return request(app.server)
+                .put(`/api/v1/action/${app.testAction._id}`)
+                .send({
+                    name: "Tested"
+                })
+                .expect(200)
+                .toPromise()
+                .then(res => {
+                    chai.expect(res.body).to.exist;
+                    chai.expect(res.body).to.have.property("name", "Tested");
+                });
+        });
     });
 });
