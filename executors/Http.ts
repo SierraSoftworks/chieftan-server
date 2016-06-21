@@ -17,7 +17,7 @@ export class HttpExecutor extends ExecutorBase {
                 let responseData = [
                     `::[info] Response Received::`,
                     `HTTP/${res.httpVersion} ${res.statusCode} ${res.statusMessage}`,
-                    res.rawHeaders.join("\n"),
+                    this.renderHeaders(res.rawHeaders),
                     ""
                 ];
 
@@ -48,6 +48,15 @@ export class HttpExecutor extends ExecutorBase {
 
             request.end();
         });
+    }
+
+    protected renderHeaders(headers: string[]) {
+        let headerData: string[] = [];
+        for (let i = 0; i < headers.length; i += 2) {
+            headerData.push(`${headers[i]}: ${headers[i + 1]}`)
+        }
+
+        return headerData.join("\n");
     }
 
     protected buildRequest(request: RequestDoc, callback: (res: http.IncomingMessage) => void) {
