@@ -26,6 +26,7 @@ describe("api", () => {
                         chai.expect(item).to.have.property("vars").eql(app.testTask.vars);
                         chai.expect(item).to.have.property("state").eql("NotExecuted");
                         chai.expect(item).to.have.property("output", "");
+                        chai.expect(item).to.have.property("created").which.exist;
                     });
                 });
         });
@@ -48,6 +49,7 @@ describe("api", () => {
                         chai.expect(item).to.have.property("vars").eql(app.testTask.vars);
                         chai.expect(item).to.have.property("state").eql("NotExecuted");
                         chai.expect(item).to.have.property("output", "");
+                        chai.expect(item).to.have.property("created").which.exist;
                     });
                 });
         });
@@ -93,6 +95,7 @@ describe("api", () => {
                         chai.expect(item).to.have.property("vars").eql(app.testTask.vars);
                         chai.expect(item).to.have.property("state").eql("NotExecuted");
                         chai.expect(item).to.have.property("output", "");
+                        chai.expect(item).to.have.property("created").which.exist;
                     });
                 });
         });
@@ -148,6 +151,7 @@ describe("api", () => {
                     chai.expect(res.body).to.have.property("vars").eql(app.testTask.vars);
                     chai.expect(res.body).to.have.property("state").eql("NotExecuted");
                     chai.expect(res.body).to.have.property("output", "");
+                    chai.expect(res.body).to.have.property("created").which.exist;
                 });
         });
 
@@ -186,6 +190,7 @@ describe("api", () => {
                     });
                     chai.expect(res.body).to.have.property("state").eql("NotExecuted");
                     chai.expect(res.body).to.have.property("output", "");
+                    chai.expect(res.body).to.have.property("created").which.exist;
                 });
         });
 
