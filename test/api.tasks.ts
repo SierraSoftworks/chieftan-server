@@ -52,6 +52,29 @@ describe("api", () => {
                 });
         });
         
+        it("should return the recent list of tasks for a project", () => {
+            return request(app.server)
+                .get(`/api/v1/project/${app.testProject._id}/tasks/recent`)
+                .expect(200)
+                .toPromise()
+                .then(res => {
+                    chai.expect(res.body).to.exist;
+                    chai.expect(res.body).to.be.a("array");
+                    chai.expect(res.body).to.have.length(1);
+
+                    res.body.forEach(item => {
+                        chai.expect(item).to.have.property("id", app.testTask._id);
+                        chai.expect(item).to.have.property("metadata").eql(app.testTask.metadata);
+                        chai.expect(item).to.have.property("action").eql(app.testTask.action);
+                        chai.expect(item).to.have.property("project").eql(app.testTask.project);
+                        chai.expect(item).to.have.property("vars").eql(app.testTask.vars);
+                        chai.expect(item).to.have.property("state").eql("NotExecuted");
+                        chai.expect(item).to.have.property("output", "");
+                        chai.expect(item).to.have.property("created").which.exist;
+                    });
+                });
+        });
+        
         it("should return the list of tasks for a project and action", () => {
             return request(app.server)
                 .get(`/api/v1/action/${app.testAction._id}/tasks`)
@@ -70,6 +93,29 @@ describe("api", () => {
                         chai.expect(item).to.have.property("vars").eql(app.testTask.vars);
                         chai.expect(item).to.have.property("state").eql("NotExecuted");
                         chai.expect(item).to.have.property("output", "");
+                    });
+                });
+        });
+        
+        it("should return the recent list of tasks for a project and action", () => {
+            return request(app.server)
+                .get(`/api/v1/action/${app.testAction._id}/tasks/recent`)
+                .expect(200)
+                .toPromise()
+                .then(res => {
+                    chai.expect(res.body).to.exist;
+                    chai.expect(res.body).to.be.a("array");
+                    chai.expect(res.body).to.have.length(1);
+
+                    res.body.forEach(item => {
+                        chai.expect(item).to.have.property("id", app.testTask._id);
+                        chai.expect(item).to.have.property("metadata").eql(app.testTask.metadata);
+                        chai.expect(item).to.have.property("action").eql(app.testTask.action);
+                        chai.expect(item).to.have.property("project").eql(app.testTask.project);
+                        chai.expect(item).to.have.property("vars").eql(app.testTask.vars);
+                        chai.expect(item).to.have.property("state").eql("NotExecuted");
+                        chai.expect(item).to.have.property("output", "");
+                        chai.expect(item).to.have.property("created").which.exist;
                     });
                 });
         });

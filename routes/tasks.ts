@@ -21,10 +21,30 @@ export class Tasks extends RouteBase {
             }).catch(err => this.catch(err).databaseError(res, err));
         });
         
+        this.server.get("/api/v1/project/:project/tasks/recent", (req, res) => {
+            this.db.Tasks.find({
+                "project.id": req.params.project
+            }).sort({
+                created: -1
+            }).limit(50).toArray().then(tasks => {
+                res.send(200, tasks);
+            }).catch(err => this.catch(err).databaseError(res, err));
+        });
+        
         this.server.get("/api/v1/action/:action/tasks", (req, res) => {
             this.db.Tasks.find({
                 'action.id': req.params.action
             }).toArray().then(tasks => {
+                res.send(200, tasks);
+            }).catch(err => this.catch(err).databaseError(res, err));
+        });
+        
+        this.server.get("/api/v1/action/:action/tasks/recent", (req, res) => {
+            this.db.Tasks.find({
+                'action.id': req.params.action
+            }).sort({
+                created: -1
+            }).limit(50).toArray().then(tasks => {
                 res.send(200, tasks);
             }).catch(err => this.catch(err).databaseError(res, err));
         });
