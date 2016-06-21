@@ -14,7 +14,8 @@ export class Application {
 
         this.server
             .use(restify.queryParser())
-            .use(restify.bodyParser());
+            .use(restify.bodyParser())
+            .use(restify.CORS());
 
         new AllRoutes(this, this.server, this.db).register();
         RegisterExecutors(this);
