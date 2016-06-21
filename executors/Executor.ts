@@ -14,6 +14,7 @@ export class ExecutorBase {
     vars: { [key: string]: string; } = {};
 
     start() {
+        this.task.executed = new Date();
         this.task.output = `::[info] Running task::`;
         this.task.state = TaskState.Executing;
         return this.task.save().then(() => {
@@ -26,6 +27,7 @@ export class ExecutorBase {
             this.task.state = TaskState.Failed;
             this.task.output = `${this.task.output || ""}\n${err.message}\n${err.stack}`.trim();
         }).then(() => {
+            this.task.completed = new Date();
             return this.task.save()
         });
     }
