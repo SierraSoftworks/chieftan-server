@@ -19,7 +19,7 @@ describe("application", () => {
 
     it("should allow chaining of executor registration", () => {
         TestExecutor.config = "test";
-        chai.expect(() => app.use(TestExecutor)).to.equal(app);
+        chai.expect(app.use(TestExecutor)).to.equal(app);
     });
 });
 
