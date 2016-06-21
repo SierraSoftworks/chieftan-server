@@ -79,11 +79,19 @@ export class HttpExecutor extends ExecutorBase {
         return {
             path: parsedUrl.path,
             hostname: parsedUrl.hostname,
-            port: parseInt(parsedUrl.port) || 80,
+            port: parseInt(parsedUrl.port) || this.protocolPort(parsedUrl.protocol),
             protocol: parsedUrl.protocol,
             method: request.method,
             headers: headers
         };
+    }
+
+    protected protocolPort(protocol: "http:" | "https:" | string): number {
+        switch(protocol) {
+            case "http:": return 80;
+            case "https:": return 443;
+            default: return 80; 
+        }
     }
 
     toString() {
