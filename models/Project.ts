@@ -15,6 +15,7 @@ export const ProjectSummaryDocSchema = {
 export interface ProjectDoc {
     _id?: string;
     name: string;
+    description: string;
     url: string;
 }
 
@@ -25,6 +26,9 @@ export class Project extends Iridium.Instance<ProjectDoc, Project> {
 
     @Iridium.Property(String)
     name: string;
+
+    @Iridium.Property(String)
+    description: string;
 
     @Iridium.Property(String)
     url: string;
@@ -41,6 +45,7 @@ export class Project extends Iridium.Instance<ProjectDoc, Project> {
         return {
             id: this._id,
             name: this.name,
+            description: this.description,
             url: this.url
         };
     }
