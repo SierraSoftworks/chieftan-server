@@ -15,6 +15,7 @@ export class HttpExecutor extends ExecutorBase {
             
             const request = this.buildRequest(action, (res => {
                 let responseData = [
+                    `::[info] Response Received::`,
                     `HTTP/${res.httpVersion} ${res.statusCode} ${res.statusMessage}`,
                     res.rawHeaders.join("\n"),
                     ""
@@ -28,8 +29,8 @@ export class HttpExecutor extends ExecutorBase {
                 res.on("end", () => {
                     this.task.output += responseData;
 
-                    if(res.statusCode !== 200)
-                        return reject(new Error(`Request failed with status ${res.statusCode} ${res.statusMessage}`));
+                    if(res.statusCode >= 400)
+                        return reject(new Error(`::[error] Request failed with status ${res.statusCode} ${res.statusMessage}::`));
                     return resolve();
                 });
             }));
@@ -41,7 +42,7 @@ export class HttpExecutor extends ExecutorBase {
             }
 
             request.on("error", (err) => {
-                this.task.output += `${err.message}`;
+                this.task.output += `\n::[error] ${err.message}::`;
                 reject(err);
             });
 

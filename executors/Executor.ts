@@ -14,12 +14,15 @@ export class ExecutorBase {
     vars: { [key: string]: string; } = {};
 
     start() {
+        this.task.output = `::[info] Running task::`;
         this.task.state = TaskState.Executing;
         return this.task.save().then(() => {
             return this.run();
         }).then(() => {
+            this.task.output += `\n::[info] Task complete in ${new Date().valueOf() - this.task.executed.valueOf()}ms::`
             this.task.state = TaskState.Passed;
         }, (err) => {
+            this.task.output += `\n::[error] Task failed in ${new Date().valueOf() - this.task.executed.valueOf()}ms::`
             this.task.state = TaskState.Failed;
             this.task.output = `${this.task.output || ""}\n${err.message}\n${err.stack}`.trim();
         }).then(() => {
