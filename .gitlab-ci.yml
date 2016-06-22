@@ -5,6 +5,10 @@ stages:
   - release
   - deploy
 
+variables:
+  CHIEFTAN_SERVER: http://chieftan.farmtracksa.com
+  PROJECT_URL: https://git.emss.co.za/chieftan/server
+
 npm:install:
   stage: dependencies
   script:
@@ -43,7 +47,10 @@ gitlab:release:
     - npm:install
     - npm:build
   script:
-    - echo 'Building Release Package'
+    - echo 'Registering release task'
+    - 'TASK_DATA = ''{"vars": { "ARTIFACT_BUILD": "$CI_BUILD_ID", "VERSION": "$CI_BUILD_REF" }, "metadata": { "description": "Version $CI_BUILD_REF of the Chieftan Server (Build $CI_BUILD_ID)", "url": "$PROJECT_URL/commit/$CI_BUILD_REF/builds" }}'''
+    - curl -X POST -H 'Content-Type: application/json' -d $TASK_DATA "$CHIEFTAN_SERVER/api/v1/action/576a2f5d43e507a01cb9feae/tasks"
+    - curl -X POST -H 'Content-Type: application/json' -d $TASK_DATA "$CHIEFTAN_SERVER/api/v1/action/576a308c43e507a01cb9feaf/tasks"
   artifacts:
     name: $CI_BUILD_REF
     paths:
