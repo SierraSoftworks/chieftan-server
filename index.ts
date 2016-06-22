@@ -8,5 +8,5 @@ let application = new Application({
 application.start().then(() => {
     console.log("Listening on %s", application.url);
 }).catch(err => {
-    console.log(err);
+    console.error(err.stack);
 });
