@@ -8,7 +8,9 @@ export class Tasks extends RouteBase {
 
     register() {
         this.server.get("/api/v1/tasks", (req, res) => {
-            this.db.Tasks.find().toArray().then(tasks => {
+            this.db.Tasks.find().sort({
+                created: -1
+            }).toArray().then(tasks => {
                 res.send(200, tasks);
             }).catch(err => this.catch(err).databaseError(res, err));
         });
@@ -16,6 +18,8 @@ export class Tasks extends RouteBase {
         this.server.get("/api/v1/project/:project/tasks", (req, res) => {
             this.db.Tasks.find({
                 "project.id": req.params.project
+            }).sort({
+                created: -1
             }).toArray().then(tasks => {
                 res.send(200, tasks);
             }).catch(err => this.catch(err).databaseError(res, err));
@@ -34,6 +38,8 @@ export class Tasks extends RouteBase {
         this.server.get("/api/v1/action/:action/tasks", (req, res) => {
             this.db.Tasks.find({
                 'action.id': req.params.action
+            }).sort({
+                created: -1
             }).toArray().then(tasks => {
                 res.send(200, tasks);
             }).catch(err => this.catch(err).databaseError(res, err));
