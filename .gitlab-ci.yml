@@ -48,9 +48,7 @@ gitlab:release:
     - npm:build
   script:
     - 'echo "Registering release task"'
-    - 'TASK_DATA=<<EOL'
-    - '{"vars": { "ARTIFACT_BUILD": "$CI_BUILD_ID", "VERSION": "$CI_BUILD_REF" }, "metadata": { "description": "Version $CI_BUILD_REF of the Chieftan Server (Build $CI_BUILD_ID)", "url": "$PROJECT_URL/commit/$CI_BUILD_REF/builds" }}'
-    - 'EOL'
+    - 'TASK_DATA=$(printf ''{"vars": { "ARTIFACT_BUILD": "%s", "VERSION": "%s" }, "metadata": { "description": "Version %s of the Chieftan Server (Build %s)", "url": "%s/commit/$CI_BUILD_REF/builds" }}'' "$CI_BUILD_ID" "$CI_BUILD_REF" "$CI_BUILD_REF" "$CI_BUILD_ID" "$PROJECT_URL")'
     - 'curl -s -X POST -H "Content-Type: application/json" -d "$TASK_DATA" "$CHIEFTAN_SERVER/api/v1/action/576a2f5d43e507a01cb9feae/tasks"'
     - 'curl -s -X POST -H "Content-Type: application/json" -d "$TASK_DATA" "$CHIEFTAN_SERVER/api/v1/action/576a308c43e507a01cb9feaf/tasks"'
   artifacts:
