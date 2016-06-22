@@ -12,6 +12,9 @@ export class Application {
             name: "Chief Server"
         });
 
+        restify.CORS.ALLOW_HEADERS.push("authorization");
+        restify.CORS.credentials = true;
+        
         this.server
             .use(restify.queryParser())
             .use(restify.bodyParser())
