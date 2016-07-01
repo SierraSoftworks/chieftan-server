@@ -9,6 +9,22 @@ export enum TaskState {
     Passed
 }
 
+export interface TaskSummaryDoc {
+    id: string;
+    metadata: {
+        description?: string;
+        url?: string;
+    };
+}
+
+export const TaskSummarySchema = {
+    id: String,
+    metadata: {
+        description: { $required: false, $type: String },
+        url: { $required: false, $type: String }
+    }
+};
+
 export interface TaskDoc {
     _id?: string;
 
@@ -79,6 +95,13 @@ export class Task extends Iridium.Instance<TaskDoc, Task> implements TaskDoc {
         doc.vars = doc.vars || {};
         doc.state = doc.state || TaskState.NotExecuted;
         doc.output = doc.output || "";
+    }
+
+    get summary(): TaskSummaryDoc {
+        return {
+            id: this._id,
+            metadata: this.metadata
+        };
     }
 
     toJSON() {

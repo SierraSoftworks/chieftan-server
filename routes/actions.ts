@@ -25,9 +25,20 @@ export class Actions extends RouteBase {
                 if (!action) return this.notFound();
                 if (!this.hasPermission(req, "project/:project/admin", { project: action.project.id })) return this.forbidden();
 
-                assign(action, pick(req.body, "name", "description", "vars", "http"));
-                return action.save();
-            }).then(action => {
+                const changes = pick(req.body, "name", "description", "vars", "configurations", "http");
+
+                return this.db.AuditLog.insert({
+                    type: "action.update",
+                    context: {
+                        project: action.project,
+                        action: action.summary,
+                        request: req.body
+                    }
+                }).then(() => {
+                    assign(action, changes);
+                    return action.save();
+                });
+            }, err => this.databaseError(err)).then(action => {
                 res.send(200, action);
             }).catch(err => this.catch(res, err));
         });
@@ -49,7 +60,15 @@ export class Actions extends RouteBase {
                     http: req.body.http
                 };
 
-                return this.db.Actions.insert(newAction).then(action => {
+                return this.db.AuditLog.insert({
+                    type: "action.create",
+                    context: {
+                        project: project.summary,
+                        request: req.body
+                    }
+                })
+                .then(() => this.db.Actions.insert(newAction))
+                .then(action => {
                     res.send(200, action);
                     return action;
                 }, err => this.databaseError(err));
