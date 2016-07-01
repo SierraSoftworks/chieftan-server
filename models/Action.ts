@@ -1,6 +1,6 @@
 import * as Iridium from "iridium";
 import {RequestDoc, RequestSchema} from "./Request";
-import {ProjectSummaryDoc, ProjectSummaryDocSchema} from "./Project";
+import {ProjectSummaryDoc, ProjectSummarySchema} from "./Project";
 
 export interface ActionDoc {
     _id?: string;
@@ -39,7 +39,7 @@ export class Action extends Iridium.Instance<ActionDoc, Action> implements Actio
     @Iridium.Property(String)
     description: string;
     
-    @Iridium.Property(ProjectSummaryDocSchema)
+    @Iridium.Property(ProjectSummarySchema)
     project: ProjectSummaryDoc;
     
     @Iridium.Property({

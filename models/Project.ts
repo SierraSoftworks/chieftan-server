@@ -6,7 +6,7 @@ export interface ProjectSummaryDoc {
     url: string;
 }
 
-export const ProjectSummaryDocSchema = {
+export const ProjectSummarySchema = {
     id: String,
     name: String,
     url: String

@@ -1,5 +1,5 @@
 import * as Iridium from "iridium";
-import {ProjectSummaryDoc, ProjectSummaryDocSchema} from "./Project";
+import {ProjectSummaryDoc, ProjectSummarySchema} from "./Project";
 import {ActionSummaryDoc, ActionSummarySchema} from "./Action";
 
 export enum TaskState {
@@ -57,7 +57,7 @@ export class Task extends Iridium.Instance<TaskDoc, Task> implements TaskDoc {
     @Iridium.Property(ActionSummarySchema)
     action: ActionSummaryDoc;
 
-    @Iridium.Property(ProjectSummaryDocSchema)
+    @Iridium.Property(ProjectSummarySchema)
     project: ProjectSummaryDoc;
     
     @Iridium.Property({
