@@ -18,6 +18,7 @@ export class Projects extends RouteBase {
         this.server.post("/api/v1/projects", this.authorize(), (req, res) => {
             this.db.AuditLog.insert({
                 type: "project.create",
+                user: this.isAuthorizedRequest(req) ? req.user.summary : null,
                 context: {
                     request: req.body
                 }

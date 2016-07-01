@@ -11,8 +11,8 @@ export class Users extends RouteBase {
         this.server.post("/api/v1/users", this.authorize(), this.permission("admin/users"), (req, res) => {
             return this.db.AuditLog.insert({
                 type: "user.create",
+                user: this.isAuthorizedRequest(req) ? req.user.summary : null,
                 context: {
-                    user: this.isAuthorizedRequest(req) ? req.user.summary : null,
                     request: req.body
                 }
             })
@@ -38,11 +38,9 @@ export class Users extends RouteBase {
 
                 return this.db.AuditLog.insert({
                     type: "user.tokens.view",
+                    user: this.isAuthorizedRequest(req) ? req.user.summary : null,
                     context: {
-                        user: this.isAuthorizedRequest(req) ? req.user.summary : null,
-                        request: {
-                            user: req.params.user
-                        }
+                        user: user.summary
                     }
                 }).then(() => {
                     res.send(200, user);
@@ -69,11 +67,9 @@ export class Users extends RouteBase {
 
                 return this.db.AuditLog.insert({
                     type: "user.tokens.create",
+                    user: this.isAuthorizedRequest(req) ? req.user.summary : null,
                     context: {
-                        user: this.isAuthorizedRequest(req) ? req.user.summary : null,
-                        request: {
-                            user: req.params.user
-                        }
+                        user: user.summary
                     }
                 }).then(() => user.save()).then(user => {
                     res.send(200, user.tokens);

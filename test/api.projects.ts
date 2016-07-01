@@ -102,6 +102,7 @@ describe("api", () => {
                 chai.expect(entry).to.exist;
                 chai.expect(entry).to.have.property("context");
 
+                chai.expect(entry).to.have.property("user").eql(app.testUser.summary);
                 chai.expect(entry.context).to.have.property("request").eql({
                     name: "Test Project",
                     description: "This is a test project",

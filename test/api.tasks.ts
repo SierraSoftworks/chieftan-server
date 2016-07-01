@@ -329,6 +329,7 @@ describe("api", () => {
                 chai.expect(entry).to.exist;
                 chai.expect(entry).to.have.property("context");
 
+                chai.expect(entry).to.have.property("user").eql(app.testUser.summary);
                 chai.expect(entry.context).to.have.property("project").eql(app.testProject.summary);
                 chai.expect(entry.context).to.have.property("action").eql(app.testAction.summary);
                 chai.expect(entry.context).to.have.property("request").eql({
@@ -393,6 +394,7 @@ describe("api", () => {
                 chai.expect(entry).to.exist;
                 chai.expect(entry).to.have.property("context");
 
+                chai.expect(entry).to.have.property("user").eql(app.testUser.summary);
                 chai.expect(entry.context).to.have.property("project").eql(app.testProject.summary);
                 chai.expect(entry.context).to.have.property("action").eql(app.testAction.summary);
                 chai.expect(entry.context).to.have.property("task").eql(app.testTask.summary);

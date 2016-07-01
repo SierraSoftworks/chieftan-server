@@ -8,6 +8,7 @@ export interface AuditLogDoc {
     _id?: string;
     
     type: string;
+    user: UserSummaryDoc;
     timestamp?: Date;
 
     context: AuditLogContextDoc;
@@ -37,6 +38,9 @@ export class AuditLog extends Iridium.Instance<AuditLogDoc, AuditLog> implements
     
     @Iridium.Property(String)
     type: string;
+
+    @Iridium.Property(UserSummarySchema)
+    user: UserSummaryDoc;
 
     @Iridium.Property(Date)
     timestamp: Date;

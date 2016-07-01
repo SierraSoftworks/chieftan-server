@@ -102,7 +102,7 @@ describe("api", () => {
                 chai.expect(entry).to.exist;
                 chai.expect(entry).to.have.property("context");
 
-                chai.expect(entry.context).to.have.property("user").eql(app.adminUser.summary);
+                chai.expect(entry).to.have.property("user").eql(app.adminUser.summary);
                 chai.expect(entry.context).to.have.property("request").eql({
                     name: "New Test User",
                     email: "test123@test.com"
@@ -164,10 +164,8 @@ describe("api", () => {
                 chai.expect(entry).to.exist;
                 chai.expect(entry).to.have.property("context");
 
-                chai.expect(entry.context).to.have.property("user").eql(app.adminUser.summary);
-                chai.expect(entry.context).to.have.property("request").eql({
-                    user: app.testUser._id
-                });
+                chai.expect(entry).to.have.property("user").eql(app.adminUser.summary);
+                chai.expect(entry.context).to.have.property("user").eql(app.testUser.summary);
             });
         });
 
@@ -205,10 +203,8 @@ describe("api", () => {
                 chai.expect(entry).to.exist;
                 chai.expect(entry).to.have.property("context");
 
-                chai.expect(entry.context).to.have.property("user").eql(app.adminUser.summary);
-                chai.expect(entry.context).to.have.property("request").eql({
-                    user: app.testUser._id
-                });
+                chai.expect(entry).to.have.property("user").eql(app.adminUser.summary);
+                chai.expect(entry.context).to.have.property("user").eql(app.testUser.summary);
             });
         });
     });
