@@ -16,6 +16,7 @@ export class Application {
         restify.CORS.credentials = true;
         
         this.server
+            .use(restify.authorizationParser())
             .use(restify.queryParser())
             .use(restify.bodyParser())
             .use(restify.CORS());

@@ -1,8 +1,12 @@
 import {Application} from "../Application";
 import {Database} from "../models/Database";
+import {User} from "../models/User";
 import {Server, Request, Response, RequestHandler} from "restify";
 import {assign} from "lodash";
 
+export interface AuthorizedRequest extends Request {
+    user: User;
+}
 
 export class RouteBase {
     constructor(protected app: Application, protected server: Server, protected db: Database) {
@@ -13,11 +17,40 @@ export class RouteBase {
         
     }
 
-    }
+    authorize(): RequestHandler {
+        return (req: Request, res: Response, next: Function) => {
+            if (req.authorization.scheme !== "Token") return this.unauthorized().catch(err => this.catch(res, err));
 
+            this.db.Users.get({
+                tokens: req.authorization.credentials
+            }).then(user => {
+                if (!user) return this.unauthorized();
+
+                req.username = user._id;
+                (<AuthorizedRequest>req).user = user;
+
+                return next();
+            }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         }
     }
 
+    isAuthorizedRequest(req: Request): req is AuthorizedRequest {
+        return !!(req && (<AuthorizedRequest>req).user);
+    }
+
+    permission(permission: string, context: { [name: string]: string; } = {}): RequestHandler {
+        return (req: Request, res: Response, next: Function) => {
+            if (!this.hasPermission(req, permission, context)) return this.forbidden().catch(err => this.catch(res, err));
+            return next();
+        }
+    }
+
+    hasPermission(req: Request, permission: string, context: { [name: string]: string; } = {}): boolean {
+        if (!this.isAuthorizedRequest(req)) return false;
+        else {
+            if (!req.user.can(permission, assign<{}, { [name: string]: string; }>({}, context, req.params))) return false;
+            return true;
+        }
     }
 
     catch(res: Response, err: Error): Promise<Error> {
@@ -50,6 +83,13 @@ export class RouteBase {
         });
     }
 
+    unauthorized<T>() {
+        return this.error<T>(401, "Unauthorized", "You haven't provided a required authentication header.");
+    }
+
+    forbidden<T>() {
+        return this.error<T>(403, "Forbidden", "You do not have permission to access this method.");
+    }
 
     conflict<T>() {
         return this.error<T>(409, "Conflict", "The entry you attempted to create already exists.");

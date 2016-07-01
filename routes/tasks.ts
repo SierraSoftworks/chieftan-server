@@ -8,7 +8,7 @@ export class Tasks extends RouteBase {
     distributor = new Distributor(this.app);
 
     register() {
-        this.server.get("/api/v1/tasks", (req, res) => {
+        this.server.get("/api/v1/tasks", this.authorize(), this.permission("admin"), (req, res) => {
             this.db.Tasks.find().sort({
                 created: -1
             }).toArray().then(tasks => {
@@ -16,7 +16,7 @@ export class Tasks extends RouteBase {
             }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
         
-        this.server.get("/api/v1/project/:project/tasks", (req, res) => {
+        this.server.get("/api/v1/project/:project/tasks", this.authorize(), this.permission("project/:project"), (req, res) => {
             this.db.Tasks.find({
                 "project.id": req.params.project
             }).sort({
@@ -26,7 +26,7 @@ export class Tasks extends RouteBase {
             }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
         
-        this.server.get("/api/v1/project/:project/tasks/recent", (req, res) => {
+        this.server.get("/api/v1/project/:project/tasks/recent", this.authorize(), this.permission("project/:project"), (req, res) => {
             this.db.Tasks.find({
                 "project.id": req.params.project
             }).sort({
@@ -39,6 +39,7 @@ export class Tasks extends RouteBase {
         this.server.get("/api/v1/action/:action/tasks", this.authorize(), (req, res) => {
             this.db.Actions.get(req.params.action).then(action => {
                 if (!action) return this.notFound();
+                if (!this.hasPermission(req, "project/:project", { project: action.project.id })) return this.forbidden();
             }).then(() => this.db.Tasks.find({
                     'action.id': req.params.action
                 }).sort({
@@ -52,6 +53,7 @@ export class Tasks extends RouteBase {
         this.server.get("/api/v1/action/:action/tasks/recent", this.authorize(), (req, res) => {
             this.db.Actions.get(req.params.action).then(action => {
                 if (!action) return this.notFound();
+                if (!this.hasPermission(req, "project/:project", { project: action.project.id })) return this.forbidden();
             }).then(() => this.db.Tasks.find({
                     'action.id': req.params.action
                 }).sort({
@@ -62,7 +64,7 @@ export class Tasks extends RouteBase {
             }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
         
-        this.server.post("/api/v1/action/:action/tasks", (req, res) => {
+        this.server.post("/api/v1/action/:action/tasks", this.authorize(), (req, res) => {
             this.db.Actions.get(req.params.action).then(action => {
                 if (!action) return this.notFound();
                 if (!this.hasPermission(req, "project/:project/admin", { project: action.project.id })) return this.forbidden();
@@ -90,11 +92,12 @@ export class Tasks extends RouteBase {
             }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
         
-        this.server.head("/api/v1/task/:id", (req, res) => {
+        this.server.head("/api/v1/task/:id", this.authorize(), (req, res) => {
             this.db.Tasks.get(req.params.id, {
                 fields: { _id: 1, project: 1 }
              }).then(task => {
                 if (!task) return this.notFound();
+                else if (!this.hasPermission(req, "project/:project", { project: task.project.id })) return this.forbidden();
                 
                 res.end();
             }).catch(err => {
@@ -106,17 +109,19 @@ export class Tasks extends RouteBase {
             });
         });
         
-        this.server.get("/api/v1/task/:id", (req, res) => {
+        this.server.get("/api/v1/task/:id", this.authorize(), (req, res) => {
             this.db.Tasks.get(req.params.id).then(task => {
                 if (!task) return this.notFound();
+                if (!this.hasPermission(req, "project/:project", { project: task.project.id })) return this.forbidden();
                 
                 res.send(task);
             }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
         
-        this.server.post("/api/v1/task/:id/run", (req, res) => {
+        this.server.post("/api/v1/task/:id/run", this.authorize(), (req, res) => {
             this.db.Tasks.get(req.params.id).then(task => {
                 if (!task) return this.notFound();
+                if (!this.hasPermission(req, "project/:project", { project: task.project.id })) return this.forbidden();
 
                 const { vars, configuration } = <{
                     vars: { [name: string]: string; };
@@ -160,9 +165,10 @@ export class Tasks extends RouteBase {
             }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
         
-        this.server.del("/api/v1/task/:id", (req, res) => {
+        this.server.del("/api/v1/task/:id", this.authorize(), (req, res) => {
             this.db.Tasks.get(req.params.id).then(task => {
                 if (!task) return this.notFound();
+                if (!this.hasPermission(req, "project/:project/admin", { project: task.project.id })) return this.forbidden();
 
                 
                 return this.db.AuditLog.insert({

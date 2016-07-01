@@ -4,7 +4,7 @@ import {assign, pick} from "lodash";
 
 export class Actions extends RouteBase {
     register() {
-        this.server.get("/api/v1/project/:project/actions", (req, res) => {
+        this.server.get("/api/v1/project/:project/actions", this.authorize(), this.permission("project/:project"), (req, res) => {
             this.db.Actions.find({
                 "project.id": req.params.project
             }).toArray().then(actions => {
@@ -12,7 +12,7 @@ export class Actions extends RouteBase {
             }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
 
-        this.server.get("/api/v1/action/:id", (req, res) => {
+        this.server.get("/api/v1/action/:id", this.authorize(), (req, res) => {
             this.db.Actions.get(req.params.id).then(action => {
                 if (!action) return this.notFound();
                 if (!this.hasPermission(req, "project/:project", { project: action.project.id })) return this.forbidden();
@@ -20,9 +20,10 @@ export class Actions extends RouteBase {
             }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
 
-        this.server.put("/api/v1/action/:id", (req, res) => {
+        this.server.put("/api/v1/action/:id", this.authorize(), (req, res) => {
             this.db.Actions.get(req.params.id).then(action => {
                 if (!action) return this.notFound();
+                if (!this.hasPermission(req, "project/:project/admin", { project: action.project.id })) return this.forbidden();
 
                 assign(action, pick(req.body, "name", "description", "vars", "http"));
                 return action.save();
@@ -31,7 +32,7 @@ export class Actions extends RouteBase {
             }).catch(err => this.catch(res, err));
         });
 
-        this.server.post("/api/v1/project/:project/actions", (req, res) => {
+        this.server.post("/api/v1/project/:project/actions", this.authorize(), this.permission("project/:project/admin"), (req, res) => {
             this.db.Projects.get(req.params.project).then(project => {
                 if (!project) return this.notFound();
 
