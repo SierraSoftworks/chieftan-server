@@ -1,7 +1,8 @@
-import {RouteBase} from "./base";
+import {RouteBase, ServerError} from "./base";
 import {TaskDoc} from "../models/Task";
 import {Distributor} from "../executors/Distributor";
 import {TaskState} from "../models/Task";
+import {assign} from "lodash";
 
 export class Tasks extends RouteBase {
     distributor = new Distributor(this.app);
@@ -11,8 +12,8 @@ export class Tasks extends RouteBase {
             this.db.Tasks.find().sort({
                 created: -1
             }).toArray().then(tasks => {
-                res.send(200, tasks);
-            }).catch(err => this.catch(err).databaseError(res, err));
+                res.send(tasks);
+            }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
         
         this.server.get("/api/v1/project/:project/tasks", (req, res) => {
@@ -21,8 +22,8 @@ export class Tasks extends RouteBase {
             }).sort({
                 created: -1
             }).toArray().then(tasks => {
-                res.send(200, tasks);
-            }).catch(err => this.catch(err).databaseError(res, err));
+                res.send(tasks);
+            }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
         
         this.server.get("/api/v1/project/:project/tasks/recent", (req, res) => {
@@ -31,33 +32,40 @@ export class Tasks extends RouteBase {
             }).sort({
                 created: -1
             }).limit(50).toArray().then(tasks => {
-                res.send(200, tasks);
-            }).catch(err => this.catch(err).databaseError(res, err));
+                res.send(tasks);
+            }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
         
-        this.server.get("/api/v1/action/:action/tasks", (req, res) => {
-            this.db.Tasks.find({
-                'action.id': req.params.action
-            }).sort({
-                created: -1
-            }).toArray().then(tasks => {
-                res.send(200, tasks);
-            }).catch(err => this.catch(err).databaseError(res, err));
+        this.server.get("/api/v1/action/:action/tasks", this.authorize(), (req, res) => {
+            this.db.Actions.get(req.params.action).then(action => {
+                if (!action) return this.notFound();
+            }).then(() => this.db.Tasks.find({
+                    'action.id': req.params.action
+                }).sort({
+                    created: -1
+                }).toArray())
+            .then(tasks => {
+                res.send(tasks);
+            }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
         
-        this.server.get("/api/v1/action/:action/tasks/recent", (req, res) => {
-            this.db.Tasks.find({
-                'action.id': req.params.action
-            }).sort({
-                created: -1
-            }).limit(50).toArray().then(tasks => {
+        this.server.get("/api/v1/action/:action/tasks/recent", this.authorize(), (req, res) => {
+            this.db.Actions.get(req.params.action).then(action => {
+                if (!action) return this.notFound();
+            }).then(() => this.db.Tasks.find({
+                    'action.id': req.params.action
+                }).sort({
+                    created: -1
+                }).limit(50).toArray())
+            .then(tasks => {
                 res.send(200, tasks);
-            }).catch(err => this.catch(err).databaseError(res, err));
+            }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
         
         this.server.post("/api/v1/action/:action/tasks", (req, res) => {
             this.db.Actions.get(req.params.action).then(action => {
-                if (!action) return this.notFound(res);
+                if (!action) return this.notFound();
+                if (!this.hasPermission(req, "project/:project/admin", { project: action.project.id })) return this.forbidden();
 
                 let newTask: TaskDoc = {
                     action: action.summary,
@@ -69,64 +77,108 @@ export class Tasks extends RouteBase {
                     vars: req.body.vars
                 };
 
-                return this.db.Tasks.insert(newTask);
+                return this.db.AuditLog.insert({
+                    type: "task.create",
+                    context: {
+                        project: action.project,
+                        action: action.summary,
+                        request: req.body
+                    }
+                }).then(() => this.db.Tasks.insert(newTask));
             }).then(task => {
-                res.send(200, task);
-            }).catch(err => this.catch(err).databaseError(res, err));
+                res.send(task);
+            }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
         
         this.server.head("/api/v1/task/:id", (req, res) => {
             this.db.Tasks.get(req.params.id, {
-                fields: { _id: 1 }
+                fields: { _id: 1, project: 1 }
              }).then(task => {
-                if (!task) res.status(404);
-                else res.status(200);
+                if (!task) return this.notFound();
                 
-                return res.end();
+                res.end();
             }).catch(err => {
-                this.catch(err);
-                res.status(500);
-                return res.end();
+                if (err instanceof ServerError) {
+                    res.status(err.code);
+                }
+                else res.status(500);
+                res.end();
             });
         });
         
         this.server.get("/api/v1/task/:id", (req, res) => {
             this.db.Tasks.get(req.params.id).then(task => {
-                if (!task) return this.notFound(res);
+                if (!task) return this.notFound();
                 
-                res.send(200, task);
-            }).catch(err => this.catch(err).databaseError(res, err));
+                res.send(task);
+            }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
         
         this.server.post("/api/v1/task/:id/run", (req, res) => {
             this.db.Tasks.get(req.params.id).then(task => {
-                if (!task) return this.notFound(res);
+                if (!task) return this.notFound();
+
+                const { vars, configuration } = <{
+                    vars: { [name: string]: string; };
+                    configuration?: string;
+                }>req.body;
 
                 return this.db.Actions.get(task.action.id).then(action => {
-                    if (!action) return this.notFound(res);
+                    if (!action) return this.notFound();
 
-                    const executors = this.distributor.getExecutors(action, task, req.body);
-                    executors.forEach(executor => {
-                        console.log(`START ${task.project.name}:${task.action.name}:${task._id} - ${executor.toString()}`);
-                        executor.start().then(() => {
-                            console.log(`STOP ${task.project.name}:${task.action.name}:${task._id} - ${executor.toString()} (${TaskState[task.state]})`);
+                    let resolvedVars: { [name: string]: string; } = {};
+                    assign(resolvedVars, action.vars, task.vars, vars);
+                    if (configuration) {
+                        const resolvedConfiguration = action.configurations.find(config => config.name === configuration);
+                        if (resolvedConfiguration)
+                            assign(resolvedVars, resolvedConfiguration.vars);
+                        else
+                            return this.notFound();
+                    }
+
+                    return this.db.AuditLog.insert({
+                        type: "task.run",
+                        context: {
+                            project: action.project,
+                            action: action.summary,
+                            task: task.summary,
+                            request: req.body
+                        }
+                    }).then(() => {
+                        const executors = this.distributor.getExecutors(action, task, resolvedVars);
+                        executors.forEach(executor => {
+                            console.log(`START ${task.project.name}:${task.action.name}:${task._id} - ${executor.toString()}`);
+                            executor.start().then(() => {
+                                console.log(`STOP ${task.project.name}:${task.action.name}:${task._id} - ${executor.toString()} (${TaskState[task.state]})`);
+                            });
                         });
-                    });
 
-                    res.send(200, task);
+                        res.send(task);
+                        return task;
+                    });
                 });
-            }).catch(err => this.catch(err).databaseError(res, err));
+            }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
         
         this.server.del("/api/v1/task/:id", (req, res) => {
             this.db.Tasks.get(req.params.id).then(task => {
-                if (!task) return this.notFound(res);
+                if (!task) return this.notFound();
+
                 
-                return task.remove().then(() => {
-                    res.status(200);
-                    res.end();
-                });
-            }).catch(err => this.catch(err).databaseError(res, err));
+                return this.db.AuditLog.insert({
+                    type: "task.remove",
+                    context: {
+                        project: task.project,
+                        action: task.action,
+                        task: task.summary
+                    }
+                })
+                .then(() => task.remove())
+            }, err => this.databaseError(err))
+            .then(() => {
+                res.status(200);
+                res.end();
+            }).catch(err => this.catch(res, err));
         });
     }
 }

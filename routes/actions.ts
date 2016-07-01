@@ -9,30 +9,31 @@ export class Actions extends RouteBase {
                 "project.id": req.params.project
             }).toArray().then(actions => {
                 res.send(200, actions);
-            }).catch(err => this.catch(err).databaseError(res, err));
+            }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
 
         this.server.get("/api/v1/action/:id", (req, res) => {
             this.db.Actions.get(req.params.id).then(action => {
-                if(!action) return this.notFound(res);
+                if (!action) return this.notFound();
+                if (!this.hasPermission(req, "project/:project", { project: action.project.id })) return this.forbidden();
                 res.send(200, action);
-            }).catch(err => this.catch(err).databaseError(res, err));
+            }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
 
         this.server.put("/api/v1/action/:id", (req, res) => {
             this.db.Actions.get(req.params.id).then(action => {
-                if (!action) return this.notFound(res);
+                if (!action) return this.notFound();
 
                 assign(action, pick(req.body, "name", "description", "vars", "http"));
                 return action.save();
             }).then(action => {
                 res.send(200, action);
-            }).catch(err => this.catch(err).databaseError(res, err));
+            }).catch(err => this.catch(res, err));
         });
 
         this.server.post("/api/v1/project/:project/actions", (req, res) => {
             this.db.Projects.get(req.params.project).then(project => {
-                if (!project) return this.notFound(res);
+                if (!project) return this.notFound();
 
                 let newAction: ActionDoc = {
                     name: req.body.name,
@@ -43,13 +44,15 @@ export class Actions extends RouteBase {
                         url: project.url
                     },
                     vars: req.body.vars || {},
+                    configurations: req.body.configurations || {},
                     http: req.body.http
                 };
 
                 return this.db.Actions.insert(newAction).then(action => {
                     res.send(200, action);
-                });
-            }).catch(err => this.catch(err).databaseError(res, err));
+                    return action;
+                }, err => this.databaseError(err));
+            }).catch(err => this.catch(res, err));
         });
     }
 }
