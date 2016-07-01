@@ -58,6 +58,9 @@ export class TestApplication extends Application {
                 header: "default_header_value",
                 data: "default_data_value"
             },
+            configurations: [
+
+            ],
             http: {
                 method: "POST",
                 url: "http://localhost:1234/test/path?query={{query}}",

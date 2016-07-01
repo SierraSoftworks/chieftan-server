@@ -12,6 +12,13 @@ export interface ActionDoc {
     vars: {
         [name: string]: string;
     };
+
+    configurations: {
+        name: string;
+        vars: {
+            [name: string]: string;
+        };
+    }[];
     
     http?: RequestDoc;
 }
@@ -48,6 +55,17 @@ export class Action extends Iridium.Instance<ActionDoc, Action> implements Actio
     vars: {
         [name: string]: string;
     };
+
+    @Iridium.Property([{
+        name: String,
+        vars: { $propertyType: String }
+    }])
+    configurations: {
+        name: string;
+        vars: {
+            [name: string]: string;
+        };
+    }[];
     
     @Iridium.Property(RequestSchema, false)
     http: RequestDoc;
@@ -67,6 +85,7 @@ export class Action extends Iridium.Instance<ActionDoc, Action> implements Actio
             description: this.description,
             project: this.project,
             vars: this.vars,
+            configurations: this.configurations,
             http: this.http
         };
     }
