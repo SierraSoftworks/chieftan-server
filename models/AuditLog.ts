@@ -56,6 +56,7 @@ export class AuditLog extends Iridium.Instance<AuditLogDoc, AuditLog> implements
         return {
             id: this._id,
             type: this.type,
+            user: this.user,
             timestamp: this.timestamp,
             context: this.context
         };
