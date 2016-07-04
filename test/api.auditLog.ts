@@ -12,6 +12,7 @@ describe("api", () => {
         before(() => app.db.AuditLog.insert({
             type: "test",
             user: app.testUser.summary,
+            token: "test",
             context: {
 
             }

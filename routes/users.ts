@@ -12,6 +12,7 @@ export class Users extends RouteBase {
             return this.db.AuditLog.insert({
                 type: "user.create",
                 user: this.isAuthorizedRequest(req) ? req.user.summary : null,
+                token: req.authorization.credentials,
                 context: {
                     request: req.body
                 }
@@ -39,6 +40,7 @@ export class Users extends RouteBase {
                 return this.db.AuditLog.insert({
                     type: "user.tokens.view",
                     user: this.isAuthorizedRequest(req) ? req.user.summary : null,
+                    token: req.authorization.credentials,
                     context: {
                         user: user.summary
                     }
@@ -68,6 +70,7 @@ export class Users extends RouteBase {
                 return this.db.AuditLog.insert({
                     type: "user.tokens.create",
                     user: this.isAuthorizedRequest(req) ? req.user.summary : null,
+                    token: req.authorization.credentials,
                     context: {
                         user: user.summary
                     }

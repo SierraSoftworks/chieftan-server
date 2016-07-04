@@ -9,6 +9,7 @@ export interface AuditLogDoc {
     
     type: string;
     user: UserSummaryDoc;
+    token: string;
     timestamp?: Date;
 
     context: AuditLogContextDoc;
@@ -41,7 +42,10 @@ export class AuditLog extends Iridium.Instance<AuditLogDoc, AuditLog> implements
 
     @Iridium.Property(UserSummarySchema)
     user: UserSummaryDoc;
-
+    
+    @Iridium.Property(String)
+    token: string;
+    
     @Iridium.Property(Date)
     timestamp: Date;
     
@@ -57,6 +61,7 @@ export class AuditLog extends Iridium.Instance<AuditLogDoc, AuditLog> implements
             id: this._id,
             type: this.type,
             user: this.user,
+            token: this.token,
             timestamp: this.timestamp,
             context: this.context
         };

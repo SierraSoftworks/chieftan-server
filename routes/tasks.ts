@@ -82,6 +82,7 @@ export class Tasks extends RouteBase {
                 return this.db.AuditLog.insert({
                     type: "task.create",
                     user: this.isAuthorizedRequest(req) ? req.user.summary : null,
+                    token: req.authorization.credentials,
                     context: {
                         project: action.project,
                         action: action.summary,
@@ -145,6 +146,7 @@ export class Tasks extends RouteBase {
                     return this.db.AuditLog.insert({
                         type: "task.run",
                         user: this.isAuthorizedRequest(req) ? req.user.summary : null,
+                        token: req.authorization.credentials,
                         context: {
                             project: action.project,
                             action: action.summary,
@@ -176,6 +178,7 @@ export class Tasks extends RouteBase {
                 return this.db.AuditLog.insert({
                     type: "task.remove",
                     user: this.isAuthorizedRequest(req) ? req.user.summary : null,
+                    token: req.authorization.credentials,
                     context: {
                         project: task.project,
                         action: task.action,

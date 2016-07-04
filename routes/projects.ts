@@ -19,6 +19,7 @@ export class Projects extends RouteBase {
             this.db.AuditLog.insert({
                 type: "project.create",
                 user: this.isAuthorizedRequest(req) ? req.user.summary : null,
+                token: req.authorization.credentials,
                 context: {
                     request: req.body
                 }
