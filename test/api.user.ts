@@ -177,7 +177,7 @@ describe("api", () => {
                 .expect(200)
                 .toPromise()
                 .then(res => {
-                    chai.expect(res.body).to.eql([...app.testUser.tokens, "test2"]);
+                    chai.expect(res.body).to.contain("test2");
                 });
         });
 
@@ -189,7 +189,7 @@ describe("api", () => {
                 .toPromise();
         });
 
-        it("should return 401 if you don't have an admin/users permission entry", () => {
+        it("should return 403 if you don't have an admin/users permission entry", () => {
             return request(app.server)
                 .post(`/api/v1/user/${app.testUser._id}/tokens`)
                 .send({ token: "test2" })
@@ -205,6 +205,47 @@ describe("api", () => {
 
                 chai.expect(entry).to.have.property("user").eql(app.adminUser.summary);
                 chai.expect(entry.context).to.have.property("user").eql(app.testUser.summary);
+            });
+        });
+
+        it("should add the token to the user's account", () => {
+            return chai.expect(app.db.Users.get(app.testUser._id)).to.eventually.have.property("tokens").contain("test2");
+        })
+
+        it("should allow you to remove a token from a user's account", () => {
+            return request(app.server)
+                .del(`/api/v1/user/${app.testUser._id}/token/test2`)
+                .set("Authorization", "Token admin")
+                .expect(200)
+                .toPromise()
+                .then(res => {
+                    chai.expect(res.body).to.not.contain("test2");
+                });
+        });
+
+        it("should return 401 if you aren't authenticated", () => {
+            return request(app.server)
+                .del(`/api/v1/user/${app.testUser._id}/token/test2`)
+                .expect(401)
+                .toPromise();
+        });
+
+        it("should return 403 if you don't have an admin/users permission entry", () => {
+            return request(app.server)
+                .del(`/api/v1/user/${app.testUser._id}/token/test2`)
+                .set("Authorization", "Token test")
+                .expect(403)
+                .toPromise();
+        });
+
+        it("should create an auditlog entry", () => {
+            return app.db.AuditLog.get({ type: "user.tokens.revoke" }).then(entry => {
+                chai.expect(entry).to.exist;
+                chai.expect(entry).to.have.property("context");
+
+                chai.expect(entry).to.have.property("user").eql(app.adminUser.summary);
+                chai.expect(entry.context).to.have.property("user").eql(app.testUser.summary);
+                chai.expect(entry.context).to.have.property("request").eql({ token: "test2" });
             });
         });
     });

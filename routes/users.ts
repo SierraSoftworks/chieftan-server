@@ -78,7 +78,33 @@ export class Users extends RouteBase {
                     res.send(200, user.tokens);
                     return user;
                 }, err => this.databaseError(err));
-            }).catch(err => this.catch(res, err));
+            }, err => this.databaseError(err)).catch(err => this.catch(res, err));
+        });
+
+        this.server.del("/api/v1/user/:user/token/:token", this.authorize(), this.permission("admin/users"), (req, res) => {
+            this.db.Users.get(req.params.user).then(user => {
+                if (!user) return this.notFound();
+
+                let i = user.tokens.indexOf(req.params.token);
+                if (!~i) return this.notFound();
+
+                user.tokens.splice(i, 1);
+
+               return this.db.AuditLog.insert({
+                    type: "user.tokens.revoke",
+                    user: this.isAuthorizedRequest(req) ? req.user.summary : null,
+                    token: req.authorization.credentials,
+                    context: {
+                        user: user.summary,
+                        request: {
+                            token: req.params.token
+                        },
+                    }
+                }).then(() => user.save()).then(user => {
+                    res.send(200, user.tokens);
+                    return user;
+                }, err => this.databaseError(err));
+            }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
     }
 }
