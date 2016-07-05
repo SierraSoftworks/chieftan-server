@@ -208,7 +208,7 @@ export class Tasks extends RouteBase {
             }).catch(err => this.catch(res, err));
         });
         
-        this.server.post("/api/v1/action/:id/task/latest/run", this.authorize(), (req, res) => {
+        this.server.post("/api/v1/action/:action/task/latest/run", this.authorize(), (req, res) => {
             this.db.Actions.get(req.params.action).then(action => {
                 if (!action) return this.notFound();
                 if (!this.hasPermission(req, "project/:project", { project: action.project.id })) return this.forbidden();
@@ -219,7 +219,6 @@ export class Tasks extends RouteBase {
                 }).next())
             .then(task => {
                 if (!task) return this.notFound();
-                if (!this.hasPermission(req, "project/:project", { project: task.project.id })) return this.forbidden();
 
                 const { vars, configuration } = <{
                     vars: { [name: string]: string; };
