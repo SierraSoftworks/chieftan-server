@@ -50,6 +50,21 @@ export class Tasks extends RouteBase {
             }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
         
+        this.server.get("/api/v1/action/:action/task/latest", this.authorize(), (req, res) => {
+            this.db.Actions.get(req.params.action).then(action => {
+                if (!action) return this.notFound();
+                if (!this.hasPermission(req, "project/:project", { project: action.project.id })) return this.forbidden();
+            }).then(() => this.db.Tasks.find({
+                    'action.id': req.params.action
+                }).sort({
+                    created: -1
+                }).next())
+            .then(task => {
+                if (!task) return this.notFound();
+                res.send(task);
+            }, err => this.databaseError(err)).catch(err => this.catch(res, err));
+        });
+        
         this.server.get("/api/v1/action/:action/tasks/recent", this.authorize(), (req, res) => {
             this.db.Actions.get(req.params.action).then(action => {
                 if (!action) return this.notFound();
@@ -191,6 +206,63 @@ export class Tasks extends RouteBase {
                 res.status(200);
                 res.end();
             }).catch(err => this.catch(res, err));
+        });
+        
+        this.server.post("/api/v1/action/:id/task/latest/run", this.authorize(), (req, res) => {
+            this.db.Actions.get(req.params.action).then(action => {
+                if (!action) return this.notFound();
+                if (!this.hasPermission(req, "project/:project", { project: action.project.id })) return this.forbidden();
+            }).then(() => this.db.Tasks.find({
+                    'action.id': req.params.action
+                }).sort({
+                    created: -1
+                }).next())
+            .then(task => {
+                if (!task) return this.notFound();
+                if (!this.hasPermission(req, "project/:project", { project: task.project.id })) return this.forbidden();
+
+                const { vars, configuration } = <{
+                    vars: { [name: string]: string; };
+                    configuration?: string;
+                }>req.body;
+
+                return this.db.Actions.get(task.action.id).then(action => {
+                    if (!action) return this.notFound();
+
+                    let resolvedVars: { [name: string]: string; } = {};
+                    assign(resolvedVars, action.vars, task.vars, vars);
+                    if (configuration) {
+                        const resolvedConfiguration = action.configurations.find(config => config.name === configuration);
+                        if (resolvedConfiguration)
+                            assign(resolvedVars, resolvedConfiguration.vars);
+                        else
+                            return this.notFound();
+                    }
+
+                    return this.db.AuditLog.insert({
+                        type: "task.run",
+                        user: this.isAuthorizedRequest(req) ? req.user.summary : null,
+                        token: req.authorization.credentials,
+                        context: {
+                            project: action.project,
+                            action: action.summary,
+                            task: task.summary,
+                            request: req.body
+                        }
+                    }).then(() => {
+                        const executors = this.distributor.getExecutors(action, task, resolvedVars);
+                        executors.forEach(executor => {
+                            console.log(`START ${task.project.name}:${task.action.name}:${task._id} - ${executor.toString()}`);
+                            executor.start().then(() => {
+                                console.log(`STOP ${task.project.name}:${task.action.name}:${task._id} - ${executor.toString()} (${TaskState[task.state]})`);
+                            });
+                        });
+
+                        res.send(task);
+                        return task;
+                    });
+                });
+            }, err => this.databaseError(err)).catch(err => this.catch(res, err));
         });
     }
 }
