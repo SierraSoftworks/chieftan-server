@@ -206,6 +206,41 @@ describe("api", () => {
                 .expect(403)
                 .toPromise();
         });
+        
+        
+        it("should return the most recent task for an action", () => {
+            return request(app.server)
+                .get(`/api/v1/action/${app.testAction._id}/task/latest`)
+                .set("Authorization", "Token test")
+                .expect(200)
+                .toPromise()
+                .then(res => {
+                    chai.expect(res.body).to.exist;
+                    chai.expect(res.body).to.have.property("id", app.testTask._id);
+                    chai.expect(res.body).to.have.property("metadata").eql(app.testTask.metadata);
+                    chai.expect(res.body).to.have.property("action").eql(app.testTask.action);
+                    chai.expect(res.body).to.have.property("project").eql(app.testTask.project);
+                    chai.expect(res.body).to.have.property("vars").eql(app.testTask.vars);
+                    chai.expect(res.body).to.have.property("state").eql("NotExecuted");
+                    chai.expect(res.body).to.have.property("output", "");
+                    chai.expect(res.body).to.have.property("created").which.exist;
+                });
+        });
+
+        it("should return 401 if you aren't authenticated", () => {
+            return request(app.server)
+                .get(`/api/v1/action/${app.testAction._id}/task/latest`)
+                .expect(401)
+                .toPromise();
+        });
+
+        it("should return 403 if you don't permission to access the project", () => {
+            return request(app.server)
+                .get(`/api/v1/action/${app.testAction2._id}/task/latest`)
+                .set("Authorization", "Token test")
+                .expect(403)
+                .toPromise();
+        });
 
         it("should allow you to check whether a task exists by ID", () => {
             return request(app.server)
