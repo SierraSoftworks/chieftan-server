@@ -17,8 +17,11 @@ RUN chown -R app:app $HOME/chieftan
 
 USER chieftan
 
+ENV PORT=3000
+EXPOSE $PORT
+
 HEALTHCHECK --interval=10s --timeout=5s --retries=3 \
-    CMD curl -f http://localhost/api/v1/status || exit 2
+    CMD curl -f http://localhost:$PORT/api/v1/status || exit 2
 
 ENV CHIEFTAN_MONGODB="mongodb://mongodb/chieftan"
 
