@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:6.2
 
 MAINTAINER Benjamin Pannell <admin@sierrasoftworks.com>
 
