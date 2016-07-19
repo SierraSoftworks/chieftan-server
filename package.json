@@ -14,6 +14,7 @@
     "prewatch": "npm run build",
     "watch": "concurrently --raw --kill-others \"npm run build:watch\" \"npm run test:watch\"",
     "create:admin": "node dist/tools/newAdmin",
+    "create:token": "node dist/tools/newToken"
   },
   "repository": {
     "type": "git",
