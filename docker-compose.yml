@@ -1,0 +1,19 @@
+version: "2"
+services:
+    backend:
+        image: docker.emss.co.za/chieftan/server
+        restart: unless-stopped
+        depends_on:
+            - mongodb
+        links:
+            - mongodb
+        ports:
+            - 3003:3000
+    
+    mongodb:
+        image: mongo:3
+        restart: unless-stopped
+        volumes:
+            - data:/data/db
+volumes:
+    data:
