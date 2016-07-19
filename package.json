@@ -12,7 +12,8 @@
     "build:watch": "tsc --watch",
     "test:watch": "mocha --watch",
     "prewatch": "npm run build",
-    "watch": "concurrently --raw --kill-others \"npm run build:watch\" \"npm run test:watch\""
+    "watch": "concurrently --raw --kill-others \"npm run build:watch\" \"npm run test:watch\"",
+    "create:admin": "node dist/tools/newAdmin",
   },
   "repository": {
     "type": "git",
