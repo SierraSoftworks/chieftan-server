@@ -5,10 +5,16 @@ import {Task} from "../../models/Task";
 import {User} from "../../models/User";
 
 export class TestApplication extends Application {
-    constructor(options: ApplicationOptions = {
-        connectionString: "mongodb://localhost/chieftan_test"
-    }) {
-        super(options);
+    constructor(options: ApplicationOptions) {
+        const defaultOptions: ApplicationOptions = {
+            connectionString: "mongodb://localhost/chieftan_test"
+        };
+
+        if (process.env["MONGO_PORT_27017_TCP_ADDR"]) {
+            defaultOptions.connectionString = `mongodb://${process.env["MONGO_PORT_27017_TCP_ADDR"]}:${process.env["MONGO_PORT_27017_TCP_PORT"]}/chieftan_test`
+        }
+
+        super(Object.assign({}, defaultOptions, options));
     }
     
     testProject: Project;
