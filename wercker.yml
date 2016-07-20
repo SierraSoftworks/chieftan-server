@@ -1,4 +1,4 @@
-box: node
+box: node:6
 
 services:
     - mongo
@@ -14,4 +14,50 @@ build:
     - script:
         name: build
         code: npm run build
+
+test:
+  steps:
     - npm-test
+
+deploy-build:
+  steps:
+    - internal/docker-push:
+        username: $USERNAME
+        password: $PASSWORD
+        registry: https://$REGISTRY
+        repository: $REGISTRY/$REGISTRY_NAMESPACE/$WERCKER_GIT_REPOSITORY
+        author: $WERCKER_STARTED_BY
+        labels: VERSION=$WERCKER_GIT_COMMIT
+        entrypoint: "npm run"
+        cmd: "start"
+        working-dir: "$WERCKER_SOURCE_DIR"
+        env: "CHIEFTAN_MONGODB=mongodb://mongodb/chieftan"
+        ports: "3000"
+
+  after-steps:
+    - slack-notifier:
+        url: $SLACK_URL
+        channel: builds
+        username: wercker
+
+deploy-release:
+  steps:
+    - internal/docker-push:
+        username: $USERNAME
+        password: $PASSWORD
+        registry: https://$REGISTRY
+        repository: $REGISTRY/$REGISTRY_NAMESPACE/$WERCKER_GIT_REPOSITORY
+        tag: latest
+        author: $WERCKER_STARTED_BY
+        labels: VERSION=$WERCKER_GIT_COMMIT
+        entrypoint: "npm run"
+        cmd: "start"
+        working-dir: "$WERCKER_SOURCE_DIR"
+        env: "CHIEFTAN_MONGODB=mongodb://mongodb/chieftan"
+        ports: "3000"
+
+  after-steps:
+    - slack-notifier:
+        url: $SLACK_URL
+        channel: builds
+        username: wercker
