@@ -14,7 +14,10 @@ mongodb:
   version: '3.2'
 
 hooks:
-  pre_setup: "sudo docker build -t chieftan-server --build-arg VERSION=$TDDIUM_CURRENT_COMMIT ."
+  pre_setup: 'sudo docker build -t chieftan-server --build-arg "VERSION=$TDDIUM_CURRENT_COMMIT" .'
+
+tests_pattern:
+  - test/*.ts
 
 tests:
   - 'sudo docker run -e CHIEFTAN_MONGODB="$MONGODB_URL" chieftan-server test'
