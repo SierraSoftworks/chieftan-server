@@ -38,15 +38,30 @@ chieftan remove:token 54e81577954376dac6ed9d8b134a790b
 ```
 
 ## Development
-Development is conducted using standard Go and `godep` for dependency management. Tests
+Development is conducted using standard Go and `gvt` for dependency management. Tests
 are written using `gocheck` to help keep things a bit more succinct.
 
 You are expected to have a MongoDB database available at `$MONGODB_URL` or
 `mongodb://localhost/chieftan` for all tests and executions.
+
+### Environment Setup
+You just need to restore the correct versions of the various dependencies using `gvt`.
+
+```sh
+go get -u github.com/FiloSottile/gvt
+gvt restore
+```
 
 ### Automated Tests
 You can run the automated test suite by executing the following:
 
 ```sh
 go test ./src/...
+```
+
+### Building
+Creating a build requires you to run `go build`, as with every other Golang project...
+
+```sh
+go build -o chieftan "-X main.version=$(git describe --abbrev=0 --tags)" "-X main.commit=$(git rev-parse HEAD)"
 ```
