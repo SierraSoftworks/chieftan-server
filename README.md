@@ -56,7 +56,8 @@ gvt restore
 You can run the automated test suite by executing the following:
 
 ```sh
-go test ./src/...
+cd src
+go test ./...
 ```
 
 ### Building
