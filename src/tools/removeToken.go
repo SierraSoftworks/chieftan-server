@@ -3,7 +3,7 @@ package tools
 import (
 	"fmt"
 
-	"../tasks"
+	"github.com/SierraSoftworks/chieftan-server/src/tasks"
 
 	"github.com/urfave/cli"
 )

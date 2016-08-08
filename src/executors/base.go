@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"../models"
+	"github.com/SierraSoftworks/chieftan-server/src/models"
 )
 
 type Executor struct {

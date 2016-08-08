@@ -10,6 +10,14 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/aymerick/raymond",
+			"repository": "https://github.com/aymerick/raymond",
+			"vcs": "git",
+			"revision": "a2232af10b53ef1ae5a767f5178db3a6c1dab655",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/urfave/cli",
 			"repository": "https://github.com/urfave/cli",
 			"vcs": "git",

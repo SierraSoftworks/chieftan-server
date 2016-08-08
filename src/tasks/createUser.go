@@ -1,8 +1,8 @@
 package tasks
 
 import (
-	"../models"
-	"gopkg.in/mgo.v2"
+	"github.com/SierraSoftworks/chieftan-server/src/models"
+	mgo "gopkg.in/mgo.v2"
 )
 
 type CreateUserRequest struct {

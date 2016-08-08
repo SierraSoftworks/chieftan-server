@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"./tools"
+	"github.com/SierraSoftworks/chieftan-server/src/tools"
 
 	"github.com/urfave/cli"
 )

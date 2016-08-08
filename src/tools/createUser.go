@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"../tasks"
+	"github.com/SierraSoftworks/chieftan-server/src/tasks"
 
 	"github.com/urfave/cli"
 )

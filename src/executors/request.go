@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"../utils"
+	"github.com/SierraSoftworks/chieftan-server/src/utils"
 
 	"net/http"
 	"strings"

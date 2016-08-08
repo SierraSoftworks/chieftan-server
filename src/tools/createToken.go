@@ -6,8 +6,8 @@ import (
 	"log"
 	"os"
 
-	"../models"
-	"../tasks"
+	"github.com/SierraSoftworks/chieftan-server/src/models"
+	"github.com/SierraSoftworks/chieftan-server/src/tasks"
 
 	"github.com/urfave/cli"
 )
