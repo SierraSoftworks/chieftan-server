@@ -31,8 +31,11 @@
     "typescript": "^2.0.0"
   },
   "devDependencies": {
+    "@types/chai": "*",
+    "@types/chai-as-promised": "*",
     "@types/bluebird": "*",
     "@types/handlebars": "*",
+    "@types/lodash": "*",
     "@types/mocha": "*",
     "@types/restify": "*",
     "@types/superagent": "*",
