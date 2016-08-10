@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/SierraSoftworks/chieftan-server/src/tools"
@@ -16,7 +17,7 @@ func main() {
 	app.Author = "Benjamin Pannell"
 	app.Email = "admin@sierrasoftworks.com"
 	app.Copyright = "Sierra Softworks © 2016"
-	app.Version = "1.0.0-dev"
+	app.Version = fmt.Sprintf("%s-%s", version, commit)
 
 	app.Commands = cli.Commands{
 		tools.CreateUser,
