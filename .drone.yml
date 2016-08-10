@@ -1,7 +1,11 @@
+workspace:
+    base: /go
+    path: src/github.com/SierraSoftworks/chieftan-server
+
 pipeline:
 
     go:build:
-        image: golang
+        image: golang:1.6
         commands:
             - go get -u github.com/FiloSottile/gvt
             - gvt restore
