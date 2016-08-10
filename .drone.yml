@@ -1,0 +1,12 @@
+pipeline:
+    docker:
+        repo: chieftan/server
+        tag:
+            - latest
+            - "${DRONE_COMMIT_BRANCH}"
+            - node
+        username: "${DOCKER_USERNAME}"
+        password: "${DOCKER_PASSWORD}"
+        email: "${DOCKER_EMAIL}"
+        build_args:
+            - "VERSION=${DRONE_COMMIT_SHA}"
