@@ -35,7 +35,7 @@ class TestServer {
         this.reqHeaders = req.headers;
         req.setEncoding("utf8");
 
-        this.reqData = new Promise((resolve, reject) => {
+        this.reqData = new Promise<string>((resolve, reject) => {
             let data = "";
             req.on("data", d => {
                 data += d;
