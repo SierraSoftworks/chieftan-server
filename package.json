@@ -23,14 +23,21 @@
   "author": "Benjamin Pannell <admin@sierrasoftworks.com>",
   "license": "MIT",
   "dependencies": {
-    "bluebird": "^3.4.0",
+    "bluebird": "^3.4.1",
     "handlebars": "^4.0.5",
-    "iridium": "^7.0.0-alpha.9",
-    "lodash": "^4.13.1",
-    "restify": "^4.1.0",
-    "typescript": "^1.8.10"
+    "iridium": "^7.0.0-alpha.15",
+    "lodash": "^4.14.2",
+    "restify": "^4.1.1",
+    "typescript": "^2.0.0"
   },
   "devDependencies": {
+    "@types/bluebird": "*",
+    "@types/handlebars": "*",
+    "@types/mocha": "*",
+    "@types/restify": "*",
+    "@types/superagent": "*",
+    "@types/supertest": "*",
+    "@types/supertest-as-promised": "*",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
     "concurrently": "^2.1.0",

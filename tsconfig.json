@@ -8,9 +8,7 @@
         "module": "commonjs"
     },
     "exclude": [
-        "typings/globals",
-        "typings/modules",
-        "node_modules",
-        "dist"
+        "node_modules/**/*",
+        "dist/**/*"
     ]
 }
