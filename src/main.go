@@ -20,6 +20,7 @@ func main() {
 	app.Version = fmt.Sprintf("%s-%s", version, commit)
 
 	app.Commands = cli.Commands{
+		RunServer,
 		tools.CreateUser,
 		tools.CreateToken,
 		tools.RemoveToken,
