@@ -20,8 +20,8 @@ USER app
 ENV PORT=3000
 EXPOSE $PORT
 
-HEALTHCHECK --interval=10s --timeout=5s --retries=3 \
-    CMD curl -f http://localhost:$PORT/api/v1/status || exit 2
+# HEALTHCHECK --interval=10s --timeout=5s --retries=3 \
+#     CMD curl -f http://localhost:$PORT/api/v1/status || exit 2
 
 ENV MONGODB_URL="mongodb://mongodb/chieftan"
 
