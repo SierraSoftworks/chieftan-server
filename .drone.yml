@@ -2,6 +2,10 @@ workspace:
     base: /go
     path: src/github.com/SierraSoftworks/chieftan-server
 
+services:
+    mongodb:
+        image: mongodb:3.2
+
 pipeline:
 
     go:build:
