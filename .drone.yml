@@ -4,7 +4,7 @@ workspace:
 
 services:
     mongodb:
-        image: mongodb:3.2
+        image: mongo:3.2
 
 pipeline:
 
