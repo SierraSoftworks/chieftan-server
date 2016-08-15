@@ -1,0 +1,25 @@
+workspace:
+    base: /go
+    path: src/github.com/SierraSoftworks/chieftan-server
+
+pipeline:
+
+    go:build:
+        image: golang:1.6
+        commands:
+            - go get -u github.com/FiloSottile/gvt
+            - gvt restore
+            - go test ./...
+            - CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-s' -o chieftan "-X main.version=$DRONE_TAG" "-X main.commit=$DRONE_COMMIT_SHA"
+
+    docker:
+        repo: chieftan/server
+        tag:
+            - latest
+            - "${DRONE_COMMIT_BRANCH}"
+            - "go"
+        username: "${DOCKER_USERNAME}"
+        password: "${DOCKER_PASSWORD}"
+        email: "${DOCKER_EMAIL}"
+        build_args:
+            - "VERSION=${DRONE_COMMIT_SHA}"
