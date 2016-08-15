@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/SierraSoftworks/chieftan-server/src/tools"
@@ -17,7 +16,7 @@ func main() {
 	app.Author = "Benjamin Pannell"
 	app.Email = "admin@sierrasoftworks.com"
 	app.Copyright = "Sierra Softworks © 2016"
-	app.Version = fmt.Sprintf("%s-%s", version, commit)
+	app.Version = version
 
 	app.Commands = cli.Commands{
 		RunServer,
