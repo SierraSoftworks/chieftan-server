@@ -1,0 +1,4 @@
+root = true
+
+[.drone.yml]
+end_of_line = lf
