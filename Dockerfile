@@ -1,5 +1,5 @@
 FROM centurylink/ca-certs
-ADD chieftan /
+ADD bin/chieftan /
 
 ENTRYPOINT /chieftan
 
