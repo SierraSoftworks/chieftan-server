@@ -67,10 +67,6 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	res, err := h.HandleFunc(c)
 
-	if res == nil && err == nil {
-		err = NewError(404, "Not Found", "We could not find the entity you were looking for. Please check your request and try again.")
-	}
-
 	if err != nil {
 		w.WriteHeader(err.Code)
 		if err := writeJSON(err, c); err != nil {
@@ -81,7 +77,9 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(c.StatusCode)
-	if err := writeJSON(res, c); err != nil {
-		log.WithField("response", res).Error("Failed to encode response to JSON", err)
+	if res != nil {
+		if err := writeJSON(res, c); err != nil {
+			log.WithField("response", res).Error("Failed to encode response to JSON", err)
+		}
 	}
 }
