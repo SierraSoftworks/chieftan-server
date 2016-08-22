@@ -16,8 +16,8 @@ type User struct {
 	ID          string   `json:"id" bson:"_id"`
 	Name        string   `json:"name"`
 	Email       string   `json:"email"`
-	Permissions []string `json:"permissions"`
-	Tokens      []string `json:"tokens"`
+	Permissions []string `json:"permissions,omitempty"`
+	Tokens      []string `json:"tokens,omitempty"`
 }
 
 func (u *User) UpdateID() {
