@@ -15,6 +15,10 @@ func getUserByID(c *utils.Context) (interface{}, *utils.Error) {
 		return nil, utils.NewErrorFor(err)
 	}
 
+	if user == nil {
+		return nil, utils.NotFound()
+	}
+
 	return user, nil
 }
 
@@ -26,6 +30,10 @@ func getUserCurrent(c *utils.Context) (interface{}, *utils.Error) {
 	user, err := tasks.GetUser(&req)
 	if err != nil {
 		return nil, utils.NewErrorFor(err)
+	}
+
+	if user == nil {
+		return nil, utils.NotFound()
 	}
 
 	return user, nil
@@ -57,25 +65,10 @@ func createUser(c *utils.Context) (interface{}, *utils.Error) {
 	return user, nil
 }
 
-func getUserTokensByID(c *utils.Context) (interface{}, *utils.Error) {
-	req := tasks.GetUserTokensRequest{
-		ID: c.Vars["user"],
-	}
-
-	tokens, err := tasks.GetUserTokens(&req)
-	if err != nil {
-		return nil, utils.NewErrorFor(err)
-	}
-
-	return tokens, nil
-}
-
 func init() {
 	Router().Path("/v1/users").Methods("GET").Handler(utils.NewHandler(getUsers).LogRequests().RequirePermissions("admin/users"))
 	Router().Path("/v1/users").Methods("POST").Handler(utils.NewHandler(createUser).RequirePermissions("admin/users"))
 
 	Router().Path("/v1/user").Methods("GET").Handler(utils.NewHandler(getUserCurrent))
-
 	Router().Path("/v1/user/{user}").Methods("GET").Handler(utils.NewHandler(getUserByID).RequirePermissions("admin/users"))
-	Router().Path("/v1/user/{user}/tokens").Methods("GET").Handler(utils.NewHandler(getUserTokensByID).RequirePermissions("admin/users"))
 }
