@@ -1,7 +1,7 @@
 package tasks
 
 import (
-	"github.com/SierraSoftworks/chieftan-server/src/models"
+	"github.com/SierraSoftworks/chieftan-server/models"
 	"gopkg.in/mgo.v2/bson"
 )
 

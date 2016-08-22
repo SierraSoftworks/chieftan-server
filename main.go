@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/SierraSoftworks/chieftan-server/src/tools"
+	"github.com/SierraSoftworks/chieftan-server/tools"
 
 	"strings"
 

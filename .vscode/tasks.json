@@ -7,7 +7,7 @@
     "args": [],
     "showOutput": "always",
     "options": {
-        "cwd": "${workspaceRoot}/src"
+        "cwd": "${workspaceRoot}"
     },
     "tasks": [
         {

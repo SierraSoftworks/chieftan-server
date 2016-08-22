@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/SierraSoftworks/chieftan-server/src/api"
+	"github.com/SierraSoftworks/chieftan-server/api"
 	log "github.com/Sirupsen/logrus"
 	"github.com/rs/cors"
 	"github.com/urfave/cli"

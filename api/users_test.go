@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/SierraSoftworks/chieftan-server/src/models"
-	"github.com/SierraSoftworks/chieftan-server/src/tasks"
+	"github.com/SierraSoftworks/chieftan-server/models"
+	"github.com/SierraSoftworks/chieftan-server/tasks"
 	. "gopkg.in/check.v1"
 	"gopkg.in/mgo.v2/bson"
 )

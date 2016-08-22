@@ -3,7 +3,7 @@ package tasks
 import (
 	"testing"
 
-	"github.com/SierraSoftworks/chieftan-server/src/models"
+	"github.com/SierraSoftworks/chieftan-server/models"
 
 	. "gopkg.in/check.v1"
 	"gopkg.in/mgo.v2/bson"

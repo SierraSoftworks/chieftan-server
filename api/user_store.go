@@ -1,8 +1,8 @@
 package api
 
 import "gopkg.in/mgo.v2/bson"
-import "github.com/SierraSoftworks/chieftan-server/src/models"
-import "github.com/SierraSoftworks/chieftan-server/src/api/utils"
+import "github.com/SierraSoftworks/chieftan-server/models"
+import "github.com/SierraSoftworks/chieftan-server/api/utils"
 
 type userStore struct {
 }

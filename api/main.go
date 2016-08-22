@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/SierraSoftworks/chieftan-server/src/api/utils"
+	"github.com/SierraSoftworks/chieftan-server/api/utils"
 	"github.com/gorilla/mux"
 )
 

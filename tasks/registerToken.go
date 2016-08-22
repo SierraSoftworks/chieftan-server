@@ -1,30 +1,30 @@
 package tasks
 
 import (
-	"github.com/SierraSoftworks/chieftan-server/src/models"
+	"github.com/SierraSoftworks/chieftan-server/models"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
-type CreateTokenRequest struct {
+type RegisterTokenRequest struct {
 	UserID string
+	Token  string
 }
 
-func CreateToken(req *CreateTokenRequest) (string, error) {
+func RegisterToken(req *RegisterTokenRequest) (string, error) {
 	if !models.IsValidUserID(req.UserID) {
 		return "", NewError(400, "Bad Request", "You failed to provide a well formed user ID.")
 	}
 
-	token, err := models.GenerateAccessToken()
-	if err != nil {
-		return "", err
+	if !models.IsWellFormattedAccessToken(req.Token) {
+		return "", NewError(400, "Bad Request", "You failed to provide a well formed access token.")
 	}
 
 	changes, err := models.DB().Users().UpdateAll(
 		&bson.M{"_id": req.UserID},
 		&bson.M{
 			"$addToSet": &bson.M{
-				"tokens": token,
+				"tokens": req.Token,
 			},
 		})
 	if err != nil {
@@ -39,5 +39,5 @@ func CreateToken(req *CreateTokenRequest) (string, error) {
 		return "", NewError(404, "Not Found", "The user you specified could not be found in the database.")
 	}
 
-	return token, nil
+	return req.Token, nil
 }

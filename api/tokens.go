@@ -1,8 +1,8 @@
 package api
 
 import (
-	"github.com/SierraSoftworks/chieftan-server/src/api/utils"
-	"github.com/SierraSoftworks/chieftan-server/src/tasks"
+	"github.com/SierraSoftworks/chieftan-server/api/utils"
+	"github.com/SierraSoftworks/chieftan-server/tasks"
 )
 
 func getTokens(c *utils.Context) (interface{}, *utils.Error) {
