@@ -2,12 +2,10 @@ package tools
 
 import (
 	"fmt"
-	"io"
-	"log"
-	"os"
 
 	"github.com/SierraSoftworks/chieftan-server/src/tasks"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/urfave/cli"
 )
 
@@ -37,17 +35,10 @@ var CreateUser cli.Command = cli.Command{
 			Permissions: []string{},
 		}
 
-		var stdErr io.Writer
-
-		if c.App.ErrWriter != nil {
-			stdErr = c.App.ErrWriter
-		} else {
-			stdErr = os.Stderr
-		}
-
-		infoLogger := log.New(stdErr, "[INFO] ", 0)
-
-		infoLogger.Printf("Creating user '%s' with email '%s'", req.Name, req.Email)
+		log.WithFields(log.Fields{
+			"Name":  req.Name,
+			"Email": req.Email,
+		}).Infof("Creating user '%s' with email '%s'", req.Name, req.Email)
 
 		if c.IsSet("admin") {
 			req.Permissions = []string{
@@ -64,9 +55,13 @@ var CreateUser cli.Command = cli.Command{
 			return err
 		}
 
-		infoLogger.Printf("User created with ID:")
-		fmt.Println(user.ID)
-		infoLogger.Printf("Run 'chieftan create:token %s' to generate a new access token for this user", user.ID)
+		log.WithFields(log.Fields{
+			"UserID": user.ID,
+		}).Infof("User created with ID: %s", user.ID)
+
+		log.WithFields(log.Fields{
+			"UserID": user.ID,
+		}).Infof("Run 'chieftan create:token %s' to generate a new access token for this user", user.ID)
 
 		return nil
 	},

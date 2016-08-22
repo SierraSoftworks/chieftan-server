@@ -2,12 +2,10 @@ package tools
 
 import (
 	"fmt"
-	"io"
-	"log"
-	"os"
 
 	"github.com/SierraSoftworks/chieftan-server/src/models"
 	"github.com/SierraSoftworks/chieftan-server/src/tasks"
+	log "github.com/Sirupsen/logrus"
 
 	"github.com/urfave/cli"
 )
@@ -30,29 +28,20 @@ var CreateToken cli.Command = cli.Command{
 			UserID: c.Args().Get(0),
 		}
 
-		var stdErr io.Writer
-
-		if c.App.ErrWriter != nil {
-			stdErr = c.App.ErrWriter
-		} else {
-			stdErr = os.Stderr
-		}
-
 		if !models.IsValidUserID(req.UserID) {
 			req.UserID = models.DeriveID(req.UserID)
 		}
 
-		infoLogger := log.New(stdErr, "[INFO] ", 0)
-
-		infoLogger.Printf("Creating new token for user with ID: %s", req.UserID)
+		log.WithFields(log.Fields{
+			"UserID": req.UserID,
+		}).Infof("Creating new token for user with ID: %s", req.UserID)
 
 		token, err := tasks.CreateToken(req)
 		if err != nil {
 			return err
 		}
 
-		infoLogger.Printf("Access token created:")
-		fmt.Println(token)
+		log.WithFields(log.Fields{"token": token}).Infof("Access token created: %s", token)
 
 		return nil
 	},
