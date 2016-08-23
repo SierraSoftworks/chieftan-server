@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"github.com/SierraSoftworks/chieftan-server/models"
+	"github.com/SierraSoftworks/girder/errors"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -14,11 +15,11 @@ func GetTokens(req *GetTokensRequest) ([]string, error) {
 	if err := models.DB().Users().FindId(req.UserID).Select(&bson.M{
 		"tokens": 1,
 	}).One(&user); err != nil {
-		return nil, NewError(500, "Server Error", "We encountered an error retrieving the users list from the database.")
+		return nil, errors.ServerError()
 	}
 
 	if user.ID != req.UserID {
-		return nil, NewError(404, "Not Found", "The user you specified could not be found in the database.")
+		return nil, errors.NotFound()
 	}
 
 	return user.Tokens, nil

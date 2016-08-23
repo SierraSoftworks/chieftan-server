@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"github.com/SierraSoftworks/chieftan-server/models"
+	"github.com/SierraSoftworks/girder/errors"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -23,7 +24,7 @@ func RemoveAllTokens(req *RemoveAllTokensRequest) error {
 	})
 
 	if err != nil {
-		return NewError(500, "Server Error", "We encountered an error removing the token from the database.")
+		return errors.ServerError()
 	}
 
 	return nil

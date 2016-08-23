@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"github.com/SierraSoftworks/chieftan-server/models"
+	"github.com/SierraSoftworks/girder/errors"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -11,7 +12,7 @@ type RemoveTokenRequest struct {
 
 func RemoveToken(req *RemoveTokenRequest) error {
 	if !models.IsWellFormattedAccessToken(req.Token) {
-		return NewError(400, "Bad Request", "The token you provided was not formatted correctly.")
+		return errors.BadRequest()
 	}
 
 	changes, err := models.DB().Users().UpdateAll(&bson.M{"tokens": req.Token}, &bson.M{
@@ -20,11 +21,11 @@ func RemoveToken(req *RemoveTokenRequest) error {
 		},
 	})
 	if err != nil {
-		return NewError(500, "Server Error", "We encountered an error removing the token from the database.")
+		return errors.ServerError()
 	}
 
 	if changes.Updated == 0 {
-		return NewError(404, "Not Found", "The token you specified could not be found in the database.")
+		return errors.NotFound()
 	}
 
 	return nil

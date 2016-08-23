@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"github.com/SierraSoftworks/chieftan-server/models"
+	"github.com/SierraSoftworks/girder/errors"
 	mgo "gopkg.in/mgo.v2"
 )
 
@@ -23,10 +24,10 @@ func CreateUser(req *CreateUserRequest) (*models.User, error) {
 
 	if err := models.DB().Users().Insert(&user); err != nil {
 		if mgo.IsDup(err) {
-			return nil, NewError(409, "Conflict", "There is already another user with this email address.")
+			return nil, errors.Conflict()
 		}
 
-		return nil, NewError(500, "Server Error", "We encountered an issue creating this user.")
+		return nil, errors.ServerError()
 	}
 
 	return &user, nil

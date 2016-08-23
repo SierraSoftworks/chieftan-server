@@ -21,7 +21,7 @@
 			"importpath": "github.com/SierraSoftworks/girder",
 			"repository": "https://github.com/SierraSoftworks/girder",
 			"vcs": "git",
-			"revision": "5ab64cbda45333124779a5f19ea807aa9c4ed8cf",
+			"revision": "476953809d6acd2f9b5ac895cab75b2a8458d808",
 			"branch": "master",
 			"notests": true
 		},

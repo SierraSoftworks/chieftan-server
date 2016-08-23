@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"github.com/SierraSoftworks/chieftan-server/models"
+	"github.com/SierraSoftworks/girder/errors"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -20,7 +21,7 @@ func CreateProject(req *CreateProjectRequest) (*models.Project, error) {
 	}
 
 	if err := models.DB().Projects().Insert(&project); err != nil {
-		return nil, NewError(500, "Server Error", "We encountered an issue creating this project.")
+		return nil, errors.ServerError()
 	}
 
 	return &project, nil

@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"github.com/SierraSoftworks/chieftan-server/models"
+	"github.com/SierraSoftworks/girder/errors"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -16,7 +17,7 @@ func SetPermissions(req *SetPermissionsRequest) (*models.User, error) {
 			"permissions": req.Permissions,
 		},
 	}); err != nil {
-		return nil, NewError(500, "Server Error", "We encountered an error updating this user's permissions.")
+		return nil, errors.ServerError()
 	}
 
 	return GetUser(&GetUserRequest{ID: req.UserID})

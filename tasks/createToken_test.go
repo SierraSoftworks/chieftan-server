@@ -1,6 +1,9 @@
 package tasks
 
-import . "gopkg.in/check.v1"
+import (
+	"github.com/SierraSoftworks/girder/errors"
+	. "gopkg.in/check.v1"
+)
 
 func (s *TasksSuite) TestCreateToken(c *C) {
 	req := &CreateTokenRequest{
@@ -9,12 +12,7 @@ func (s *TasksSuite) TestCreateToken(c *C) {
 
 	_, err := CreateToken(req)
 	c.Check(err, NotNil)
-
-	switch err.(type) {
-	case *TaskError:
-		e := err.(*TaskError)
-		c.Check(e.Code, Equals, 400)
-	}
+	c.Check(errors.From(err).Code, Equals, 400)
 
 	user, err := CreateUser(&CreateUserRequest{
 		Name:  "Test User",
