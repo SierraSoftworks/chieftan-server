@@ -7,34 +7,29 @@ import (
 	"github.com/SierraSoftworks/chieftan-server/models"
 )
 
-type Executor struct {
-	db *models.Database
+type Executor interface {
+	Start(ctx *Context) error
 }
 
-type executorContext struct {
+type ExecutorBase struct {
+}
+
+type Context struct {
 	Action    *models.Action
 	Task      *models.Task
 	Variables map[string]string
 }
 
-func newExecutor(
-	db *models.Database,
-) *Executor {
-	return &Executor{
-		db: db,
-	}
-}
-
-func (e *Executor) run(ctx *executorContext) error {
+func (e *ExecutorBase) run(ctx *Context) error {
 	return fmt.Errorf("not implemented")
 }
 
-func (e *Executor) Start(ctx *executorContext) error {
+func (e *ExecutorBase) Start(ctx *Context) error {
 	ctx.Task.Executed = time.Now()
 	ctx.Task.Output = "::[info] Running task::"
 	ctx.Task.State = models.TaskStateExecuting
 
-	if err := e.db.Tasks().UpdateId(ctx.Task.ID, ctx.Task); err != nil {
+	if err := models.DB().Tasks().UpdateId(ctx.Task.ID, ctx.Task); err != nil {
 		return err
 	}
 
@@ -49,7 +44,7 @@ func (e *Executor) Start(ctx *executorContext) error {
 
 	ctx.Task.Completed = time.Now()
 
-	if err := e.db.Tasks().UpdateId(ctx.Task.ID, ctx.Task); err != nil {
+	if err := models.DB().Tasks().UpdateId(ctx.Task.ID, ctx.Task); err != nil {
 		return err
 	}
 

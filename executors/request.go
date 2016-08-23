@@ -11,13 +11,17 @@ import (
 	"strings"
 )
 
+func init() {
+	Register("http", &Request{})
+}
+
 type Request struct {
-	*Executor
+	*ExecutorBase
 
 	Client http.Client
 }
 
-func (r *Request) run(ctx *executorContext) error {
+func (r *Request) run(ctx *Context) error {
 	out := []string{}
 
 	data := bytes.NewBuffer([]byte{})
