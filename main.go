@@ -7,6 +7,7 @@ import (
 
 	"strings"
 
+	"github.com/SierraSoftworks/chieftan-server/models"
 	log "github.com/Sirupsen/logrus"
 	"github.com/urfave/cli"
 )
@@ -33,6 +34,12 @@ func main() {
 			Name:  "log-level",
 			Usage: "DEBUG|INFO|WARN|ERROR",
 		},
+		cli.StringFlag{
+			Name:   "mongodb",
+			EnvVar: "MONGODB_URL",
+			Usage:  "mongodb://localhost:27017/chieftan",
+			Value:  "mongodb://localhost:27017/chieftan",
+		},
 	}
 
 	app.Before = func(c *cli.Context) error {
@@ -51,6 +58,8 @@ func main() {
 				log.SetLevel(log.InfoLevel)
 			}
 		}
+
+		models.Connect(c.String("mongodb"))
 
 		return nil
 	}

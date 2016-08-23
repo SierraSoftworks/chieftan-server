@@ -3,7 +3,6 @@ package models
 import (
 	"log"
 	"net/url"
-	"os"
 	"strings"
 
 	"gopkg.in/mgo.v2"
@@ -15,12 +14,7 @@ func DB() *Database {
 	return &db
 }
 
-func init() {
-	mongodbURL := os.ExpandEnv("$MONGODB_URL")
-	if mongodbURL == "" {
-		mongodbURL = "mongodb://localhost/chieftan"
-	}
-
+func Connect(mongodbURL string) {
 	urlInfo, err := url.Parse(mongodbURL)
 	if err != nil {
 		log.Fatal(err)
@@ -33,6 +27,7 @@ func init() {
 	}
 
 	db = Database{
-		db: session.DB(strings.TrimLeft(urlInfo.Path, "/")),
+		db:      session.DB(strings.TrimLeft(urlInfo.Path, "/")),
+		session: session,
 	}
 }

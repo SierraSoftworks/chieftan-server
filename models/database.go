@@ -5,7 +5,8 @@ import (
 )
 
 type Database struct {
-	db *mgo.Database
+	db      *mgo.Database
+	session *mgo.Session
 }
 
 func (d *Database) Actions() *mgo.Collection {
