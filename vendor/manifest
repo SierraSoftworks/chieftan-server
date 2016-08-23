@@ -10,6 +10,22 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/SierraSoftworks/gatekeeper",
+			"repository": "https://github.com/SierraSoftworks/gatekeeper",
+			"vcs": "git",
+			"revision": "a0afb5186db5eb2b17629b744267f165c434f163",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/SierraSoftworks/girder",
+			"repository": "https://github.com/SierraSoftworks/girder",
+			"vcs": "git",
+			"revision": "5ab64cbda45333124779a5f19ea807aa9c4ed8cf",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/Sirupsen/logrus",
 			"repository": "https://github.com/Sirupsen/logrus",
 			"vcs": "git",
