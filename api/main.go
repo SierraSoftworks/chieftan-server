@@ -1,7 +1,10 @@
 package api
 
 import (
-	"github.com/SierraSoftworks/chieftan-server/api/utils"
+	"github.com/SierraSoftworks/chieftan-server/tasks"
+
+	"github.com/SierraSoftworks/girder"
+	"github.com/SierraSoftworks/girder/errors"
 	"github.com/gorilla/mux"
 )
 
@@ -12,6 +15,12 @@ func Router() *mux.Router {
 	return router
 }
 
-func init() {
-	utils.ActiveUserStore = &userStore{}
+func getUser(token *girder.AuthorizationToken) (girder.User, error) {
+	if token.Type != "Token" {
+		return nil, errors.Unauthorized()
+	}
+
+	return tasks.GetUser(&tasks.GetUserRequest{
+		Token: token.Value,
+	})
 }

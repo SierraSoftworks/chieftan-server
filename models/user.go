@@ -20,6 +20,14 @@ type User struct {
 	Tokens      []string `json:"tokens,omitempty"`
 }
 
+func (u *User) GetID() string {
+	return u.ID
+}
+
+func (u *User) GetPermissions() []string {
+	return u.Permissions
+}
+
 func (u *User) UpdateID() {
 	u.ID = DeriveID(u.Email)
 }
