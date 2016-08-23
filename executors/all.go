@@ -2,6 +2,10 @@ package executors
 
 var executors map[string]Executor
 
+func init() {
+	executors = map[string]Executor{}
+}
+
 func Get(operation string) Executor {
 	return executors[operation]
 }
