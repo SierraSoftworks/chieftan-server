@@ -16,6 +16,8 @@ type TasksSuite struct{}
 var _ = Suite(&TasksSuite{})
 
 func (s *TasksSuite) SetUpTest(c *C) {
+	models.Connect("mongodb://localhost/chieftan_test")
+
 	_, err := models.DB().Users().RemoveAll(&bson.M{})
 	c.Assert(err, IsNil)
 

@@ -5,25 +5,11 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/SierraSoftworks/chieftan-server/models"
 	"github.com/SierraSoftworks/chieftan-server/tasks"
 	. "gopkg.in/check.v1"
-	"gopkg.in/mgo.v2/bson"
 )
 
-type UsersAPISuite struct{}
-
-var _ = Suite(&UsersAPISuite{})
-
-func (s *UsersAPISuite) SetUpTest(c *C) {
-	_, err := models.DB().Users().RemoveAll(&bson.M{})
-	c.Assert(err, IsNil)
-
-	_, err = models.DB().AuditLogs().RemoveAll(&bson.M{})
-	c.Assert(err, IsNil)
-}
-
-func (s *UsersAPISuite) TestGetUsers(c *C) {
+func (s *TestSuite) TestGetUsers(c *C) {
 	ts := httptest.NewServer(Router())
 	defer ts.Close()
 	url := fmt.Sprintf("%s%s", ts.URL, "/v1/users")
@@ -69,7 +55,7 @@ func (s *UsersAPISuite) TestGetUsers(c *C) {
 	c.Check(res.StatusCode, Equals, 200)
 }
 
-func (s *UsersAPISuite) TestGetUser(c *C) {
+func (s *TestSuite) TestGetUser(c *C) {
 	ts := httptest.NewServer(Router())
 	defer ts.Close()
 
