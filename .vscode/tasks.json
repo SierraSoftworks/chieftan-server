@@ -14,7 +14,7 @@
             "taskName": "build",
             "isBuildCommand": true,
             "args": [
-                "-o", "chieftan"
+                "-o", "bin/chieftan.exe"
             ]
         },
         {
@@ -22,7 +22,13 @@
             "isTestCommand": true,
             "args": [
                 "-v",
-                "./..."
+                "./",
+                "./api",
+                "./executors",
+                "./models",
+                "./tasks",
+                "./tools",
+                "./utils"
             ]
         }
     ]
