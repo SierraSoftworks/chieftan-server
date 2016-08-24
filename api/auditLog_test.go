@@ -15,7 +15,7 @@ import (
 
 func TestAuditLog(t *testing.T) {
 	Convey("/v1/audit", t, func() {
-		setUpTest(t)
+		setUpTest()
 		ts := httptest.NewServer(Router())
 		defer ts.Close()
 
@@ -98,7 +98,7 @@ func TestAuditLog(t *testing.T) {
 	})
 
 	Convey("/v1/audit/{entry}", t, func() {
-		setUpTest(t)
+		setUpTest()
 		ts := httptest.NewServer(Router())
 		defer ts.Close()
 

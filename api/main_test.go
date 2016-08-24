@@ -1,14 +1,12 @@
 package api
 
 import (
-	"testing"
-
 	"github.com/SierraSoftworks/chieftan-server/models"
 	. "github.com/smartystreets/goconvey/convey"
 	"gopkg.in/mgo.v2/bson"
 )
 
-func setUpTest(t *testing.T) {
+func setUpTest() {
 	models.Connect("mongodb://localhost/chieftan_test")
 
 	_, err := models.DB().Users().RemoveAll(&bson.M{})

@@ -22,7 +22,9 @@ func RemoveToken(req *RemoveTokenRequest) (*models.AuditLogContext, error) {
 		return nil, formatError(err)
 	}
 
-	err = models.DB().Users().Update(&bson.M{"tokens": req.Token}, &bson.M{
+	err = models.DB().Users().Update(&bson.M{
+		"tokens": req.Token,
+	}, &bson.M{
 		"$pull": &bson.M{
 			"tokens": req.Token,
 		},

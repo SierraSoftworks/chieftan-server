@@ -17,7 +17,7 @@ import (
 
 func TestUsers(t *testing.T) {
 	Convey("/v1/users", t, func() {
-		setUpTest(t)
+		setUpTest()
 		ts := httptest.NewServer(Router())
 		defer ts.Close()
 
@@ -142,7 +142,7 @@ func TestUsers(t *testing.T) {
 	})
 
 	Convey("/v1/user/{user}", t, func() {
-		setUpTest(t)
+		setUpTest()
 		ts := httptest.NewServer(Router())
 		defer ts.Close()
 
@@ -202,7 +202,7 @@ func TestUsers(t *testing.T) {
 	})
 
 	Convey("/v1/user", t, func() {
-		setUpTest(t)
+		setUpTest()
 		ts := httptest.NewServer(Router())
 		defer ts.Close()
 
