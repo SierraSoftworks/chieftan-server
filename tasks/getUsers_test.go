@@ -3,7 +3,7 @@ package tasks
 import . "gopkg.in/check.v1"
 
 func (s *TasksSuite) TestGetUsers(c *C) {
-	_, err := CreateUser(&CreateUserRequest{
+	_, _, err := CreateUser(&CreateUserRequest{
 		Name:  "Test User",
 		Email: "test@test.com",
 	})

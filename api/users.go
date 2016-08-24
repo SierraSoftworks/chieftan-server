@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/SierraSoftworks/chieftan-server/models"
 	"github.com/SierraSoftworks/chieftan-server/tasks"
 	"github.com/SierraSoftworks/girder"
 	"github.com/SierraSoftworks/girder/errors"
@@ -16,10 +17,6 @@ func getUserByID(c *girder.Context) (interface{}, error) {
 		return nil, errors.From(err)
 	}
 
-	if user == nil {
-		return nil, errors.NotFound()
-	}
-
 	return user, nil
 }
 
@@ -31,10 +28,6 @@ func getUserCurrent(c *girder.Context) (interface{}, error) {
 	user, err := tasks.GetUser(&req)
 	if err != nil {
 		return nil, errors.From(err)
-	}
-
-	if user == nil {
-		return nil, errors.NotFound()
 	}
 
 	return user, nil
@@ -58,7 +51,17 @@ func createUser(c *girder.Context) (interface{}, error) {
 		return nil, err
 	}
 
-	user, err := tasks.CreateUser(&req)
+	user, audit, err := tasks.CreateUser(&req)
+	if err != nil {
+		return nil, errors.From(err)
+	}
+
+	_, err = tasks.CreateAuditLogEntry(&tasks.CreateAuditLogEntryRequest{
+		Token:   c.GetAuthToken().Value,
+		User:    c.User.(*models.User).Summary(),
+		Type:    "user.create",
+		Context: audit,
+	})
 	if err != nil {
 		return nil, errors.From(err)
 	}
@@ -67,9 +70,9 @@ func createUser(c *girder.Context) (interface{}, error) {
 }
 
 func init() {
-	Router().Path("/v1/users").Methods("GET").Handler(girder.NewHandler(getUsers).LogRequests().RequireAuthentication(getUser).RequirePermission("admin/users"))
-	Router().Path("/v1/users").Methods("POST").Handler(girder.NewHandler(createUser).RequireAuthentication(getUser).RequirePermission("admin/users"))
+	Router().Path("/v1/users").Methods("GET").Handler(girder.NewHandler(getUsers).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
+	Router().Path("/v1/users").Methods("POST").Handler(girder.NewHandler(createUser).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
 
-	Router().Path("/v1/user").Methods("GET").Handler(girder.NewHandler(getUserCurrent).RequireAuthentication(getUser))
-	Router().Path("/v1/user/{user}").Methods("GET").Handler(girder.NewHandler(getUserByID).RequireAuthentication(getUser).RequirePermission("admin/users"))
+	Router().Path("/v1/user").Methods("GET").Handler(girder.NewHandler(getUserCurrent).RequireAuthentication(getUser).LogRequests())
+	Router().Path("/v1/user/{user}").Methods("GET").Handler(girder.NewHandler(getUserByID).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
 }

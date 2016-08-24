@@ -26,7 +26,7 @@ var RemoveToken cli.Command = cli.Command{
 			Token: c.Args().Get(0),
 		}
 
-		err := tasks.RemoveToken(req)
+		_, err := tasks.RemoveToken(req)
 		if err != nil {
 			return err
 		}

@@ -1,9 +1,13 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"gopkg.in/mgo.v2/bson"
+)
 
 type AuditLog struct {
-	ID        string          `json:"id" bson:"_id"`
+	ID        bson.ObjectId   `json:"id" bson:"_id"`
 	Type      string          `json:"type"`
 	User      UserSummary     `json:"user,omitempty"`
 	Token     string          `json:"token"`

@@ -6,13 +6,13 @@ import "github.com/SierraSoftworks/chieftan-server/models"
 func (s *TasksSuite) TestCreateAuditLogEntry(c *C) {
 	req := &CreateAuditLogEntryRequest{
 		Type: "test",
-		User: models.UserSummary{
+		User: &models.UserSummary{
 			ID:    "test",
 			Name:  "Test User",
 			Email: "test@test.com",
 		},
 		Token:   "0123456789abcdef0123456789abcdef",
-		Context: models.AuditLogContext{},
+		Context: &models.AuditLogContext{},
 	}
 
 	entry, err := CreateAuditLogEntry(req)
@@ -21,4 +21,11 @@ func (s *TasksSuite) TestCreateAuditLogEntry(c *C) {
 
 	c.Check(entry.ID, Not(Equals), "")
 	c.Check(entry.Type, Equals, "test")
+	c.Check(entry.User, DeepEquals, models.UserSummary{
+		ID:    "test",
+		Name:  "Test User",
+		Email: "test@test.com",
+	})
+	c.Check(entry.Token, Equals, "0123456789abcdef0123456789abcdef")
+	c.Check(entry.Context, DeepEquals, models.AuditLogContext{})
 }

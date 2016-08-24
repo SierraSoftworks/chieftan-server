@@ -36,7 +36,7 @@ var CreateToken cli.Command = cli.Command{
 			"UserID": req.UserID,
 		}).Infof("Creating new token for user with ID: %s", req.UserID)
 
-		token, err := tasks.CreateToken(req)
+		token, _, err := tasks.CreateToken(req)
 		if err != nil {
 			return err
 		}

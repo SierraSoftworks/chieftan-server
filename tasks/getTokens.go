@@ -2,7 +2,6 @@ package tasks
 
 import (
 	"github.com/SierraSoftworks/chieftan-server/models"
-	"github.com/SierraSoftworks/girder/errors"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -10,17 +9,21 @@ type GetTokensRequest struct {
 	UserID string
 }
 
-func GetTokens(req *GetTokensRequest) ([]string, error) {
+func GetTokens(req *GetTokensRequest) ([]string, *models.AuditLogContext, error) {
 	var user models.User
-	if err := models.DB().Users().FindId(req.UserID).Select(&bson.M{
+
+	err := models.DB().Users().FindId(req.UserID).Select(&bson.M{
+		"_id":    1,
+		"name":   1,
+		"email":  1,
 		"tokens": 1,
-	}).One(&user); err != nil {
-		return nil, errors.ServerError()
+	}).One(&user)
+
+	if err != nil {
+		return nil, nil, formatError(err)
 	}
 
-	if user.ID != req.UserID {
-		return nil, errors.NotFound()
-	}
-
-	return user.Tokens, nil
+	return user.Tokens, &models.AuditLogContext{
+		User: user.Summary(),
+	}, nil
 }

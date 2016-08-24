@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"gopkg.in/mgo.v2/bson"
+)
 
 type TaskState int
 
@@ -15,13 +19,13 @@ type TaskMetadata struct {
 }
 
 type TaskSummary struct {
-	ID       string       `json:"id"`
-	Metadata TaskMetadata `json:"metadata"`
+	ID       bson.ObjectId `json:"id"`
+	Metadata TaskMetadata  `json:"metadata"`
 }
 
 type Task struct {
-	ID       string       `json:"id" bson:"_id"`
-	Metadata TaskMetadata `json:"metadata"`
+	ID       bson.ObjectId `json:"id" bson:"_id"`
+	Metadata TaskMetadata  `json:"metadata"`
 
 	Created   time.Time `json:"created"`
 	Executed  time.Time `json:"executed"`

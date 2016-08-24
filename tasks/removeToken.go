@@ -10,23 +10,29 @@ type RemoveTokenRequest struct {
 	Token string
 }
 
-func RemoveToken(req *RemoveTokenRequest) error {
+func RemoveToken(req *RemoveTokenRequest) (*models.AuditLogContext, error) {
 	if !models.IsWellFormattedAccessToken(req.Token) {
-		return errors.BadRequest()
+		return nil, errors.BadRequest()
 	}
 
-	changes, err := models.DB().Users().UpdateAll(&bson.M{"tokens": req.Token}, &bson.M{
+	user, err := GetUser(&GetUserRequest{
+		Token: req.Token,
+	})
+	if err != nil {
+		return nil, formatError(err)
+	}
+
+	err = models.DB().Users().Update(&bson.M{"tokens": req.Token}, &bson.M{
 		"$pull": &bson.M{
 			"tokens": req.Token,
 		},
 	})
+
 	if err != nil {
-		return errors.ServerError()
+		return nil, formatError(err)
 	}
 
-	if changes.Updated == 0 {
-		return errors.NotFound()
-	}
-
-	return nil
+	return &models.AuditLogContext{
+		User: user.Summary(),
+	}, nil
 }

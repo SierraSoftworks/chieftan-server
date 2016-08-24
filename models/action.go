@@ -1,7 +1,9 @@
 package models
 
+import "gopkg.in/mgo.v2/bson"
+
 type Action struct {
-	ID             string                `json:"id" bson:"_id"`
+	ID             bson.ObjectId         `json:"id" bson:"_id"`
 	Name           string                `json:"name"`
 	Description    string                `json:"description"`
 	Project        ProjectSummary        `json:"project"`
@@ -11,9 +13,9 @@ type Action struct {
 }
 
 type ActionSummary struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	ID          bson.ObjectId `json:"id"`
+	Name        string        `json:"name"`
+	Description string        `json:"description"`
 }
 
 type ActionConfiguration struct {
@@ -21,8 +23,8 @@ type ActionConfiguration struct {
 	Variables map[string]string `json:"vars"`
 }
 
-func (a *Action) Summary() ActionSummary {
-	return ActionSummary{
+func (a *Action) Summary() *ActionSummary {
+	return &ActionSummary{
 		ID:          a.ID,
 		Name:        a.Name,
 		Description: a.Description,

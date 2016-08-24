@@ -10,11 +10,11 @@ func (s *TasksSuite) TestRegisterToken(c *C) {
 		UserID: "invalid user ID",
 	}
 
-	_, err := RegisterToken(req)
+	_, _, err := RegisterToken(req)
 	c.Check(err, NotNil)
 	c.Check(errors.From(err).Code, Equals, 400)
 
-	user, err := CreateUser(&CreateUserRequest{
+	user, _, err := CreateUser(&CreateUserRequest{
 		Name:  "Test User",
 		Email: "test@test.com",
 	})
@@ -22,13 +22,14 @@ func (s *TasksSuite) TestRegisterToken(c *C) {
 	c.Assert(user, NotNil)
 
 	req.UserID = user.ID
-	token, err := RegisterToken(req)
+	token, _, err := RegisterToken(req)
 	c.Check(err, NotNil)
 	c.Check(errors.From(err).Code, Equals, 400)
 
 	req.Token = "0123456789abcdef0123456789abcdef"
-	token, err = RegisterToken(req)
+	token, audit, err := RegisterToken(req)
 	c.Assert(err, IsNil)
+	c.Assert(audit, NotNil)
 	c.Check(token, Not(Equals), "")
 	c.Check(token, HasLen, 32)
 }

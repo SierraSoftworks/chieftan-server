@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/SierraSoftworks/chieftan-server/models"
 	"github.com/SierraSoftworks/chieftan-server/tasks"
 	"github.com/SierraSoftworks/girder"
 	"github.com/SierraSoftworks/girder/errors"
@@ -11,7 +12,18 @@ func getTokens(c *girder.Context) (interface{}, error) {
 		ID: c.Vars["user"],
 	}
 
-	tokens, err := tasks.GetUserTokens(&req)
+	tokens, audit, err := tasks.GetUserTokens(&req)
+	if err != nil {
+		return nil, errors.From(err)
+	}
+
+	_, err = tasks.CreateAuditLogEntry(&tasks.CreateAuditLogEntryRequest{
+		Token:   c.GetAuthToken().Value,
+		User:    c.User.(*models.User).Summary(),
+		Type:    "user.tokens.view",
+		Context: audit,
+	})
+
 	if err != nil {
 		return nil, errors.From(err)
 	}
@@ -24,7 +36,17 @@ func createToken(c *girder.Context) (interface{}, error) {
 		UserID: c.Vars["user"],
 	}
 
-	token, err := tasks.CreateToken(&req)
+	token, audit, err := tasks.CreateToken(&req)
+	if err != nil {
+		return nil, errors.From(err)
+	}
+
+	_, err = tasks.CreateAuditLogEntry(&tasks.CreateAuditLogEntryRequest{
+		Token:   c.GetAuthToken().Value,
+		User:    c.User.(*models.User).Summary(),
+		Type:    "user.tokens.create",
+		Context: audit,
+	})
 	if err != nil {
 		return nil, errors.From(err)
 	}
@@ -39,7 +61,17 @@ func revokeToken(c *girder.Context) (interface{}, error) {
 		Token: c.Vars["token"],
 	}
 
-	err := tasks.RemoveToken(&req)
+	audit, err := tasks.RemoveToken(&req)
+	if err != nil {
+		return nil, errors.From(err)
+	}
+
+	_, err = tasks.CreateAuditLogEntry(&tasks.CreateAuditLogEntryRequest{
+		Token:   c.GetAuthToken().Value,
+		User:    c.User.(*models.User).Summary(),
+		Type:    "user.tokens.revoke",
+		Context: audit,
+	})
 	if err != nil {
 		return nil, errors.From(err)
 	}
@@ -50,7 +82,17 @@ func revokeToken(c *girder.Context) (interface{}, error) {
 func revokeAllTokens(c *girder.Context) (interface{}, error) {
 	req := tasks.RemoveAllTokensRequest{}
 
-	err := tasks.RemoveAllTokens(&req)
+	audit, err := tasks.RemoveAllTokens(&req)
+	if err != nil {
+		return nil, errors.From(err)
+	}
+
+	_, err = tasks.CreateAuditLogEntry(&tasks.CreateAuditLogEntryRequest{
+		Token:   c.GetAuthToken().Value,
+		User:    c.User.(*models.User).Summary(),
+		Type:    "tokens.revoke",
+		Context: audit,
+	})
 	if err != nil {
 		return nil, errors.From(err)
 	}
@@ -63,7 +105,17 @@ func revokeAllTokensForUser(c *girder.Context) (interface{}, error) {
 		UserID: c.Vars["user"],
 	}
 
-	err := tasks.RemoveAllTokens(&req)
+	audit, err := tasks.RemoveAllTokens(&req)
+	if err != nil {
+		return nil, errors.From(err)
+	}
+
+	_, err = tasks.CreateAuditLogEntry(&tasks.CreateAuditLogEntryRequest{
+		Token:   c.GetAuthToken().Value,
+		User:    c.User.(*models.User).Summary(),
+		Type:    "user.tokens.revoke",
+		Context: audit,
+	})
 	if err != nil {
 		return nil, errors.From(err)
 	}
@@ -72,10 +124,10 @@ func revokeAllTokensForUser(c *girder.Context) (interface{}, error) {
 }
 
 func init() {
-	Router().Path("/v1/tokens").Methods("DELETE").Handler(girder.NewHandler(revokeAllTokens).RequirePermission("admin"))
-	Router().Path("/v1/token/{token}").Methods("DELETE").Handler(girder.NewHandler(revokeToken).RequirePermission("admin/users"))
+	Router().Path("/v1/tokens").Methods("DELETE").Handler(girder.NewHandler(revokeAllTokens).RequirePermission("admin").LogRequests())
+	Router().Path("/v1/token/{token}").Methods("DELETE").Handler(girder.NewHandler(revokeToken).RequirePermission("admin/users").LogRequests())
 
-	Router().Path("/v1/user/{user}/tokens").Methods("GET").Handler(girder.NewHandler(getTokens).RequirePermission("admin/users"))
-	Router().Path("/v1/user/{user}/tokens").Methods("POST").Handler(girder.NewHandler(createToken).RequirePermission("admin/users"))
-	Router().Path("/v1/user/{user}/tokens").Methods("DELETE").Handler(girder.NewHandler(revokeAllTokensForUser).RequirePermission("admin/users"))
+	Router().Path("/v1/user/{user}/tokens").Methods("GET").Handler(girder.NewHandler(getTokens).RequirePermission("admin/users").LogRequests())
+	Router().Path("/v1/user/{user}/tokens").Methods("POST").Handler(girder.NewHandler(createToken).RequirePermission("admin/users").LogRequests())
+	Router().Path("/v1/user/{user}/tokens").Methods("DELETE").Handler(girder.NewHandler(revokeAllTokensForUser).RequirePermission("admin/users").LogRequests())
 }

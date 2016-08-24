@@ -14,7 +14,7 @@ func (s *TestSuite) TestGetUsers(c *C) {
 	defer ts.Close()
 	url := fmt.Sprintf("%s%s", ts.URL, "/v1/users")
 
-	user, err := tasks.CreateUser(&tasks.CreateUserRequest{
+	user, _, err := tasks.CreateUser(&tasks.CreateUserRequest{
 		Name:  "Test User",
 		Email: "test@test.com",
 	})
@@ -32,7 +32,7 @@ func (s *TestSuite) TestGetUsers(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(res.StatusCode, Equals, 401)
 
-	token, err := tasks.CreateToken(&tasks.CreateTokenRequest{
+	token, _, err := tasks.CreateToken(&tasks.CreateTokenRequest{
 		UserID: user.ID,
 	})
 	c.Assert(err, IsNil)
@@ -45,10 +45,12 @@ func (s *TestSuite) TestGetUsers(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(res.StatusCode, Equals, 403)
 
-	user, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+	_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
 		UserID:      user.ID,
 		Permissions: []string{"admin/users"},
 	})
+	c.Assert(err, IsNil)
+
 	res, err = client.Do(req)
 	defer res.Body.Close()
 	c.Assert(err, IsNil)
@@ -59,7 +61,7 @@ func (s *TestSuite) TestGetUser(c *C) {
 	ts := httptest.NewServer(Router())
 	defer ts.Close()
 
-	user, err := tasks.CreateUser(&tasks.CreateUserRequest{
+	user, _, err := tasks.CreateUser(&tasks.CreateUserRequest{
 		Name:  "Test User",
 		Email: "test@test.com",
 	})
@@ -79,7 +81,7 @@ func (s *TestSuite) TestGetUser(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(res.StatusCode, Equals, 401)
 
-	token, err := tasks.CreateToken(&tasks.CreateTokenRequest{
+	token, _, err := tasks.CreateToken(&tasks.CreateTokenRequest{
 		UserID: user.ID,
 	})
 	c.Assert(err, IsNil)
@@ -92,10 +94,12 @@ func (s *TestSuite) TestGetUser(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(res.StatusCode, Equals, 403)
 
-	user, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+	_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
 		UserID:      user.ID,
 		Permissions: []string{"admin/users"},
 	})
+	c.Assert(err, IsNil)
+
 	res, err = client.Do(req)
 	defer res.Body.Close()
 	c.Assert(err, IsNil)

@@ -10,11 +10,11 @@ func (s *TasksSuite) TestCreateToken(c *C) {
 		UserID: "invalid user ID",
 	}
 
-	_, err := CreateToken(req)
-	c.Check(err, NotNil)
+	_, audit, err := CreateToken(req)
+	c.Assert(err, NotNil)
 	c.Check(errors.From(err).Code, Equals, 400)
 
-	user, err := CreateUser(&CreateUserRequest{
+	user, _, err := CreateUser(&CreateUserRequest{
 		Name:  "Test User",
 		Email: "test@test.com",
 	})
@@ -22,8 +22,10 @@ func (s *TasksSuite) TestCreateToken(c *C) {
 	c.Assert(user, NotNil)
 
 	req.UserID = user.ID
-	token, err := CreateToken(req)
+	token, audit, err := CreateToken(req)
 	c.Assert(err, IsNil)
+	c.Assert(audit, NotNil)
+	c.Check(audit.User, DeepEquals, user.Summary())
 	c.Check(token, Not(Equals), "")
 	c.Check(token, HasLen, 32)
 }

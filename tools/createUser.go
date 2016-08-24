@@ -49,7 +49,7 @@ var CreateUser cli.Command = cli.Command{
 			}
 		}
 
-		user, err := tasks.CreateUser(req)
+		user, _, err := tasks.CreateUser(req)
 
 		if err != nil {
 			return err

@@ -2,7 +2,6 @@ package tasks
 
 import (
 	"github.com/SierraSoftworks/chieftan-server/models"
-	"github.com/SierraSoftworks/girder/errors"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -12,17 +11,19 @@ type CreateProjectRequest struct {
 	URL         string
 }
 
-func CreateProject(req *CreateProjectRequest) (*models.Project, error) {
+func CreateProject(req *CreateProjectRequest) (*models.Project, *models.AuditLogContext, error) {
 	project := models.Project{
-		ID:          string(bson.NewObjectId()),
+		ID:          bson.NewObjectId(),
 		Name:        req.Name,
 		Description: req.Description,
 		URL:         req.URL,
 	}
 
 	if err := models.DB().Projects().Insert(&project); err != nil {
-		return nil, errors.ServerError()
+		return nil, nil, formatError(err)
 	}
 
-	return &project, nil
+	return &project, &models.AuditLogContext{
+		Project: project.Summary(),
+	}, nil
 }

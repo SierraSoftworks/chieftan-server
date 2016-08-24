@@ -28,7 +28,7 @@ func (s *TestSuite) TestUserSummary(c *C) {
 	}
 
 	summary := user.Summary()
-	c.Check(summary, DeepEquals, UserSummary{
+	c.Check(summary, DeepEquals, &UserSummary{
 		ID:    "c2d8df67421f13020b46dd5bdf18b36c",
 		Name:  "Benjamin Pannell",
 		Email: "bpannell@emss.co.za",

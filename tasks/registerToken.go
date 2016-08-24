@@ -3,7 +3,6 @@ package tasks
 import (
 	"github.com/SierraSoftworks/chieftan-server/models"
 	"github.com/SierraSoftworks/girder/errors"
-	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -12,33 +11,33 @@ type RegisterTokenRequest struct {
 	Token  string
 }
 
-func RegisterToken(req *RegisterTokenRequest) (string, error) {
+func RegisterToken(req *RegisterTokenRequest) (string, *models.AuditLogContext, error) {
 	if !models.IsValidUserID(req.UserID) {
-		return "", errors.BadRequest()
+		return "", nil, errors.BadRequest()
 	}
 
 	if !models.IsWellFormattedAccessToken(req.Token) {
-		return "", errors.BadRequest()
+		return "", nil, errors.BadRequest()
 	}
 
-	changes, err := models.DB().Users().UpdateAll(
+	user, err := GetUser(&GetUserRequest{ID: req.UserID})
+	if err != nil {
+		return "", nil, err
+	}
+
+	err = models.DB().Users().Update(
 		&bson.M{"_id": req.UserID},
 		&bson.M{
 			"$addToSet": &bson.M{
 				"tokens": req.Token,
 			},
 		})
+
 	if err != nil {
-		if mgo.IsDup(err) {
-			return "", errors.Conflict()
-		}
-
-		return "", errors.ServerError()
+		return "", nil, formatError(err)
 	}
 
-	if changes.Updated == 0 {
-		return "", errors.NotFound()
-	}
-
-	return req.Token, nil
+	return req.Token, &models.AuditLogContext{
+		User: user.Summary(),
+	}, nil
 }

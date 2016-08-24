@@ -11,10 +11,13 @@ func (s *TasksSuite) TestCreateUser(c *C) {
 		},
 	}
 
-	user, err := CreateUser(req)
+	user, audit, err := CreateUser(req)
 	c.Assert(err, IsNil)
-	c.Assert(user, NotNil)
+	c.Assert(audit, NotNil)
+	c.Check(audit.User, NotNil)
+	c.Check(audit.User.ID, Equals, user.ID)
 
+	c.Assert(user, NotNil)
 	c.Check(user.ID, Equals, "b642b4217b34b1e8d3bd915fc65c4452")
 	c.Check(user.Name, Equals, "Test User")
 	c.Check(user.Email, Equals, "test@test.com")

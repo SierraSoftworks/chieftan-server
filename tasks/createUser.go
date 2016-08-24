@@ -1,10 +1,6 @@
 package tasks
 
-import (
-	"github.com/SierraSoftworks/chieftan-server/models"
-	"github.com/SierraSoftworks/girder/errors"
-	mgo "gopkg.in/mgo.v2"
-)
+import "github.com/SierraSoftworks/chieftan-server/models"
 
 type CreateUserRequest struct {
 	Name        string
@@ -12,7 +8,7 @@ type CreateUserRequest struct {
 	Permissions []string
 }
 
-func CreateUser(req *CreateUserRequest) (*models.User, error) {
+func CreateUser(req *CreateUserRequest) (*models.User, *models.AuditLogContext, error) {
 	user := models.User{
 		Name:        req.Name,
 		Email:       req.Email,
@@ -23,12 +19,10 @@ func CreateUser(req *CreateUserRequest) (*models.User, error) {
 	user.UpdateID()
 
 	if err := models.DB().Users().Insert(&user); err != nil {
-		if mgo.IsDup(err) {
-			return nil, errors.Conflict()
-		}
-
-		return nil, errors.ServerError()
+		return nil, nil, formatError(err)
 	}
 
-	return &user, nil
+	return &user, &models.AuditLogContext{
+		User: user.Summary(),
+	}, nil
 }

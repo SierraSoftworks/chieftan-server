@@ -6,28 +6,27 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/SierraSoftworks/chieftan-server/models"
-	"github.com/SierraSoftworks/girder/errors"
 )
 
 type CreateAuditLogEntryRequest struct {
 	Type    string
-	User    models.UserSummary
+	User    *models.UserSummary
 	Token   string
-	Context models.AuditLogContext
+	Context *models.AuditLogContext
 }
 
 func CreateAuditLogEntry(req *CreateAuditLogEntryRequest) (*models.AuditLog, error) {
 	entry := models.AuditLog{
-		ID:        string(bson.NewObjectId()),
+		ID:        bson.NewObjectId(),
 		Type:      req.Type,
-		User:      req.User,
+		User:      *req.User,
 		Token:     req.Token,
 		Timestamp: time.Now(),
-		Context:   req.Context,
+		Context:   *req.Context,
 	}
 
 	if err := models.DB().AuditLogs().Insert(&entry); err != nil {
-		return nil, errors.ServerError()
+		return nil, formatError(err)
 	}
 
 	return &entry, nil

@@ -9,10 +9,14 @@ func (s *TasksSuite) TestCreateProject(c *C) {
 		URL:         "http://test.com",
 	}
 
-	project, err := CreateProject(req)
+	project, audit, err := CreateProject(req)
 	c.Assert(err, IsNil)
-	c.Assert(project, NotNil)
+	c.Assert(audit, NotNil)
+	c.Check(audit.Project, NotNil)
+	c.Check(audit.Project.ID, Equals, project.ID)
+	c.Check(audit.Project.Name, Equals, "Test Project")
 
+	c.Assert(project, NotNil)
 	c.Check(project.ID, Not(Equals), "")
 	c.Check(project.Name, Equals, "Test Project")
 	c.Check(project.Description, Equals, "A test project")

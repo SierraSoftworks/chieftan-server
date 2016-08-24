@@ -32,8 +32,8 @@ func (u *User) UpdateID() {
 	u.ID = DeriveID(u.Email)
 }
 
-func (u *User) Summary() UserSummary {
-	return UserSummary{
+func (u *User) Summary() *UserSummary {
+	return &UserSummary{
 		ID:    u.ID,
 		Name:  u.Name,
 		Email: u.Email,
