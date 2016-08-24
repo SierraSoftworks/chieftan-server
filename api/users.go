@@ -7,6 +7,14 @@ import (
 	"github.com/SierraSoftworks/girder/errors"
 )
 
+func init() {
+	Router().Path("/v1/users").Methods("GET").Handler(girder.NewHandler(getUsers).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
+	Router().Path("/v1/users").Methods("POST").Handler(girder.NewHandler(createUser).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
+
+	Router().Path("/v1/user").Methods("GET").Handler(girder.NewHandler(getUserCurrent).RequireAuthentication(getUser).LogRequests())
+	Router().Path("/v1/user/{user}").Methods("GET").Handler(girder.NewHandler(getUserByID).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
+}
+
 func getUserByID(c *girder.Context) (interface{}, error) {
 	req := tasks.GetUserRequest{
 		ID: c.Vars["user"],
@@ -67,12 +75,4 @@ func createUser(c *girder.Context) (interface{}, error) {
 	}
 
 	return user, nil
-}
-
-func init() {
-	Router().Path("/v1/users").Methods("GET").Handler(girder.NewHandler(getUsers).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
-	Router().Path("/v1/users").Methods("POST").Handler(girder.NewHandler(createUser).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
-
-	Router().Path("/v1/user").Methods("GET").Handler(girder.NewHandler(getUserCurrent).RequireAuthentication(getUser).LogRequests())
-	Router().Path("/v1/user/{user}").Methods("GET").Handler(girder.NewHandler(getUserByID).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
 }

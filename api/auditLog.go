@@ -6,6 +6,11 @@ import (
 	"github.com/SierraSoftworks/girder/errors"
 )
 
+func init() {
+	Router().Path("/v1/audit").Methods("GET").Handler(girder.NewHandler(getAuditLog).RequireAuthentication(getUser).RequirePermission("admin").LogRequests())
+	Router().Path("/v1/audit/{entry}").Methods("GET").Handler(girder.NewHandler(getAuditLogEntryByID).RequireAuthentication(getUser).RequirePermission("admin").LogRequests())
+}
+
 func getAuditLogEntryByID(c *girder.Context) (interface{}, error) {
 	req := tasks.GetAuditLogEntryRequest{
 		ID: c.Vars["entry"],
@@ -28,9 +33,4 @@ func getAuditLog(c *girder.Context) (interface{}, error) {
 	}
 
 	return entries, nil
-}
-
-func init() {
-	Router().Path("/v1/audit").Methods("GET").Handler(girder.NewHandler(getAuditLog).RequireAuthentication(getUser).RequirePermission("admin").LogRequests())
-	Router().Path("/v1/audit/{entry}").Methods("GET").Handler(girder.NewHandler(getAuditLogEntryByID).RequireAuthentication(getUser).RequirePermission("admin").LogRequests())
 }
