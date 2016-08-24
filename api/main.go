@@ -20,7 +20,18 @@ func getUser(token *girder.AuthorizationToken) (girder.User, error) {
 		return nil, errors.Unauthorized()
 	}
 
-	return tasks.GetUser(&tasks.GetUserRequest{
+	user, err := tasks.GetUser(&tasks.GetUserRequest{
 		Token: token.Value,
 	})
+
+	if err != nil {
+		e := errors.From(err)
+		if e.Code == 404 {
+			return nil, errors.Unauthorized()
+		}
+
+		return nil, e
+	}
+
+	return user, nil
 }
