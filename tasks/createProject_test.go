@@ -1,24 +1,32 @@
 package tasks
 
-import . "gopkg.in/check.v1"
+import (
+	"testing"
 
-func (s *TasksSuite) TestCreateProject(c *C) {
-	req := &CreateProjectRequest{
-		Name:        "Test Project",
-		Description: "A test project",
-		URL:         "http://test.com",
-	}
+	. "github.com/smartystreets/goconvey/convey"
+)
 
-	project, audit, err := CreateProject(req)
-	c.Assert(err, IsNil)
-	c.Assert(audit, NotNil)
-	c.Check(audit.Project, NotNil)
-	c.Check(audit.Project.ID, Equals, project.ID)
-	c.Check(audit.Project.Name, Equals, "Test Project")
+func TestCreateProject(t *testing.T) {
+	Convey("CreateProject", t, func() {
+		testSetup()
 
-	c.Assert(project, NotNil)
-	c.Check(project.ID, Not(Equals), "")
-	c.Check(project.Name, Equals, "Test Project")
-	c.Check(project.Description, Equals, "A test project")
-	c.Check(project.URL, Equals, "http://test.com")
+		req := &CreateProjectRequest{
+			Name:        "Test Project",
+			Description: "A test project",
+			URL:         "http://test.com",
+		}
+
+		project, audit, err := CreateProject(req)
+		So(err, ShouldBeNil)
+		So(audit, ShouldNotBeNil)
+		So(audit.Project, ShouldNotBeNil)
+		So(audit.Project.ID, ShouldEqual, project.ID)
+		So(audit.Project.Name, ShouldEqual, "Test Project")
+
+		So(project, ShouldNotBeNil)
+		So(project.ID, ShouldNotEqual, "")
+		So(project.Name, ShouldEqual, "Test Project")
+		So(project.Description, ShouldEqual, "A test project")
+		So(project.URL, ShouldEqual, "http://test.com")
+	})
 }

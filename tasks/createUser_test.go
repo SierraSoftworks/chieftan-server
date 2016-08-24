@@ -1,26 +1,34 @@
 package tasks
 
-import . "gopkg.in/check.v1"
+import (
+	"testing"
 
-func (s *TasksSuite) TestCreateUser(c *C) {
-	req := &CreateUserRequest{
-		Name:  "Test User",
-		Email: "test@test.com",
-		Permissions: []string{
-			"admin",
-		},
-	}
+	. "github.com/smartystreets/goconvey/convey"
+)
 
-	user, audit, err := CreateUser(req)
-	c.Assert(err, IsNil)
-	c.Assert(audit, NotNil)
-	c.Check(audit.User, NotNil)
-	c.Check(audit.User.ID, Equals, user.ID)
+func TestCreateUser(t *testing.T) {
+	Convey("CreateUser", t, func() {
+		testSetup()
 
-	c.Assert(user, NotNil)
-	c.Check(user.ID, Equals, "b642b4217b34b1e8d3bd915fc65c4452")
-	c.Check(user.Name, Equals, "Test User")
-	c.Check(user.Email, Equals, "test@test.com")
-	c.Check(user.Permissions, DeepEquals, []string{"admin"})
-	c.Check(user.Tokens, DeepEquals, []string{})
+		req := &CreateUserRequest{
+			Name:  "Test User",
+			Email: "test@test.com",
+			Permissions: []string{
+				"admin",
+			},
+		}
+
+		user, audit, err := CreateUser(req)
+		So(err, ShouldBeNil)
+		So(audit, ShouldNotBeNil)
+		So(audit.User, ShouldNotBeNil)
+		So(audit.User.ID, ShouldEqual, user.ID)
+
+		So(user, ShouldNotBeNil)
+		So(user.ID, ShouldEqual, "b642b4217b34b1e8d3bd915fc65c4452")
+		So(user.Name, ShouldEqual, "Test User")
+		So(user.Email, ShouldEqual, "test@test.com")
+		So(user.Permissions, ShouldResemble, []string{"admin"})
+		So(user.Tokens, ShouldResemble, []string{})
+	})
 }

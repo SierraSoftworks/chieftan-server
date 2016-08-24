@@ -5,76 +5,176 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"testing"
 
 	"github.com/SierraSoftworks/chieftan-server/models"
 	"github.com/SierraSoftworks/chieftan-server/tasks"
-	. "gopkg.in/check.v1"
+	"github.com/SierraSoftworks/girder/errors"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
-func (s *TestSuite) TestGetAuditLogEntry(c *C) {
-	ts := httptest.NewServer(Router())
-	defer ts.Close()
+func TestAuditLog(t *testing.T) {
+	Convey("/v1/audit", t, func() {
+		setUpTest(t)
+		ts := httptest.NewServer(Router())
+		defer ts.Close()
 
-	entry, err := tasks.CreateAuditLogEntry(&tasks.CreateAuditLogEntryRequest{
-		Type: "test",
-		User: &models.UserSummary{
-			ID:    "test",
-			Name:  "Test User",
-			Email: "test@test.com",
-		},
-		Token:   "0123456789abcdef0123456789abcdef",
-		Context: &models.AuditLogContext{},
+		entry, err := tasks.CreateAuditLogEntry(&tasks.CreateAuditLogEntryRequest{
+			Type: "test",
+			User: &models.UserSummary{
+				ID:    "test",
+				Name:  "Test User",
+				Email: "test@test.com",
+			},
+			Token:   "0123456789abcdef0123456789abcdef",
+			Context: &models.AuditLogContext{},
+		})
+		So(entry, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		Convey("GET", func() {
+			req, err := http.NewRequest("GET", fmt.Sprintf("%s/v1/audit", ts.URL), nil)
+			So(err, ShouldBeNil)
+
+			Convey("When not signed in", func() {
+				res, err := http.DefaultClient.Do(req)
+				So(err, ShouldBeNil)
+				So(res.StatusCode, ShouldEqual, 401)
+
+				dec := json.NewDecoder(res.Body)
+				var e errors.Error
+				So(dec.Decode(&e), ShouldBeNil)
+				So(e.Code, ShouldEqual, 401)
+			})
+
+			Convey("When signed in", func() {
+				user, _, err := tasks.CreateUser(&tasks.CreateUserRequest{
+					Name:  "Test User",
+					Email: "test@test.com",
+				})
+				So(err, ShouldBeNil)
+				So(user, ShouldNotBeNil)
+
+				token, _, err := tasks.CreateToken(&tasks.CreateTokenRequest{
+					UserID: user.ID,
+				})
+				So(err, ShouldBeNil)
+
+				req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+
+				Convey("Without admin permissions", func() {
+					res, err := http.DefaultClient.Do(req)
+					defer res.Body.Close()
+					So(err, ShouldBeNil)
+
+					So(res.StatusCode, ShouldEqual, 403)
+				})
+
+				Convey("With admin permissions", func() {
+					_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						UserID:      user.ID,
+						Permissions: []string{"admin"},
+					})
+					So(err, ShouldBeNil)
+
+					res, err := http.DefaultClient.Do(req)
+					defer res.Body.Close()
+					So(err, ShouldBeNil)
+
+					So(res.StatusCode, ShouldEqual, 200)
+
+					var entries []models.AuditLog
+					dec := json.NewDecoder(res.Body)
+					So(dec.Decode(&entries), ShouldBeNil)
+					So(entries, ShouldHaveLength, 1)
+
+					e := entries[0]
+					So(e.ID, ShouldEqual, entry.ID)
+					So(e.Timestamp.Unix(), ShouldEqual, entry.Timestamp.Unix())
+					So(e.Token, ShouldEqual, entry.Token)
+				})
+			})
+		})
 	})
 
-	c.Assert(err, IsNil)
+	Convey("/v1/audit/{entry}", t, func() {
+		setUpTest(t)
+		ts := httptest.NewServer(Router())
+		defer ts.Close()
 
-	url := fmt.Sprintf("%s%s%s", ts.URL, "/v1/audit/", entry.ID.Hex())
+		entry, err := tasks.CreateAuditLogEntry(&tasks.CreateAuditLogEntryRequest{
+			Type: "test",
+			User: &models.UserSummary{
+				ID:    "test",
+				Name:  "Test User",
+				Email: "test@test.com",
+			},
+			Token:   "0123456789abcdef0123456789abcdef",
+			Context: &models.AuditLogContext{},
+		})
+		So(entry, ShouldNotBeNil)
+		So(err, ShouldBeNil)
 
-	req, err := http.NewRequest("GET", url, nil)
-	c.Assert(err, IsNil)
+		Convey("GET", func() {
+			req, err := http.NewRequest("GET", fmt.Sprintf("%s/v1/audit/%s", ts.URL, entry.ID.Hex()), nil)
+			So(err, ShouldBeNil)
+			fmt.Print(req.URL)
 
-	client := &http.Client{}
+			Convey("When not signed in", func() {
+				res, err := http.DefaultClient.Do(req)
+				So(err, ShouldBeNil)
+				So(res.StatusCode, ShouldEqual, 401)
 
-	res, err := client.Do(req)
-	defer res.Body.Close()
-	c.Assert(err, IsNil)
-	c.Assert(res.StatusCode, Equals, 401)
+				dec := json.NewDecoder(res.Body)
+				var e errors.Error
+				So(dec.Decode(&e), ShouldBeNil)
+				So(e.Code, ShouldEqual, 401)
+			})
 
-	user, _, err := tasks.CreateUser(&tasks.CreateUserRequest{
-		Name:  "Test User",
-		Email: "test@test.com",
+			Convey("When signed in", func() {
+				user, _, err := tasks.CreateUser(&tasks.CreateUserRequest{
+					Name:  "Test User",
+					Email: "test@test.com",
+				})
+				So(err, ShouldBeNil)
+				So(user, ShouldNotBeNil)
+
+				token, _, err := tasks.CreateToken(&tasks.CreateTokenRequest{
+					UserID: user.ID,
+				})
+				So(err, ShouldBeNil)
+
+				req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+
+				Convey("Without admin permissions", func() {
+					res, err := http.DefaultClient.Do(req)
+					defer res.Body.Close()
+					So(err, ShouldBeNil)
+
+					So(res.StatusCode, ShouldEqual, 403)
+				})
+
+				Convey("With admin permissions", func() {
+					_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						UserID:      user.ID,
+						Permissions: []string{"admin"},
+					})
+					So(err, ShouldBeNil)
+
+					res, err := http.DefaultClient.Do(req)
+					defer res.Body.Close()
+					So(err, ShouldBeNil)
+
+					So(res.StatusCode, ShouldEqual, 200)
+
+					var e models.AuditLog
+					dec := json.NewDecoder(res.Body)
+					So(dec.Decode(&e), ShouldBeNil)
+					So(e.ID, ShouldEqual, entry.ID)
+					So(e.Timestamp.Unix(), ShouldEqual, entry.Timestamp.Unix())
+					So(e.Token, ShouldEqual, entry.Token)
+				})
+			})
+		})
 	})
-	c.Assert(err, IsNil)
-	c.Assert(user, NotNil)
-
-	token, _, err := tasks.CreateToken(&tasks.CreateTokenRequest{
-		UserID: user.ID,
-	})
-	c.Assert(err, IsNil)
-	c.Assert(token, Not(Equals), "")
-
-	req.Header.Add("Authorization", fmt.Sprintf("Token %s", token))
-
-	res, err = client.Do(req)
-	defer res.Body.Close()
-	c.Assert(err, IsNil)
-	c.Assert(res.StatusCode, Equals, 403)
-
-	_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
-		UserID:      user.ID,
-		Permissions: []string{"admin"},
-	})
-	c.Assert(err, IsNil)
-
-	res, err = client.Do(req)
-	defer res.Body.Close()
-	c.Assert(err, IsNil)
-	c.Check(res.StatusCode, Equals, 200)
-
-	var e models.AuditLog
-	dec := json.NewDecoder(res.Body)
-	c.Assert(dec.Decode(&e), IsNil)
-	c.Check(e.ID, Equals, entry.ID)
-	c.Check(e.Timestamp.Unix(), Equals, entry.Timestamp.Unix())
-	c.Check(e.Token, Equals, entry.Token)
 }

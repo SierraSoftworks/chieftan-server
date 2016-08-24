@@ -1,31 +1,37 @@
 package tasks
 
 import (
+	"testing"
+
 	"github.com/SierraSoftworks/girder/errors"
-	. "gopkg.in/check.v1"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
-func (s *TasksSuite) TestCreateToken(c *C) {
-	req := &CreateTokenRequest{
-		UserID: "invalid user ID",
-	}
+func TestCreateToken(t *testing.T) {
+	Convey("CreateToken", t, func() {
+		testSetup()
 
-	_, audit, err := CreateToken(req)
-	c.Assert(err, NotNil)
-	c.Check(errors.From(err).Code, Equals, 400)
+		req := &CreateTokenRequest{
+			UserID: "invalid user ID",
+		}
 
-	user, _, err := CreateUser(&CreateUserRequest{
-		Name:  "Test User",
-		Email: "test@test.com",
+		_, audit, err := CreateToken(req)
+		So(err, ShouldNotBeNil)
+		So(errors.From(err).Code, ShouldEqual, 400)
+
+		user, _, err := CreateUser(&CreateUserRequest{
+			Name:  "Test User",
+			Email: "test@test.com",
+		})
+		So(err, ShouldBeNil)
+		So(user, ShouldNotBeNil)
+
+		req.UserID = user.ID
+		token, audit, err := CreateToken(req)
+		So(err, ShouldBeNil)
+		So(audit, ShouldNotBeNil)
+		So(audit.User, ShouldResemble, user.Summary())
+		So(token, ShouldNotEqual, "")
+		So(token, ShouldHaveLength, 32)
 	})
-	c.Assert(err, IsNil)
-	c.Assert(user, NotNil)
-
-	req.UserID = user.ID
-	token, audit, err := CreateToken(req)
-	c.Assert(err, IsNil)
-	c.Assert(audit, NotNil)
-	c.Check(audit.User, DeepEquals, user.Summary())
-	c.Check(token, Not(Equals), "")
-	c.Check(token, HasLen, 32)
 }

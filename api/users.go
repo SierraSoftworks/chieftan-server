@@ -48,7 +48,7 @@ func createUser(c *girder.Context) (interface{}, error) {
 	req := tasks.CreateUserRequest{}
 
 	if err := c.ReadBody(&req); err != nil {
-		return nil, err
+		return nil, errors.From(err)
 	}
 
 	user, audit, err := tasks.CreateUser(&req)

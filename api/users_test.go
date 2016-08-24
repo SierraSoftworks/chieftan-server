@@ -1,107 +1,247 @@
 package api
 
 import (
+	"bufio"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"testing"
 
+	"bytes"
+
+	"github.com/SierraSoftworks/chieftan-server/models"
 	"github.com/SierraSoftworks/chieftan-server/tasks"
-	. "gopkg.in/check.v1"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
-func (s *TestSuite) TestGetUsers(c *C) {
-	ts := httptest.NewServer(Router())
-	defer ts.Close()
-	url := fmt.Sprintf("%s%s", ts.URL, "/v1/users")
+func TestUsers(t *testing.T) {
+	Convey("/v1/users", t, func() {
+		setUpTest(t)
+		ts := httptest.NewServer(Router())
+		defer ts.Close()
 
-	user, _, err := tasks.CreateUser(&tasks.CreateUserRequest{
-		Name:  "Test User",
-		Email: "test@test.com",
+		user, _, err := tasks.CreateUser(&tasks.CreateUserRequest{
+			Name:  "Test User",
+			Email: "test@test.com",
+		})
+		So(err, ShouldBeNil)
+		So(user, ShouldNotBeNil)
+
+		Convey("GET", func() {
+			req, err := http.NewRequest("GET", fmt.Sprintf("%s/v1/users", ts.URL), nil)
+			So(err, ShouldBeNil)
+
+			Convey("When not signed in", func() {
+				res, err := http.DefaultClient.Do(req)
+				So(err, ShouldBeNil)
+				So(res.StatusCode, ShouldEqual, 401)
+			})
+
+			Convey("When signed in", func() {
+				token, _, err := tasks.CreateToken(&tasks.CreateTokenRequest{
+					UserID: user.ID,
+				})
+				So(err, ShouldBeNil)
+
+				req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+
+				Convey("Without admin/users permissions", func() {
+					res, err := http.DefaultClient.Do(req)
+					defer res.Body.Close()
+					So(err, ShouldBeNil)
+
+					So(res.StatusCode, ShouldEqual, 403)
+				})
+
+				Convey("With admin/users permissions", func() {
+					_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						UserID:      user.ID,
+						Permissions: []string{"admin/users"},
+					})
+					So(err, ShouldBeNil)
+
+					res, err := http.DefaultClient.Do(req)
+					defer res.Body.Close()
+					So(err, ShouldBeNil)
+
+					So(res.StatusCode, ShouldEqual, 200)
+
+					var users []models.User
+					dec := json.NewDecoder(res.Body)
+					So(dec.Decode(&users), ShouldBeNil)
+					So(users, ShouldHaveLength, 1)
+				})
+			})
+		})
+
+		Convey("POST", func() {
+			reqBodyBuf := bytes.NewBuffer([]byte{})
+			reqBody := bufio.NewWriter(reqBodyBuf)
+			enc := json.NewEncoder(reqBody)
+			So(enc.Encode(tasks.CreateUserRequest{
+				Email:       "newuser@test.com",
+				Name:        "Test User",
+				Permissions: []string{"test"},
+			}), ShouldBeNil)
+			So(reqBody.Flush(), ShouldBeNil)
+
+			Convey("When not signed in", func() {
+				req, err := http.NewRequest("POST", fmt.Sprintf("%s/v1/users", ts.URL), bufio.NewReader(reqBodyBuf))
+				So(err, ShouldBeNil)
+
+				res, err := http.DefaultClient.Do(req)
+				So(err, ShouldBeNil)
+				So(res.StatusCode, ShouldEqual, 401)
+			})
+
+			Convey("When signed in", func() {
+				token, _, err := tasks.CreateToken(&tasks.CreateTokenRequest{
+					UserID: user.ID,
+				})
+				So(err, ShouldBeNil)
+
+				Convey("Without admin/users permissions", func() {
+					req, err := http.NewRequest("POST", fmt.Sprintf("%s/v1/users", ts.URL), bufio.NewReader(reqBodyBuf))
+					So(err, ShouldBeNil)
+
+					req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+
+					res, err := http.DefaultClient.Do(req)
+					defer res.Body.Close()
+					So(err, ShouldBeNil)
+
+					So(res.StatusCode, ShouldEqual, 403)
+				})
+
+				Convey("With admin/users permissions", func() {
+					_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						UserID:      user.ID,
+						Permissions: []string{"admin/users"},
+					})
+					So(err, ShouldBeNil)
+
+					req, err := http.NewRequest("POST", fmt.Sprintf("%s/v1/users", ts.URL), bufio.NewReader(reqBodyBuf))
+					So(err, ShouldBeNil)
+
+					req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+
+					res, err := http.DefaultClient.Do(req)
+					defer res.Body.Close()
+					So(err, ShouldBeNil)
+
+					So(res.StatusCode, ShouldEqual, 200)
+
+					var u models.User
+					dec := json.NewDecoder(res.Body)
+					So(dec.Decode(&u), ShouldBeNil)
+					So(u.Email, ShouldEqual, "newuser@test.com")
+				})
+			})
+		})
 	})
 
-	c.Assert(err, IsNil)
-	c.Assert(user, NotNil)
+	Convey("/v1/user/{user}", t, func() {
+		setUpTest(t)
+		ts := httptest.NewServer(Router())
+		defer ts.Close()
 
-	req, err := http.NewRequest("GET", url, nil)
-	c.Assert(err, IsNil)
+		user, _, err := tasks.CreateUser(&tasks.CreateUserRequest{
+			Name:  "Test User",
+			Email: "test@test.com",
+		})
+		So(err, ShouldBeNil)
+		So(user, ShouldNotBeNil)
 
-	client := &http.Client{}
+		Convey("GET", func() {
+			req, err := http.NewRequest("GET", fmt.Sprintf("%s/v1/user/%s", ts.URL, user.ID), nil)
+			So(err, ShouldBeNil)
 
-	res, err := client.Do(req)
-	defer res.Body.Close()
-	c.Assert(err, IsNil)
-	c.Assert(res.StatusCode, Equals, 401)
+			Convey("When not signed in", func() {
+				res, err := http.DefaultClient.Do(req)
+				So(err, ShouldBeNil)
+				So(res.StatusCode, ShouldEqual, 401)
+			})
 
-	token, _, err := tasks.CreateToken(&tasks.CreateTokenRequest{
-		UserID: user.ID,
+			Convey("When signed in", func() {
+				token, _, err := tasks.CreateToken(&tasks.CreateTokenRequest{
+					UserID: user.ID,
+				})
+				So(err, ShouldBeNil)
+
+				req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+
+				Convey("Without admin/users permissions", func() {
+					res, err := http.DefaultClient.Do(req)
+					defer res.Body.Close()
+					So(err, ShouldBeNil)
+
+					So(res.StatusCode, ShouldEqual, 403)
+				})
+
+				Convey("With admin/users permissions", func() {
+					_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						UserID:      user.ID,
+						Permissions: []string{"admin/users"},
+					})
+					So(err, ShouldBeNil)
+
+					res, err := http.DefaultClient.Do(req)
+					defer res.Body.Close()
+					So(err, ShouldBeNil)
+
+					So(res.StatusCode, ShouldEqual, 200)
+
+					var u models.User
+					dec := json.NewDecoder(res.Body)
+					So(dec.Decode(&u), ShouldBeNil)
+					So(u.ID, ShouldEqual, user.ID)
+				})
+			})
+		})
 	})
-	c.Assert(err, IsNil)
-	c.Assert(token, Not(Equals), "")
 
-	req.Header.Add("Authorization", fmt.Sprintf("Token %s", token))
+	Convey("/v1/user", t, func() {
+		setUpTest(t)
+		ts := httptest.NewServer(Router())
+		defer ts.Close()
 
-	res, err = client.Do(req)
-	defer res.Body.Close()
-	c.Assert(err, IsNil)
-	c.Assert(res.StatusCode, Equals, 403)
+		user, _, err := tasks.CreateUser(&tasks.CreateUserRequest{
+			Name:  "Test User",
+			Email: "test@test.com",
+		})
+		So(err, ShouldBeNil)
+		So(user, ShouldNotBeNil)
 
-	_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
-		UserID:      user.ID,
-		Permissions: []string{"admin/users"},
+		Convey("GET", func() {
+			req, err := http.NewRequest("GET", fmt.Sprintf("%s/v1/user", ts.URL), nil)
+			So(err, ShouldBeNil)
+
+			Convey("When not signed in", func() {
+				res, err := http.DefaultClient.Do(req)
+				So(err, ShouldBeNil)
+				So(res.StatusCode, ShouldEqual, 401)
+			})
+
+			Convey("When signed in", func() {
+				token, _, err := tasks.CreateToken(&tasks.CreateTokenRequest{
+					UserID: user.ID,
+				})
+				So(err, ShouldBeNil)
+
+				req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+
+				res, err := http.DefaultClient.Do(req)
+				defer res.Body.Close()
+				So(err, ShouldBeNil)
+
+				So(res.StatusCode, ShouldEqual, 200)
+
+				var u models.User
+				dec := json.NewDecoder(res.Body)
+				So(dec.Decode(&u), ShouldBeNil)
+				So(u.ID, ShouldEqual, user.ID)
+			})
+		})
 	})
-	c.Assert(err, IsNil)
-
-	res, err = client.Do(req)
-	defer res.Body.Close()
-	c.Assert(err, IsNil)
-	c.Check(res.StatusCode, Equals, 200)
-}
-
-func (s *TestSuite) TestGetUser(c *C) {
-	ts := httptest.NewServer(Router())
-	defer ts.Close()
-
-	user, _, err := tasks.CreateUser(&tasks.CreateUserRequest{
-		Name:  "Test User",
-		Email: "test@test.com",
-	})
-
-	url := fmt.Sprintf("%s%s%s", ts.URL, "/v1/user/", user.ID)
-
-	c.Assert(err, IsNil)
-	c.Assert(user, NotNil)
-
-	req, err := http.NewRequest("GET", url, nil)
-	c.Assert(err, IsNil)
-
-	client := &http.Client{}
-
-	res, err := client.Do(req)
-	defer res.Body.Close()
-	c.Assert(err, IsNil)
-	c.Assert(res.StatusCode, Equals, 401)
-
-	token, _, err := tasks.CreateToken(&tasks.CreateTokenRequest{
-		UserID: user.ID,
-	})
-	c.Assert(err, IsNil)
-	c.Assert(token, Not(Equals), "")
-
-	req.Header.Add("Authorization", fmt.Sprintf("Token %s", token))
-
-	res, err = client.Do(req)
-	defer res.Body.Close()
-	c.Assert(err, IsNil)
-	c.Assert(res.StatusCode, Equals, 403)
-
-	_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
-		UserID:      user.ID,
-		Permissions: []string{"admin/users"},
-	})
-	c.Assert(err, IsNil)
-
-	res, err = client.Do(req)
-	defer res.Body.Close()
-	c.Assert(err, IsNil)
-	c.Assert(res.StatusCode, Equals, 200)
 }

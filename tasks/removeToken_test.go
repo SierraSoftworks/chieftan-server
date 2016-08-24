@@ -1,25 +1,32 @@
 package tasks
 
-import . "gopkg.in/check.v1"
+import (
+	"testing"
 
-func (s *TasksSuite) TestRemoveToken(c *C) {
-	user, _, err := CreateUser(&CreateUserRequest{
-		Name:  "Test User",
-		Email: "test@test.com",
-	})
-	c.Assert(err, IsNil)
-	c.Assert(user, NotNil)
+	. "github.com/smartystreets/goconvey/convey"
+)
 
-	token, _, err := CreateToken(&CreateTokenRequest{
-		UserID: user.ID,
-	})
-	c.Assert(err, IsNil)
-	c.Check(token, Not(Equals), "")
+func TestRemoveToken(t *testing.T) {
+	Convey("RemoveToken", t, func() {
+		testSetup()
+		user, _, err := CreateUser(&CreateUserRequest{
+			Name:  "Test User",
+			Email: "test@test.com",
+		})
+		So(err, ShouldBeNil)
+		So(user, ShouldNotBeNil)
 
-	audit, err := RemoveToken(&RemoveTokenRequest{
-		Token: token,
+		token, _, err := CreateToken(&CreateTokenRequest{
+			UserID: user.ID,
+		})
+		So(err, ShouldBeNil)
+		So(token, ShouldNotEqual, "")
+
+		audit, err := RemoveToken(&RemoveTokenRequest{
+			Token: token,
+		})
+		So(err, ShouldBeNil)
+		So(audit, ShouldNotBeNil)
+		So(audit.User, ShouldResemble, user.Summary())
 	})
-	c.Assert(err, IsNil)
-	c.Assert(audit, NotNil)
-	c.Check(audit.User, DeepEquals, user.Summary())
 }

@@ -1,40 +1,46 @@
 package tasks
 
 import (
+	"testing"
+
 	"github.com/SierraSoftworks/chieftan-server/models"
 	"github.com/SierraSoftworks/girder/errors"
-	. "gopkg.in/check.v1"
+	. "github.com/smartystreets/goconvey/convey"
 	"gopkg.in/mgo.v2/bson"
 )
 
-func (s *TasksSuite) TestGetAuditLogEntry(c *C) {
-	newEntry, err := CreateAuditLogEntry(&CreateAuditLogEntryRequest{
-		Type: "test",
-		User: &models.UserSummary{
-			ID:    "test",
-			Name:  "Test User",
-			Email: "test@test.com",
-		},
-		Token:   "0123456789abcdef0123456789abcdef",
-		Context: &models.AuditLogContext{},
+func TestGetAuditLogEntry(t *testing.T) {
+	Convey("GetAuditLogEntry", t, func() {
+		testSetup()
+
+		newEntry, err := CreateAuditLogEntry(&CreateAuditLogEntryRequest{
+			Type: "test",
+			User: &models.UserSummary{
+				ID:    "test",
+				Name:  "Test User",
+				Email: "test@test.com",
+			},
+			Token:   "0123456789abcdef0123456789abcdef",
+			Context: &models.AuditLogContext{},
+		})
+
+		So(err, ShouldBeNil)
+		So(newEntry, ShouldNotBeNil)
+
+		entry, err := GetAuditLogEntry(&GetAuditLogEntryRequest{
+			ID: newEntry.ID.Hex(),
+		})
+
+		So(err, ShouldBeNil)
+		So(entry, ShouldNotBeNil)
+		So(entry.ID, ShouldEqual, newEntry.ID)
+		So(entry.Token, ShouldEqual, newEntry.Token)
+		So(entry.User, ShouldResemble, newEntry.User)
+
+		_, err = GetAuditLogEntry(&GetAuditLogEntryRequest{
+			ID: bson.NewObjectId().Hex(),
+		})
+		So(err, ShouldNotBeNil)
+		So(errors.From(err).Code, ShouldEqual, 404)
 	})
-
-	c.Assert(err, IsNil)
-	c.Assert(newEntry, NotNil)
-
-	entry, err := GetAuditLogEntry(&GetAuditLogEntryRequest{
-		ID: newEntry.ID.Hex(),
-	})
-
-	c.Assert(err, IsNil)
-	c.Assert(entry, NotNil)
-	c.Check(entry.ID, Equals, newEntry.ID)
-	c.Check(entry.Token, Equals, newEntry.Token)
-	c.Check(entry.User, DeepEquals, newEntry.User)
-
-	_, err = GetAuditLogEntry(&GetAuditLogEntryRequest{
-		ID: bson.NewObjectId().Hex(),
-	})
-	c.Assert(err, NotNil)
-	c.Check(errors.From(err).Code, Equals, 404)
 }

@@ -1,18 +1,26 @@
 package tasks
 
-import . "gopkg.in/check.v1"
+import (
+	"testing"
 
-func (s *TasksSuite) TestGetUsers(c *C) {
-	_, _, err := CreateUser(&CreateUserRequest{
-		Name:  "Test User",
-		Email: "test@test.com",
+	. "github.com/smartystreets/goconvey/convey"
+)
+
+func TestGetUsers(t *testing.T) {
+	Convey("GetUsers", t, func() {
+		testSetup()
+
+		_, _, err := CreateUser(&CreateUserRequest{
+			Name:  "Test User",
+			Email: "test@test.com",
+		})
+
+		So(err, ShouldBeNil)
+
+		users, err := GetUsers(&GetUsersRequest{})
+
+		So(err, ShouldBeNil)
+		So(users, ShouldNotBeNil)
+		So(users, ShouldHaveLength, 1)
 	})
-
-	c.Assert(err, IsNil)
-
-	users, err := GetUsers(&GetUsersRequest{})
-
-	c.Assert(err, IsNil)
-	c.Assert(users, NotNil)
-	c.Check(users, HasLen, 1)
 }

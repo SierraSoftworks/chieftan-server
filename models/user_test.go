@@ -1,51 +1,61 @@
 package models
 
-import . "gopkg.in/check.v1"
+import (
+	"testing"
 
-func (s *TestSuite) TestUserUpdateID(c *C) {
-	user := User{
-		Name:  "Benjamin Pannell",
-		Email: "bpannell@emss.co.za",
-	}
+	. "github.com/smartystreets/goconvey/convey"
+)
 
-	user.UpdateID()
+func TestUser(t *testing.T) {
+	Convey("User", t, func() {
+		Convey("UpdateID", func() {
+			user := User{
+				Name:  "Benjamin Pannell",
+				Email: "bpannell@emss.co.za",
+			}
 
-	c.Check(user.ID, Equals, "c2d8df67421f13020b46dd5bdf18b36c")
-}
+			user.UpdateID()
 
-func (s *TestSuite) TestUserSummary(c *C) {
-	user := User{
-		ID:    "c2d8df67421f13020b46dd5bdf18b36c",
-		Name:  "Benjamin Pannell",
-		Email: "bpannell@emss.co.za",
-		Permissions: []string{
-			"admin",
-			"admin/users",
-		},
-		Tokens: []string{
-			"abcdef",
-		},
-	}
+			So(user.ID, ShouldEqual, "c2d8df67421f13020b46dd5bdf18b36c")
+		})
 
-	summary := user.Summary()
-	c.Check(summary, DeepEquals, &UserSummary{
-		ID:    "c2d8df67421f13020b46dd5bdf18b36c",
-		Name:  "Benjamin Pannell",
-		Email: "bpannell@emss.co.za",
+		Convey("Summary", func() {
+			user := User{
+				ID:    "c2d8df67421f13020b46dd5bdf18b36c",
+				Name:  "Benjamin Pannell",
+				Email: "bpannell@emss.co.za",
+				Permissions: []string{
+					"admin",
+					"admin/users",
+				},
+				Tokens: []string{
+					"abcdef",
+				},
+			}
+
+			summary := user.Summary()
+
+			So(summary, ShouldNotBeNil)
+			So(summary, ShouldResemble, &UserSummary{
+				ID:    "c2d8df67421f13020b46dd5bdf18b36c",
+				Name:  "Benjamin Pannell",
+				Email: "bpannell@emss.co.za",
+			})
+		})
+
+		Convey("NewToken", func() {
+			user := User{}
+
+			token, err := user.NewToken()
+			So(err, ShouldBeNil)
+			So(token, ShouldNotBeEmpty)
+			So(user.Tokens, ShouldResemble, []string{token})
+		})
+
+		Convey("IsValidUserID", func() {
+			So(IsValidUserID("abc"), ShouldBeFalse)
+			So(IsValidUserID("x"), ShouldBeFalse)
+			So(IsValidUserID("0123456789abcdef0123456789abcdef"), ShouldBeTrue)
+		})
 	})
-}
-
-func (s *TestSuite) TestUserNewToken(c *C) {
-	user := User{}
-
-	token, err := user.NewToken()
-	c.Assert(err, IsNil)
-	c.Check(token, Not(Equals), "")
-	c.Check(user.Tokens, DeepEquals, []string{token})
-}
-
-func (s *TestSuite) TestUserIsValidUserID(c *C) {
-	c.Check(IsValidUserID("abc"), Equals, false)
-	c.Check(IsValidUserID("x"), Equals, false)
-	c.Check(IsValidUserID("0123456789abcdef0123456789abcdef"), Equals, true)
 }

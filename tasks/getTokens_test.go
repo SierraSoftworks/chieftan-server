@@ -1,29 +1,37 @@
 package tasks
 
-import . "gopkg.in/check.v1"
+import (
+	"testing"
 
-func (s *TasksSuite) TestGetTokens(c *C) {
-	user, _, err := CreateUser(&CreateUserRequest{
-		Name:  "Test User",
-		Email: "test@test.com",
+	. "github.com/smartystreets/goconvey/convey"
+)
+
+func TestGetTokens(t *testing.T) {
+	Convey("GetTokens", t, func() {
+		testSetup()
+
+		user, _, err := CreateUser(&CreateUserRequest{
+			Name:  "Test User",
+			Email: "test@test.com",
+		})
+
+		So(err, ShouldBeNil)
+
+		token, _, err := CreateToken(&CreateTokenRequest{
+			UserID: user.ID,
+		})
+
+		So(err, ShouldBeNil)
+
+		tokens, audit, err := GetTokens(&GetTokensRequest{
+			UserID: user.ID,
+		})
+
+		So(err, ShouldBeNil)
+		So(audit, ShouldNotBeNil)
+		So(audit.User, ShouldResemble, user.Summary())
+		So(tokens, ShouldNotBeNil)
+		So(tokens, ShouldHaveLength, 1)
+		So(tokens, ShouldResemble, []string{token})
 	})
-
-	c.Assert(err, IsNil)
-
-	token, _, err := CreateToken(&CreateTokenRequest{
-		UserID: user.ID,
-	})
-
-	c.Assert(err, IsNil)
-
-	tokens, audit, err := GetTokens(&GetTokensRequest{
-		UserID: user.ID,
-	})
-
-	c.Assert(err, IsNil)
-	c.Assert(audit, NotNil)
-	c.Check(audit.User, DeepEquals, user.Summary())
-	c.Assert(tokens, NotNil)
-	c.Check(tokens, HasLen, 1)
-	c.Check(tokens, DeepEquals, []string{token})
 }

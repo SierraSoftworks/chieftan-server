@@ -1,20 +1,27 @@
 package models
 
-import . "gopkg.in/check.v1"
+import (
+	"testing"
 
-func (s *TestSuite) TestIsWellFormattedAccessToken(c *C) {
-	c.Check(IsWellFormattedAccessToken("abc"), Equals, false)
-	c.Check(IsWellFormattedAccessToken("x"), Equals, false)
-	c.Check(IsWellFormattedAccessToken("0123456789abcdef0123456789abcdef"), Equals, true)
-}
+	. "github.com/smartystreets/goconvey/convey"
+)
 
-func (s *TestSuite) TestGenerateAccessToken(c *C) {
-	token, err := GenerateAccessToken()
+func TestAccessToken(t *testing.T) {
+	Convey("AccessToken", t, func() {
+		testSetup()
 
-	c.Assert(err, IsNil)
+		Convey("IsWellFormattedAccessToken", func() {
+			So(IsWellFormattedAccessToken("abc"), ShouldBeFalse)
+			So(IsWellFormattedAccessToken("x"), ShouldBeFalse)
+			So(IsWellFormattedAccessToken("0123456789abcdef0123456789abcdef"), ShouldBeTrue)
+		})
 
-	c.Check(token, Not(Equals), "")
-	c.Check(token, HasLen, 32)
-
-	c.Check(token, Not(Equals), "00000000000000000000000000000000")
+		Convey("GenerateAccessToken", func() {
+			token, err := GenerateAccessToken()
+			So(err, ShouldBeNil)
+			So(token, ShouldNotBeEmpty)
+			So(token, ShouldHaveLength, 32)
+			So(token, ShouldNotEqual, "00000000000000000000000000000000")
+		})
+	})
 }
