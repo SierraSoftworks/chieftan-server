@@ -7,7 +7,7 @@ import (
 )
 
 type RemoveTokenRequest struct {
-	Token string
+	Token string `json:"token"`
 }
 
 func RemoveToken(req *RemoveTokenRequest) (*models.AuditLogContext, error) {

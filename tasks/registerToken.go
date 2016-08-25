@@ -7,8 +7,8 @@ import (
 )
 
 type RegisterTokenRequest struct {
-	UserID string
-	Token  string
+	UserID string `json:"user"`
+	Token  string `json:"token"`
 }
 
 func RegisterToken(req *RegisterTokenRequest) (string, *models.AuditLogContext, error) {

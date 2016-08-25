@@ -3,9 +3,9 @@ package tasks
 import "github.com/SierraSoftworks/chieftan-server/models"
 
 type CreateUserRequest struct {
-	Name        string
-	Email       string
-	Permissions []string
+	Name        string   `json:"name"`
+	Email       string   `json:"email"`
+	Permissions []string `json:"permissions,omitempty"`
 }
 
 func CreateUser(req *CreateUserRequest) (*models.User, *models.AuditLogContext, error) {

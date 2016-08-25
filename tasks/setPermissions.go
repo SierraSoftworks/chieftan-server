@@ -6,8 +6,8 @@ import (
 )
 
 type SetPermissionsRequest struct {
-	UserID      string
-	Permissions []string
+	UserID      string   `json:"user"`
+	Permissions []string `json:"permissions"`
 }
 
 func SetPermissions(req *SetPermissionsRequest) (*models.AuditLogContext, error) {

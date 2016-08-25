@@ -6,7 +6,7 @@ import (
 )
 
 type RemoveAllTokensRequest struct {
-	UserID string
+	UserID string `json:"user,omitempty"`
 }
 
 func RemoveAllTokens(req *RemoveAllTokensRequest) (*models.AuditLogContext, error) {

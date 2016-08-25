@@ -7,7 +7,7 @@ import (
 )
 
 type GetAuditLogEntryRequest struct {
-	ID string
+	ID string `json:"entry"`
 }
 
 func GetAuditLogEntry(req *GetAuditLogEntryRequest) (*models.AuditLog, error) {

@@ -7,7 +7,7 @@ import (
 )
 
 type GetProjectRequest struct {
-	ProjectID string
+	ProjectID string `json:"project"`
 }
 
 func GetProject(req *GetProjectRequest) (*models.Project, error) {

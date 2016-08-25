@@ -6,9 +6,9 @@ import (
 )
 
 type CreateProjectRequest struct {
-	Name        string
-	Description string
-	URL         string
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	URL         string `json:"url"`
 }
 
 func CreateProject(req *CreateProjectRequest) (*models.Project, *models.AuditLogContext, error) {

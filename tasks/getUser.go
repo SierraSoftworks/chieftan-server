@@ -6,8 +6,8 @@ import (
 )
 
 type GetUserRequest struct {
-	ID    string
-	Token string
+	ID    string `json:"user"`
+	Token string `json:"token"`
 }
 
 func GetUser(req *GetUserRequest) (*models.User, error) {

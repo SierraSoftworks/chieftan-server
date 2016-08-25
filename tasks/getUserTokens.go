@@ -6,7 +6,7 @@ import (
 )
 
 type GetUserTokensRequest struct {
-	ID string
+	ID string `json:"user"`
 }
 
 func GetUserTokens(req *GetUserTokensRequest) ([]string, *models.AuditLogContext, error) {

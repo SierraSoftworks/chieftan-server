@@ -9,10 +9,10 @@ import (
 )
 
 type CreateAuditLogEntryRequest struct {
-	Type    string
-	User    *models.UserSummary
-	Token   string
-	Context *models.AuditLogContext
+	Type    string                  `json:"type"`
+	User    *models.UserSummary     `json:"user"`
+	Token   string                  `json:"token"`
+	Context *models.AuditLogContext `json:"context"`
 }
 
 func CreateAuditLogEntry(req *CreateAuditLogEntryRequest) (*models.AuditLog, error) {
