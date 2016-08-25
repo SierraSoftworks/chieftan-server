@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"github.com/SierraSoftworks/chieftan-server/models"
+	"github.com/SierraSoftworks/girder/errors"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -11,10 +12,14 @@ type CreateActionRequest struct {
 	Variables      map[string]string            `json:"vars"`
 	Configurations []models.ActionConfiguration `json:"configurations"`
 	HTTP           *models.Request              `json:"http"`
-	Project        *models.ProjectSummary       `json:"project"`
+	Project        *models.ProjectSummary       `json:"-"`
 }
 
 func CreateAction(req *CreateActionRequest) (*models.Action, *models.AuditLogContext, error) {
+	if req.Project == nil {
+		return nil, nil, errors.BadRequest()
+	}
+
 	action := models.Action{
 		ID:             bson.NewObjectId(),
 		Name:           req.Name,
