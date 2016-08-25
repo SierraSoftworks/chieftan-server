@@ -10,6 +10,8 @@ import (
 func init() {
 	Router().Path("/v1/projects").Methods("GET").Handler(girder.NewHandler(getProjects).RequireAuthentication(getUser).LogRequests())
 	Router().Path("/v1/projects").Methods("POST").Handler(girder.NewHandler(createProject).RequireAuthentication(getUser).LogRequests())
+
+	Router().Path("/v1/project/{project}").Methods("GET").Handler(girder.NewHandler(getProject).RequireAuthentication(getUser).LogRequests())
 }
 
 func getProjects(c *girder.Context) (interface{}, error) {
@@ -20,6 +22,18 @@ func getProjects(c *girder.Context) (interface{}, error) {
 	}
 
 	return projects, nil
+}
+
+func getProject(c *girder.Context) (interface{}, error) {
+	req := tasks.GetProjectRequest{
+		ProjectID: c.Vars["project"],
+	}
+	project, err := tasks.GetProject(&req)
+	if err != nil {
+		return nil, errors.From(err)
+	}
+
+	return project, nil
 }
 
 func createProject(c *girder.Context) (interface{}, error) {

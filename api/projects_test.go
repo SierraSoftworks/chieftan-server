@@ -32,6 +32,14 @@ func TestProjects(t *testing.T) {
 		})
 		So(err, ShouldBeNil)
 
+		project, _, err := tasks.CreateProject(&tasks.CreateProjectRequest{
+			Name:        "Test Project",
+			Description: "Testing",
+			URL:         "https://github.com/SierraSoftworks/chieftan-server",
+		})
+		So(err, ShouldBeNil)
+		So(project, ShouldNotBeNil)
+
 		Convey("GET", func() {
 			req, err := http.NewRequest("GET", fmt.Sprintf("%s/v1/projects", ts.URL), nil)
 			So(err, ShouldBeNil)
@@ -83,6 +91,51 @@ func TestProjects(t *testing.T) {
 				So(dec.Decode(&project), ShouldBeNil)
 
 				So(project.ID, ShouldNotBeEmpty)
+			})
+		})
+	})
+
+	Convey("/v1/project/{project}", t, func() {
+		setUpTest()
+		ts := httptest.NewServer(Router())
+		defer ts.Close()
+
+		user, _, err := tasks.CreateUser(&tasks.CreateUserRequest{
+			Name:  "Test User",
+			Email: "test@test.com",
+		})
+		So(err, ShouldBeNil)
+		So(user, ShouldNotBeNil)
+
+		token, _, err := tasks.CreateToken(&tasks.CreateTokenRequest{
+			UserID: user.ID,
+		})
+		So(err, ShouldBeNil)
+
+		project, _, err := tasks.CreateProject(&tasks.CreateProjectRequest{
+			Name:        "Test Project",
+			Description: "Testing",
+			URL:         "https://github.com/SierraSoftworks/chieftan-server",
+		})
+		So(err, ShouldBeNil)
+		So(project, ShouldNotBeNil)
+
+		Convey("GET", func() {
+			req, err := http.NewRequest("GET", fmt.Sprintf("%s/v1/project/%s", ts.URL, project.ID.Hex()), nil)
+			So(err, ShouldBeNil)
+
+			Convey("When not signed in", func() {
+				res, err := http.DefaultClient.Do(req)
+				So(err, ShouldBeNil)
+				So(res.StatusCode, ShouldEqual, 401)
+			})
+
+			Convey("When signed in", func() {
+				req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+
+				res, err := http.DefaultClient.Do(req)
+				So(err, ShouldBeNil)
+				So(res.StatusCode, ShouldEqual, 200)
 			})
 		})
 	})
