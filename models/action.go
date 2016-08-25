@@ -6,10 +6,10 @@ type Action struct {
 	ID             bson.ObjectId         `json:"id" bson:"_id"`
 	Name           string                `json:"name"`
 	Description    string                `json:"description"`
-	Project        ProjectSummary        `json:"project"`
+	Project        *ProjectSummary       `json:"project"`
 	Variables      map[string]string     `json:"vars"`
 	Configurations []ActionConfiguration `json:"configurations"`
-	HTTP           Request               `json:"http,omitempty"`
+	HTTP           *Request              `json:"http,omitempty"`
 }
 
 type ActionSummary struct {

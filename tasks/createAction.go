@@ -21,8 +21,8 @@ func CreateAction(req *CreateActionRequest) (*models.Action, *models.AuditLogCon
 		Description:    req.Description,
 		Variables:      req.Variables,
 		Configurations: req.Configurations,
-		HTTP:           *req.HTTP,
-		Project:        *req.Project,
+		HTTP:           req.HTTP,
+		Project:        req.Project,
 	}
 
 	if err := models.DB().Actions().Insert(&action); err != nil {

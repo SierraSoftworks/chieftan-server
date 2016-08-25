@@ -46,6 +46,6 @@ func TestCreateAction(t *testing.T) {
 		So(audit.Project, ShouldResemble, project.Summary())
 		So(audit.Action, ShouldResemble, action.Summary())
 
-		So(action.Project, ShouldResemble, *project.Summary())
+		So(action.Project, ShouldResemble, project.Summary())
 	})
 }
