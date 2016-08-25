@@ -30,9 +30,7 @@ func TestStatus(t *testing.T) {
 			dec := json.NewDecoder(res.Body)
 			So(dec.Decode(&status), ShouldBeNil)
 
-			So(status, ShouldResemble, models.Status{
-				StartedAt: startedAt,
-			})
+			So(status.StartedAt.Unix(), ShouldEqual, startedAt.Unix())
 		})
 	})
 }
