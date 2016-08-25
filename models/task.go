@@ -31,8 +31,8 @@ type Task struct {
 	Executed  time.Time `json:"executed"`
 	Completed time.Time `json:"completed"`
 
-	Action  ActionSummary  `json:"action"`
-	Project ProjectSummary `json:"project"`
+	Action  *ActionSummary  `json:"action"`
+	Project *ProjectSummary `json:"project"`
 
 	Variables map[string]string `json:"vars"`
 	State     TaskState         `json:"state"`

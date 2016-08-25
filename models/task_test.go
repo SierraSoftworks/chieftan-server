@@ -16,12 +16,12 @@ func TestTask(t *testing.T) {
 					Description: "Test task",
 				},
 				Created: time.Now(),
-				Action: ActionSummary{
+				Action: &ActionSummary{
 					ID:          "000000000000000000000000",
 					Name:        "Test Action",
 					Description: "Test action",
 				},
-				Project: ProjectSummary{
+				Project: &ProjectSummary{
 					ID:   "000000000000000000000000",
 					Name: "Test Project",
 					URL:  "https://github.com/SierraSoftworks/chieftan-server",
