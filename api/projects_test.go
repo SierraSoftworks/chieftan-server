@@ -15,7 +15,8 @@ import (
 )
 
 func TestProjects(t *testing.T) {
-	Convey("/v1/projects", t, func() {
+	Convey("Projects API", t, func() {
+
 		setUpTest()
 		ts := httptest.NewServer(Router())
 		defer ts.Close()
@@ -40,102 +41,84 @@ func TestProjects(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(project, ShouldNotBeNil)
 
-		Convey("GET", func() {
-			req, err := http.NewRequest("GET", fmt.Sprintf("%s/v1/projects", ts.URL), nil)
-			So(err, ShouldBeNil)
+		Convey("/v1/projects", func() {
+			url := fmt.Sprintf("%s/v1/projects", ts.URL)
 
-			Convey("When not signed in", func() {
-				res, err := http.DefaultClient.Do(req)
+			Convey("GET", func() {
+				req, err := http.NewRequest("GET", url, nil)
 				So(err, ShouldBeNil)
-				So(res.StatusCode, ShouldEqual, 401)
+
+				Convey("When not signed in", func() {
+					res, err := http.DefaultClient.Do(req)
+					So(err, ShouldBeNil)
+					So(res.StatusCode, ShouldEqual, 401)
+				})
+
+				Convey("When signed in", func() {
+					req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+
+					res, err := http.DefaultClient.Do(req)
+					So(err, ShouldBeNil)
+					So(res.StatusCode, ShouldEqual, 200)
+				})
 			})
 
-			Convey("When signed in", func() {
-				req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+			Convey("POST", func() {
+				reqBody := bytes.NewBuffer([]byte{})
+				reqBodyWriter := bufio.NewWriter(reqBody)
+				enc := json.NewEncoder(reqBodyWriter)
+				So(enc.Encode(&tasks.CreateProjectRequest{
+					Name:        "Test Project",
+					Description: "This is a test project",
+					URL:         "https://github.com/sierrasoftworks/chieftan-server",
+				}), ShouldBeNil)
+				reqBodyWriter.Flush()
 
-				res, err := http.DefaultClient.Do(req)
+				req, err := http.NewRequest("POST", url, bufio.NewReader(reqBody))
 				So(err, ShouldBeNil)
-				So(res.StatusCode, ShouldEqual, 200)
+
+				Convey("When not signed in", func() {
+					res, err := http.DefaultClient.Do(req)
+					So(err, ShouldBeNil)
+					So(res.StatusCode, ShouldEqual, 401)
+				})
+
+				Convey("When signed in", func() {
+					req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+
+					res, err := http.DefaultClient.Do(req)
+					So(err, ShouldBeNil)
+					So(res.StatusCode, ShouldEqual, 200)
+
+					var project models.Project
+					dec := json.NewDecoder(res.Body)
+					So(dec.Decode(&project), ShouldBeNil)
+
+					So(project.ID, ShouldNotBeEmpty)
+				})
 			})
 		})
 
-		Convey("POST", func() {
-			reqBody := bytes.NewBuffer([]byte{})
-			reqBodyWriter := bufio.NewWriter(reqBody)
-			enc := json.NewEncoder(reqBodyWriter)
-			So(enc.Encode(&tasks.CreateProjectRequest{
-				Name:        "Test Project",
-				Description: "This is a test project",
-				URL:         "https://github.com/sierrasoftworks/chieftan-server",
-			}), ShouldBeNil)
-			reqBodyWriter.Flush()
+		Convey("/v1/project/{project}", func() {
+			url := fmt.Sprintf("%s/v1/project/%s", ts.URL, project.ID.Hex())
 
-			req, err := http.NewRequest("POST", fmt.Sprintf("%s/v1/projects", ts.URL), bufio.NewReader(reqBody))
-			So(err, ShouldBeNil)
-
-			Convey("When not signed in", func() {
-				res, err := http.DefaultClient.Do(req)
+			Convey("GET", func() {
+				req, err := http.NewRequest("GET", url, nil)
 				So(err, ShouldBeNil)
-				So(res.StatusCode, ShouldEqual, 401)
-			})
 
-			Convey("When signed in", func() {
-				req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+				Convey("When not signed in", func() {
+					res, err := http.DefaultClient.Do(req)
+					So(err, ShouldBeNil)
+					So(res.StatusCode, ShouldEqual, 401)
+				})
 
-				res, err := http.DefaultClient.Do(req)
-				So(err, ShouldBeNil)
-				So(res.StatusCode, ShouldEqual, 200)
+				Convey("When signed in", func() {
+					req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
 
-				var project models.Project
-				dec := json.NewDecoder(res.Body)
-				So(dec.Decode(&project), ShouldBeNil)
-
-				So(project.ID, ShouldNotBeEmpty)
-			})
-		})
-	})
-
-	Convey("/v1/project/{project}", t, func() {
-		setUpTest()
-		ts := httptest.NewServer(Router())
-		defer ts.Close()
-
-		user, _, err := tasks.CreateUser(&tasks.CreateUserRequest{
-			Name:  "Test User",
-			Email: "test@test.com",
-		})
-		So(err, ShouldBeNil)
-		So(user, ShouldNotBeNil)
-
-		token, _, err := tasks.CreateToken(&tasks.CreateTokenRequest{
-			UserID: user.ID,
-		})
-		So(err, ShouldBeNil)
-
-		project, _, err := tasks.CreateProject(&tasks.CreateProjectRequest{
-			Name:        "Test Project",
-			Description: "Testing",
-			URL:         "https://github.com/SierraSoftworks/chieftan-server",
-		})
-		So(err, ShouldBeNil)
-		So(project, ShouldNotBeNil)
-
-		Convey("GET", func() {
-			req, err := http.NewRequest("GET", fmt.Sprintf("%s/v1/project/%s", ts.URL, project.ID.Hex()), nil)
-			So(err, ShouldBeNil)
-
-			Convey("When not signed in", func() {
-				res, err := http.DefaultClient.Do(req)
-				So(err, ShouldBeNil)
-				So(res.StatusCode, ShouldEqual, 401)
-			})
-
-			Convey("When signed in", func() {
-				req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
-
-				res, err := http.DefaultClient.Do(req)
-				So(err, ShouldBeNil)
-				So(res.StatusCode, ShouldEqual, 200)
+					res, err := http.DefaultClient.Do(req)
+					So(err, ShouldBeNil)
+					So(res.StatusCode, ShouldEqual, 200)
+				})
 			})
 		})
 	})

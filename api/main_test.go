@@ -24,6 +24,12 @@ func setUpTest() {
 
 	_, err = models.DB().AuditLogs().RemoveAll(&bson.M{})
 	So(err, ShouldBeNil)
+
+	_, err = models.DB().Actions().RemoveAll(&bson.M{})
+	So(err, ShouldBeNil)
+
+	_, err = models.DB().Tasks().RemoveAll(&bson.M{})
+	So(err, ShouldBeNil)
 }
 
 func TestAuthentication(t *testing.T) {
