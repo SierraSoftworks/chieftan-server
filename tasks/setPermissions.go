@@ -30,6 +30,7 @@ func SetPermissions(req *SetPermissionsRequest) (*models.AuditLogContext, error)
 	}
 
 	return &models.AuditLogContext{
-		User: user.Summary(),
+		User:    user.Summary(),
+		Request: req,
 	}, nil
 }

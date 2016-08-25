@@ -25,5 +25,6 @@ func CreateProject(req *CreateProjectRequest) (*models.Project, *models.AuditLog
 
 	return &project, &models.AuditLogContext{
 		Project: project.Summary(),
+		Request: req,
 	}, nil
 }

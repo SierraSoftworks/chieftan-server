@@ -38,6 +38,7 @@ func CreateToken(req *CreateTokenRequest) (string, *models.AuditLogContext, erro
 	}
 
 	return token, &models.AuditLogContext{
-		User: user.Summary(),
+		User:    user.Summary(),
+		Request: req,
 	}, nil
 }

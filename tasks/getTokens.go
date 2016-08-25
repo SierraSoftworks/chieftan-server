@@ -24,6 +24,7 @@ func GetTokens(req *GetTokensRequest) ([]string, *models.AuditLogContext, error)
 	}
 
 	return user.Tokens, &models.AuditLogContext{
-		User: user.Summary(),
+		User:    user.Summary(),
+		Request: req,
 	}, nil
 }

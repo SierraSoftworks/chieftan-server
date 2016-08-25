@@ -12,7 +12,9 @@ type RemoveAllTokensRequest struct {
 func RemoveAllTokens(req *RemoveAllTokensRequest) (*models.AuditLogContext, error) {
 	query := bson.M{}
 
-	auditContext := models.AuditLogContext{}
+	auditContext := models.AuditLogContext{
+		Request: req,
+	}
 
 	if req.UserID != "" {
 		query["_id"] = req.UserID

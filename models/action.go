@@ -9,7 +9,7 @@ type Action struct {
 	Project        ProjectSummary        `json:"project"`
 	Variables      map[string]string     `json:"vars"`
 	Configurations []ActionConfiguration `json:"configurations"`
-	HTTP           *Request              `json:"http,omitempty"`
+	HTTP           Request               `json:"http,omitempty"`
 }
 
 type ActionSummary struct {

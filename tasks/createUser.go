@@ -23,6 +23,7 @@ func CreateUser(req *CreateUserRequest) (*models.User, *models.AuditLogContext, 
 	}
 
 	return &user, &models.AuditLogContext{
-		User: user.Summary(),
+		User:    user.Summary(),
+		Request: req,
 	}, nil
 }

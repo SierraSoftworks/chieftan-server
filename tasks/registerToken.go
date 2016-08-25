@@ -38,6 +38,7 @@ func RegisterToken(req *RegisterTokenRequest) (string, *models.AuditLogContext, 
 	}
 
 	return req.Token, &models.AuditLogContext{
-		User: user.Summary(),
+		User:    user.Summary(),
+		Request: req,
 	}, nil
 }
