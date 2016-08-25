@@ -12,6 +12,7 @@ func init() {
 	Router().Path("/v1/project/{project}/actions").Methods("POST").Handler(girder.NewHandler(createAction).RequireAuthentication(getUser).LogRequests())
 
 	Router().Path("/v1/action/{action}").Methods("GET").Handler(girder.NewHandler(getAction).RequireAuthentication(getUser).LogRequests())
+	Router().Path("/v1/action/{action}").Methods("PUT").Handler(girder.NewHandler(updateAction).RequireAuthentication(getUser).LogRequests())
 }
 
 func getActions(c *girder.Context) (interface{}, error) {
@@ -33,6 +34,23 @@ func getAction(c *girder.Context) (interface{}, error) {
 	}
 
 	action, err := tasks.GetAction(&req)
+	if err != nil {
+		return nil, errors.From(err)
+	}
+
+	return action, nil
+}
+
+func updateAction(c *girder.Context) (interface{}, error) {
+	req := tasks.UpdateActionRequest{}
+
+	if err := c.ReadBody(&req); err != nil {
+		return nil, errors.From(err)
+	}
+
+	req.ID = c.Vars["action"]
+
+	action, err := tasks.UpdateAction(&req)
 	if err != nil {
 		return nil, errors.From(err)
 	}

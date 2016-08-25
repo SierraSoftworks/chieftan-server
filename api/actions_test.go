@@ -212,5 +212,42 @@ func TestActions(t *testing.T) {
 				So(&a, ShouldResemble, action)
 			})
 		})
+
+		Convey("PUT", func() {
+			reqBody := bytes.NewBuffer([]byte{})
+			reqBodyWriter := bufio.NewWriter(reqBody)
+			enc := json.NewEncoder(reqBodyWriter)
+			So(enc.Encode(&tasks.CreateActionRequest{
+				Variables: map[string]string{
+					"x": "5",
+				},
+			}), ShouldBeNil)
+			reqBodyWriter.Flush()
+
+			req, err := http.NewRequest("PUT", fmt.Sprintf("%s/v1/action/%s", ts.URL, action.ID.Hex()), bufio.NewReader(reqBody))
+			So(err, ShouldBeNil)
+
+			Convey("When not signed in", func() {
+				res, err := http.DefaultClient.Do(req)
+				So(err, ShouldBeNil)
+				So(res.StatusCode, ShouldEqual, 401)
+			})
+
+			Convey("When signed in", func() {
+				req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+
+				res, err := http.DefaultClient.Do(req)
+				So(err, ShouldBeNil)
+				So(res.StatusCode, ShouldEqual, 200)
+
+				var a models.Action
+				dec := json.NewDecoder(res.Body)
+				So(dec.Decode(&a), ShouldBeNil)
+
+				So(a.Variables, ShouldResemble, map[string]string{
+					"x": "5",
+				})
+			})
+		})
 	})
 }
