@@ -40,6 +40,55 @@ func TestActions(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(project, ShouldNotBeNil)
 
+		Convey("GET", func() {
+			action, _, err := tasks.CreateAction(&tasks.CreateActionRequest{
+				Name:        "Test Project",
+				Description: "This is a test project",
+				Variables: map[string]string{
+					"x": "1",
+				},
+				Configurations: []models.ActionConfiguration{
+					models.ActionConfiguration{
+						Name: "Config 2",
+						Variables: map[string]string{
+							"x": "2",
+						},
+					},
+				},
+				HTTP: &models.Request{
+					Method:  "GET",
+					URL:     "https://github.com/SierraSoftworks/chieftan-server",
+					Headers: map[string]string{},
+				},
+				Project: project.Summary(),
+			})
+			So(err, ShouldBeNil)
+			So(action, ShouldNotBeNil)
+
+			req, err := http.NewRequest("GET", fmt.Sprintf("%s/v1/project/%s/actions", ts.URL, project.ID.Hex()), nil)
+			So(err, ShouldBeNil)
+
+			Convey("When not signed in", func() {
+				res, err := http.DefaultClient.Do(req)
+				So(err, ShouldBeNil)
+				So(res.StatusCode, ShouldEqual, 401)
+			})
+
+			Convey("When signed in", func() {
+				req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+
+				res, err := http.DefaultClient.Do(req)
+				So(err, ShouldBeNil)
+				So(res.StatusCode, ShouldEqual, 200)
+
+				var as []models.Action
+				dec := json.NewDecoder(res.Body)
+				So(dec.Decode(&as), ShouldBeNil)
+
+				So(as, ShouldResemble, []models.Action{*action})
+			})
+		})
+
 		Convey("POST", func() {
 			reqBody := bytes.NewBuffer([]byte{})
 			reqBodyWriter := bufio.NewWriter(reqBody)

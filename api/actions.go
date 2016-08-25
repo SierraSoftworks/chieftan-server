@@ -8,7 +8,21 @@ import (
 )
 
 func init() {
+	Router().Path("/v1/project/{project}/actions").Methods("GET").Handler(girder.NewHandler(getActions).RequireAuthentication(getUser).LogRequests())
 	Router().Path("/v1/project/{project}/actions").Methods("POST").Handler(girder.NewHandler(createAction).RequireAuthentication(getUser).LogRequests())
+}
+
+func getActions(c *girder.Context) (interface{}, error) {
+	req := tasks.GetProjectActionsRequest{
+		ProjectID: c.Vars["project"],
+	}
+
+	actions, err := tasks.GetProjectActions(&req)
+	if err != nil {
+		return nil, errors.From(err)
+	}
+
+	return actions, nil
 }
 
 func createAction(c *girder.Context) (interface{}, error) {
