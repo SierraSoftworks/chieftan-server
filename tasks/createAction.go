@@ -8,7 +8,7 @@ import (
 type CreateActionRequest struct {
 	Name           string                       `json:"name"`
 	Description    string                       `json:"description"`
-	Variables      map[string]string            `json:"variables"`
+	Variables      map[string]string            `json:"vars"`
 	Configurations []models.ActionConfiguration `json:"configurations"`
 	HTTP           *models.Request              `json:"http"`
 	Project        *models.ProjectSummary       `json:"project"`
