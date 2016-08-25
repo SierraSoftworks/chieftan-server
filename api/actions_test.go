@@ -77,15 +77,32 @@ func TestActions(t *testing.T) {
 			Convey("When signed in", func() {
 				req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
 
-				res, err := http.DefaultClient.Do(req)
-				So(err, ShouldBeNil)
-				So(res.StatusCode, ShouldEqual, 200)
+				Convey("Without project/:project permissions", func() {
+					res, err := http.DefaultClient.Do(req)
+					defer res.Body.Close()
+					So(err, ShouldBeNil)
 
-				var as []models.Action
-				dec := json.NewDecoder(res.Body)
-				So(dec.Decode(&as), ShouldBeNil)
+					So(res.StatusCode, ShouldEqual, 403)
+				})
 
-				So(as, ShouldResemble, []models.Action{*action})
+				Convey("With project/:project permissions", func() {
+					_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						UserID:      user.ID,
+						Permissions: []string{fmt.Sprintf("project/%s", project.ID.Hex())},
+					})
+					So(err, ShouldBeNil)
+
+					res, err := http.DefaultClient.Do(req)
+					So(err, ShouldBeNil)
+					So(res.StatusCode, ShouldEqual, 200)
+
+					var as []models.Action
+					dec := json.NewDecoder(res.Body)
+					So(dec.Decode(&as), ShouldBeNil)
+
+					So(as, ShouldResemble, []models.Action{*action})
+				})
+
 			})
 		})
 
@@ -126,15 +143,31 @@ func TestActions(t *testing.T) {
 			Convey("When signed in", func() {
 				req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
 
-				res, err := http.DefaultClient.Do(req)
-				So(err, ShouldBeNil)
-				So(res.StatusCode, ShouldEqual, 200)
+				Convey("Without project/:project/admin permissions", func() {
+					res, err := http.DefaultClient.Do(req)
+					defer res.Body.Close()
+					So(err, ShouldBeNil)
 
-				var action models.Action
-				dec := json.NewDecoder(res.Body)
-				So(dec.Decode(&action), ShouldBeNil)
+					So(res.StatusCode, ShouldEqual, 403)
+				})
 
-				So(action.ID, ShouldNotBeEmpty)
+				Convey("With project/:project/admin permissions", func() {
+					_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						UserID:      user.ID,
+						Permissions: []string{fmt.Sprintf("project/%s/admin", project.ID.Hex())},
+					})
+					So(err, ShouldBeNil)
+					res, err := http.DefaultClient.Do(req)
+					So(err, ShouldBeNil)
+					So(res.StatusCode, ShouldEqual, 200)
+
+					var action models.Action
+					dec := json.NewDecoder(res.Body)
+					So(dec.Decode(&action), ShouldBeNil)
+
+					So(action.ID, ShouldNotBeEmpty)
+
+				})
 			})
 		})
 	})
@@ -201,15 +234,32 @@ func TestActions(t *testing.T) {
 			Convey("When signed in", func() {
 				req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
 
-				res, err := http.DefaultClient.Do(req)
-				So(err, ShouldBeNil)
-				So(res.StatusCode, ShouldEqual, 200)
+				Convey("Without project/:project permissions", func() {
+					res, err := http.DefaultClient.Do(req)
+					defer res.Body.Close()
+					So(err, ShouldBeNil)
 
-				var a models.Action
-				dec := json.NewDecoder(res.Body)
-				So(dec.Decode(&a), ShouldBeNil)
+					So(res.StatusCode, ShouldEqual, 403)
+				})
 
-				So(&a, ShouldResemble, action)
+				Convey("With project/:project permissions", func() {
+					_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						UserID:      user.ID,
+						Permissions: []string{fmt.Sprintf("project/%s", project.ID.Hex())},
+					})
+					So(err, ShouldBeNil)
+
+					res, err := http.DefaultClient.Do(req)
+					So(err, ShouldBeNil)
+					So(res.StatusCode, ShouldEqual, 200)
+
+					var a models.Action
+					dec := json.NewDecoder(res.Body)
+					So(dec.Decode(&a), ShouldBeNil)
+
+					So(&a, ShouldResemble, action)
+				})
+
 			})
 		})
 
@@ -236,16 +286,32 @@ func TestActions(t *testing.T) {
 			Convey("When signed in", func() {
 				req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
 
-				res, err := http.DefaultClient.Do(req)
-				So(err, ShouldBeNil)
-				So(res.StatusCode, ShouldEqual, 200)
+				Convey("Without project/:project/admin permissions", func() {
+					res, err := http.DefaultClient.Do(req)
+					defer res.Body.Close()
+					So(err, ShouldBeNil)
 
-				var a models.Action
-				dec := json.NewDecoder(res.Body)
-				So(dec.Decode(&a), ShouldBeNil)
+					So(res.StatusCode, ShouldEqual, 403)
+				})
 
-				So(a.Variables, ShouldResemble, map[string]string{
-					"x": "5",
+				Convey("With project/:project/admin permissions", func() {
+					_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						UserID:      user.ID,
+						Permissions: []string{fmt.Sprintf("project/%s/admin", project.ID.Hex())},
+					})
+					So(err, ShouldBeNil)
+
+					res, err := http.DefaultClient.Do(req)
+					So(err, ShouldBeNil)
+					So(res.StatusCode, ShouldEqual, 200)
+
+					var a models.Action
+					dec := json.NewDecoder(res.Body)
+					So(dec.Decode(&a), ShouldBeNil)
+
+					So(a.Variables, ShouldResemble, map[string]string{
+						"x": "5",
+					})
 				})
 			})
 		})

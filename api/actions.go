@@ -8,8 +8,8 @@ import (
 )
 
 func init() {
-	Router().Path("/v1/project/{project}/actions").Methods("GET").Handler(girder.NewHandler(getActions).RequireAuthentication(getUser).LogRequests())
-	Router().Path("/v1/project/{project}/actions").Methods("POST").Handler(girder.NewHandler(createAction).RequireAuthentication(getUser).LogRequests())
+	Router().Path("/v1/project/{project}/actions").Methods("GET").Handler(girder.NewHandler(getActions).RequireAuthentication(getUser).RequirePermission("project/:project").LogRequests())
+	Router().Path("/v1/project/{project}/actions").Methods("POST").Handler(girder.NewHandler(createAction).RequireAuthentication(getUser).RequirePermission("project/:project/admin").LogRequests())
 
 	Router().Path("/v1/action/{action}").Methods("GET").Handler(girder.NewHandler(getAction).RequireAuthentication(getUser).LogRequests())
 	Router().Path("/v1/action/{action}").Methods("PUT").Handler(girder.NewHandler(updateAction).RequireAuthentication(getUser).LogRequests())
@@ -38,10 +38,29 @@ func getAction(c *girder.Context) (interface{}, error) {
 		return nil, errors.From(err)
 	}
 
+	if !c.Permissions.WithContext(map[string]string{
+		"project": action.Project.ID.Hex(),
+	}).Can("project/:project") {
+		return nil, errors.NotAllowed()
+	}
+
 	return action, nil
 }
 
 func updateAction(c *girder.Context) (interface{}, error) {
+	action, err := tasks.GetAction(&tasks.GetActionRequest{
+		ActionID: c.Vars["action"],
+	})
+	if err != nil {
+		return nil, errors.From(err)
+	}
+
+	if !c.Permissions.WithContext(map[string]string{
+		"project": action.Project.ID.Hex(),
+	}).Can("project/:project/admin") {
+		return nil, errors.NotAllowed()
+	}
+
 	req := tasks.UpdateActionRequest{}
 
 	if err := c.ReadBody(&req); err != nil {
@@ -50,7 +69,7 @@ func updateAction(c *girder.Context) (interface{}, error) {
 
 	req.ID = c.Vars["action"]
 
-	action, err := tasks.UpdateAction(&req)
+	action, err = tasks.UpdateAction(&req)
 	if err != nil {
 		return nil, errors.From(err)
 	}
