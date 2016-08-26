@@ -30,5 +30,13 @@ func TestCreateUser(t *testing.T) {
 		So(user.Email, ShouldEqual, "test@test.com")
 		So(user.Permissions, ShouldResemble, []string{"admin"})
 		So(user.Tokens, ShouldResemble, []string{})
+
+		Convey("Updates database", func() {
+			user, err := GetUser(&GetUserRequest{
+				ID: user.ID,
+			})
+			So(err, ShouldBeNil)
+			So(user, ShouldNotBeNil)
+		})
 	})
 }

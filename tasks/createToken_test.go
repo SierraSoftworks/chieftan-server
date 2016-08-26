@@ -33,5 +33,13 @@ func TestCreateToken(t *testing.T) {
 		So(audit.User, ShouldResemble, user.Summary())
 		So(token, ShouldNotEqual, "")
 		So(token, ShouldHaveLength, 32)
+
+		Convey("Updates database", func() {
+			tokens, _, err := GetUserTokens(&GetUserTokensRequest{
+				ID: user.ID,
+			})
+			So(err, ShouldBeNil)
+			So(tokens, ShouldResemble, []string{token})
+		})
 	})
 }

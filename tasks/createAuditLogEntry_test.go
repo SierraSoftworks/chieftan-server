@@ -35,5 +35,14 @@ func TestCreateAuditLogEntry(t *testing.T) {
 		})
 		So(entry.Token, ShouldEqual, "0123456789abcdef0123456789abcdef")
 		So(entry.Context, ShouldResemble, models.AuditLogContext{})
+
+		Convey("Updates database", func() {
+			entry, err := GetAuditLogEntry(&GetAuditLogEntryRequest{
+				ID: entry.ID.Hex(),
+			})
+			So(err, ShouldBeNil)
+			So(entry, ShouldNotBeNil)
+			So(entry.Token, ShouldEqual, "0123456789abcdef0123456789abcdef")
+		})
 	})
 }

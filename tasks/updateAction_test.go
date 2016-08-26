@@ -37,5 +37,14 @@ func TestUpdateAction(t *testing.T) {
 		So(action, ShouldNotBeNil)
 		So(action.Name, ShouldEqual, "Test Action")
 		So(action.Description, ShouldEqual, "This is a test action")
+
+		Convey("Updates database", func() {
+			action, err := GetAction(&GetActionRequest{
+				ActionID: action.ID.Hex(),
+			})
+			So(err, ShouldBeNil)
+			So(action, ShouldNotBeNil)
+			So(action.Description, ShouldEqual, "This is a test action")
+		})
 	})
 }

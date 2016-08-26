@@ -17,39 +17,47 @@ func TestRemoveAllTokens(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(user, ShouldNotBeNil)
 
-		token, _, err := CreateToken(&CreateTokenRequest{
-			UserID: user.ID,
-		})
-		So(err, ShouldBeNil)
-		So(token, ShouldNotEqual, "")
+		Convey("Globally", func() {
+			token, _, err := CreateToken(&CreateTokenRequest{
+				UserID: user.ID,
+			})
+			So(err, ShouldBeNil)
+			So(token, ShouldNotEqual, "")
 
-		audit, err := RemoveAllTokens(&RemoveAllTokensRequest{})
-		So(err, ShouldBeNil)
-		So(audit, ShouldNotBeNil)
+			audit, err := RemoveAllTokens(&RemoveAllTokensRequest{})
+			So(err, ShouldBeNil)
+			So(audit, ShouldNotBeNil)
 
-		tokens, _, err := GetTokens(&GetTokensRequest{
-			UserID: user.ID,
+			Convey("Updates database", func() {
+				tokens, _, err := GetTokens(&GetTokensRequest{
+					UserID: user.ID,
+				})
+				So(err, ShouldBeNil)
+				So(tokens, ShouldResemble, []string{})
+			})
 		})
-		So(err, ShouldBeNil)
-		So(tokens, ShouldResemble, []string{})
 
-		token, _, err = CreateToken(&CreateTokenRequest{
-			UserID: user.ID,
-		})
-		So(err, ShouldBeNil)
-		So(token, ShouldNotEqual, "")
+		Convey("For User", func() {
+			token, _, err := CreateToken(&CreateTokenRequest{
+				UserID: user.ID,
+			})
+			So(err, ShouldBeNil)
+			So(token, ShouldNotEqual, "")
 
-		audit, err = RemoveAllTokens(&RemoveAllTokensRequest{
-			UserID: user.ID,
-		})
-		So(err, ShouldBeNil)
-		So(audit, ShouldNotBeNil)
-		So(audit.User, ShouldResemble, user.Summary())
+			audit, err := RemoveAllTokens(&RemoveAllTokensRequest{
+				UserID: user.ID,
+			})
+			So(err, ShouldBeNil)
+			So(audit, ShouldNotBeNil)
+			So(audit.User, ShouldResemble, user.Summary())
 
-		tokens, _, err = GetTokens(&GetTokensRequest{
-			UserID: user.ID,
+			Convey("Updates database", func() {
+				tokens, _, err := GetTokens(&GetTokensRequest{
+					UserID: user.ID,
+				})
+				So(err, ShouldBeNil)
+				So(tokens, ShouldResemble, []string{})
+			})
 		})
-		So(err, ShouldBeNil)
-		So(tokens, ShouldResemble, []string{})
 	})
 }

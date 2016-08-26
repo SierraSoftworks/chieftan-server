@@ -28,5 +28,13 @@ func TestCreateProject(t *testing.T) {
 		So(project.Name, ShouldEqual, "Test Project")
 		So(project.Description, ShouldEqual, "A test project")
 		So(project.URL, ShouldEqual, "http://test.com")
+
+		Convey("Updates database", func() {
+			project, err := GetProject(&GetProjectRequest{
+				ProjectID: project.ID.Hex(),
+			})
+			So(err, ShouldBeNil)
+			So(project, ShouldNotBeNil)
+		})
 	})
 }

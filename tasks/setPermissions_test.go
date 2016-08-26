@@ -26,12 +26,14 @@ func TestSetPermissions(t *testing.T) {
 		So(audit, ShouldNotBeNil)
 		So(audit.User, ShouldResemble, user.Summary())
 
-		user, err = GetUser(&GetUserRequest{
-			ID: models.DeriveID("test@test.com"),
-		})
-		So(err, ShouldBeNil)
-		So(user, ShouldNotBeNil)
+		Convey("Updates database", func() {
+			user, err := GetUser(&GetUserRequest{
+				ID: models.DeriveID("test@test.com"),
+			})
+			So(err, ShouldBeNil)
+			So(user, ShouldNotBeNil)
 
-		So(user.Permissions, ShouldResemble, []string{"test"})
+			So(user.Permissions, ShouldResemble, []string{"test"})
+		})
 	})
 }

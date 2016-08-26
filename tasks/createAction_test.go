@@ -47,5 +47,13 @@ func TestCreateAction(t *testing.T) {
 		So(audit.Action, ShouldResemble, action.Summary())
 
 		So(action.Project, ShouldResemble, project.Summary())
+
+		Convey("Updates database", func() {
+			action, err := GetAction(&GetActionRequest{
+				ActionID: action.ID.Hex(),
+			})
+			So(err, ShouldBeNil)
+			So(action, ShouldNotBeNil)
+		})
 	})
 }

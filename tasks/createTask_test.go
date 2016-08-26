@@ -48,5 +48,13 @@ func TestCreateTask(t *testing.T) {
 
 		So(task, ShouldNotBeNil)
 		So(task.ID, ShouldNotBeEmpty)
+
+		Convey("Updates database", func() {
+			task, err := GetTask(&GetTaskRequest{
+				TaskID: task.ID.Hex(),
+			})
+			So(err, ShouldBeNil)
+			So(task, ShouldNotBeNil)
+		})
 	})
 }
