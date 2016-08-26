@@ -10,13 +10,25 @@ import (
 )
 
 type testExecution struct {
-	*Execution
+	Execution
 
 	Executors []Executor
 }
 
 func (e *testExecution) GetExecutors() []Executor {
 	return e.Executors
+}
+
+type testExecutor struct {
+	RunHandler func(ctx *Execution) error
+}
+
+func (e *testExecutor) Name() string {
+	return "Test"
+}
+
+func (e *testExecutor) Run(ctx *Execution) error {
+	return e.RunHandler(ctx)
 }
 
 func TestExecution(t *testing.T) {
@@ -40,34 +52,77 @@ func TestExecution(t *testing.T) {
 
 		variables := map[string]string{}
 
-		exBase, err := NewExecution(&Options{
-			Action:        action,
-			Task:          task,
-			Configuration: configuration,
-			Variables:     variables,
+		Convey("With no options", func() {
+			_, err := NewExecution(nil)
+			So(err, ShouldNotBeNil)
 		})
 
-		So(err, ShouldBeNil)
-		ex := &testExecution{
-			Execution: exBase,
-			Executors: []Executor{
-				&testExecutor{
-					RunHandler: func(ctx *Execution) error {
-						time.Sleep(100 * time.Millisecond)
-						return nil
+		Convey("With no action", func() {
+			_, err := NewExecution(&Options{
+				Task:          task,
+				Configuration: configuration,
+				Variables:     variables,
+			})
+			So(err, ShouldNotBeNil)
+		})
+
+		Convey("With no task", func() {
+			_, err := NewExecution(&Options{
+				Action:        action,
+				Configuration: configuration,
+				Variables:     variables,
+			})
+			So(err, ShouldNotBeNil)
+		})
+
+		Convey("With no configuration", func() {
+			_, err := NewExecution(&Options{
+				Action:    action,
+				Task:      task,
+				Variables: variables,
+			})
+			So(err, ShouldBeNil)
+		})
+
+		Convey("With a valid executor", func() {
+			exBase, err := NewExecution(&Options{
+				Action:        action,
+				Task:          task,
+				Configuration: configuration,
+				Variables:     variables,
+			})
+			So(err, ShouldBeNil)
+
+			hasExecuted := false
+			ex := &testExecution{
+				Execution: *exBase,
+				Executors: []Executor{
+					&testExecutor{
+						RunHandler: func(ctx *Execution) error {
+							time.Sleep(100 * time.Millisecond)
+							hasExecuted = true
+							return nil
+						},
 					},
 				},
-			},
-		}
+			}
 
-		So(ex.GetExecutors(), ShouldResemble, ex.Executors)
+			Convey("Should get the correct executors list", func() {
+				So(ex.GetExecutors(), ShouldResemble, ex.Executors)
+			})
 
-		stateChanged := ex.Start()
-		So(stateChanged, ShouldNotBeNil)
+			Convey("Should correctly run the executor", func() {
+				stateChanged := ex.Start()
+				So(stateChanged, ShouldNotBeNil)
 
-		for range stateChanged {
-		}
+				for _ = range stateChanged {
+				}
 
-		So(ex.Task.State, ShouldEqual, models.TaskStatePassed)
+				// So(hasExecuted, ShouldBeTrue)
+				So(ex.Task.Completed, ShouldNotResemble, time.Time{})
+				So(ex.Task.Output, ShouldNotBeEmpty)
+				So(ex.Task.State, ShouldEqual, models.TaskStatePassed)
+			})
+		})
 	})
 }

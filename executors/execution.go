@@ -18,6 +18,11 @@ type Execution struct {
 	StateChanged chan *models.Task
 }
 
+type Executor interface {
+	Name() string
+	Run(ctx *Execution) error
+}
+
 func NewExecution(options *Options) (*Execution, error) {
 	if options == nil {
 		return nil, errors.BadRequest()

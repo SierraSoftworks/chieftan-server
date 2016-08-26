@@ -11,8 +11,6 @@ import (
 )
 
 type HTTP struct {
-	*ExecutorBase
-
 	Client http.Client
 }
 
