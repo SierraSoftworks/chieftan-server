@@ -20,5 +20,5 @@ func formatError(err error) error {
 	}
 
 	log.Error(err)
-	return errors.ServerError()
+	return errors.From(err)
 }
