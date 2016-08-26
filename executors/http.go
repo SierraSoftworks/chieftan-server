@@ -8,25 +8,23 @@ import (
 	"github.com/SierraSoftworks/chieftan-server/utils"
 
 	"net/http"
-	"strings"
 )
 
-func init() {
-	Register("http", &Request{})
-}
-
-type Request struct {
+type HTTP struct {
 	*ExecutorBase
 
 	Client http.Client
 }
 
-func (r *Request) run(ctx *Context) error {
-	out := []string{}
+func (e *HTTP) Name() string {
+	return "HTTP"
+}
 
-	data := bytes.NewBuffer([]byte{})
+func (r *HTTP) Run(ctx *Execution) error {
+	var data *bytes.Buffer
 
 	if ctx.Action.HTTP.Data != nil {
+		data = bytes.NewBuffer([]byte{})
 		i := utils.NewInterpolator(ctx.Variables)
 
 		encodedData, err := i.Run(ctx.Action.HTTP.Data)
@@ -51,8 +49,18 @@ func (r *Request) run(ctx *Context) error {
 		return err
 	}
 
+	ctx.WriteLn("%s %s", req.Method, req.URL)
+
 	for key, val := range ctx.Action.HTTP.Headers {
 		req.Header.Set(key, val)
+		ctx.WriteLn("%s: %s", key, val)
+	}
+
+	ctx.WriteLn("")
+
+	if data != nil {
+		ctx.WriteLn(data.String())
+		ctx.WriteLn("")
 	}
 
 	res, err := r.Client.Do(req)
@@ -62,12 +70,10 @@ func (r *Request) run(ctx *Context) error {
 
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(res.Body)
-	out = append(out, buf.String())
-
-	ctx.Task.Output = fmt.Sprintf("%s\n%s", ctx.Task.Output, strings.Join(out, "\n"))
+	ctx.WriteLn(buf.String())
 
 	if res.StatusCode >= 400 {
-		return fmt.Errorf("::[error] Request failed with status %d %s:: ", res.StatusCode, res.Status)
+		return fmt.Errorf("Request failed with status %d %s", res.StatusCode, res.Status)
 	}
 
 	return nil
