@@ -32,9 +32,9 @@ var RunServer = cli.Command{
 		mux := http.NewServeMux()
 		mux.Handle("/api/", http.StripPrefix("/api", api.Router()))
 		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(404)
 			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte(`{"code":404, "error": "Not Found", "message": "The method you attempted to make use of could not be found on our system."}`))
+			w.WriteHeader(404)
+			w.Write([]byte(`{"code": 404, "error": "Not Found", "message": "The method you attempted to make use of could not be found on our system."}`))
 		})
 
 		listenOn := fmt.Sprintf("%s:%d", c.String("ip"), c.Int64("port"))
