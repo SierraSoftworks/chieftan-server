@@ -8,11 +8,38 @@ import (
 )
 
 func init() {
-	Router().Path("/v1/users").Methods("GET").Handler(girder.NewHandler(getUsers).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
-	Router().Path("/v1/users").Methods("POST").Handler(girder.NewHandler(createUser).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
+	Router().
+		Path("/v1/users").
+		Methods("GET").
+		Handler(girder.NewHandler(getUsers).
+			RequireAuthentication(getUser).
+			RequirePermission("admin/users").
+			LogRequests()).
+		Name("GET /users")
+	Router().
+		Path("/v1/users").
+		Methods("POST").
+		Handler(girder.NewHandler(createUser).
+			RequireAuthentication(getUser).
+			RequirePermission("admin/users").
+			LogRequests()).
+		Name("POST /users")
 
-	Router().Path("/v1/user").Methods("GET").Handler(girder.NewHandler(getUserCurrent).RequireAuthentication(getUser).LogRequests())
-	Router().Path("/v1/user/{user}").Methods("GET").Handler(girder.NewHandler(getUserByID).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
+	Router().
+		Path("/v1/user").
+		Methods("GET").
+		Handler(girder.NewHandler(getUserCurrent).
+			RequireAuthentication(getUser).
+			LogRequests()).
+		Name("POST /user")
+	Router().
+		Path("/v1/user/{user}").
+		Methods("GET").
+		Handler(girder.NewHandler(getUserByID).
+			RequireAuthentication(getUser).
+			RequirePermission("admin/users").
+			LogRequests()).
+		Name("POST /user/{user}")
 }
 
 func getUserByID(c *girder.Context) (interface{}, error) {

@@ -8,10 +8,28 @@ import (
 )
 
 func init() {
-	Router().Path("/v1/projects").Methods("GET").Handler(girder.NewHandler(getProjects).RequireAuthentication(getUser).LogRequests())
-	Router().Path("/v1/projects").Methods("POST").Handler(girder.NewHandler(createProject).RequireAuthentication(getUser).LogRequests())
+	Router().
+		Path("/v1/projects").
+		Methods("GET").
+		Handler(girder.NewHandler(getProjects).
+			RequireAuthentication(getUser).
+			LogRequests()).
+		Name("GET /projects")
+	Router().
+		Path("/v1/projects").
+		Methods("POST").
+		Handler(girder.NewHandler(createProject).
+			RequireAuthentication(getUser).
+			LogRequests()).
+		Name("POST /projects")
 
-	Router().Path("/v1/project/{project}").Methods("GET").Handler(girder.NewHandler(getProject).RequireAuthentication(getUser).LogRequests())
+	Router().
+		Path("/v1/project/{project}").
+		Methods("GET").
+		Handler(girder.NewHandler(getProject).
+			RequireAuthentication(getUser).
+			LogRequests()).
+		Name("GET /project/{project}")
 }
 
 func getProjects(c *girder.Context) (interface{}, error) {

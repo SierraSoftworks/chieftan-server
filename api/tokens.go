@@ -8,14 +8,56 @@ import (
 )
 
 func init() {
-	Router().Path("/v1/tokens").Methods("DELETE").Handler(girder.NewHandler(revokeAllTokens).RequireAuthentication(getUser).RequirePermission("admin").LogRequests())
-	Router().Path("/v1/token/{token}").Methods("DELETE").Handler(girder.NewHandler(revokeToken).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
+	Router().
+		Path("/v1/tokens").
+		Methods("DELETE").
+		Handler(girder.NewHandler(revokeAllTokens).
+			RequireAuthentication(getUser).
+			RequirePermission("admin").
+			LogRequests()).
+		Name("DELETE /tokens")
+	Router().
+		Path("/v1/token/{token}").
+		Methods("DELETE").
+		Handler(girder.NewHandler(revokeToken).
+			RequireAuthentication(getUser).
+			RequirePermission("admin/users").
+			LogRequests()).
+		Name("DELETE /token/{token}")
 
-	Router().Path("/v1/user/{user}/tokens").Methods("GET").Handler(girder.NewHandler(getTokens).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
-	Router().Path("/v1/user/{user}/tokens").Methods("POST").Handler(girder.NewHandler(createToken).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
-	Router().Path("/v1/user/{user}/tokens").Methods("DELETE").Handler(girder.NewHandler(revokeAllTokensForUser).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
+	Router().
+		Path("/v1/user/{user}/tokens").
+		Methods("GET").
+		Handler(girder.NewHandler(getTokens).
+			RequireAuthentication(getUser).
+			RequirePermission("admin/users").
+			LogRequests()).
+		Name("GET /user/{user}/tokens")
+	Router().
+		Path("/v1/user/{user}/tokens").
+		Methods("POST").
+		Handler(girder.NewHandler(createToken).
+			RequireAuthentication(getUser).
+			RequirePermission("admin/users").
+			LogRequests()).
+		Name("POST /user/{user}/tokens")
+	Router().
+		Path("/v1/user/{user}/tokens").
+		Methods("DELETE").
+		Handler(girder.NewHandler(revokeAllTokensForUser).
+			RequireAuthentication(getUser).
+			RequirePermission("admin/users").
+			LogRequests()).
+		Name("DELETE /user/{user}/tokens")
 
-	Router().Path("/v1/user/{user}/token/{token}").Methods("DELETE").Handler(girder.NewHandler(revokeToken).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
+	Router().
+		Path("/v1/user/{user}/token/{token}").
+		Methods("DELETE").
+		Handler(girder.NewHandler(revokeToken).
+			RequireAuthentication(getUser).
+			RequirePermission("admin/users").
+			LogRequests()).
+		Name("DELETE /user/{user}/token/{token}")
 
 }
 

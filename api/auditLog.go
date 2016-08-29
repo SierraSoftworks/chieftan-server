@@ -7,8 +7,22 @@ import (
 )
 
 func init() {
-	Router().Path("/v1/audit").Methods("GET").Handler(girder.NewHandler(getAuditLog).RequireAuthentication(getUser).RequirePermission("admin").LogRequests())
-	Router().Path("/v1/audit/{entry}").Methods("GET").Handler(girder.NewHandler(getAuditLogEntryByID).RequireAuthentication(getUser).RequirePermission("admin").LogRequests())
+	Router().
+		Path("/v1/audit").
+		Methods("GET").
+		Handler(girder.NewHandler(getAuditLog).
+			RequireAuthentication(getUser).
+			RequirePermission("admin").
+			LogRequests()).
+		Name("GET /audit")
+	Router().
+		Path("/v1/audit/{entry}").
+		Methods("GET").
+		Handler(girder.NewHandler(getAuditLogEntryByID).
+			RequireAuthentication(getUser).
+			RequirePermission("admin").
+			LogRequests()).
+		Name("GET /audit/{entry}")
 }
 
 func getAuditLogEntryByID(c *girder.Context) (interface{}, error) {

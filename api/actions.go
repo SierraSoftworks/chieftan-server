@@ -8,11 +8,37 @@ import (
 )
 
 func init() {
-	Router().Path("/v1/project/{project}/actions").Methods("GET").Handler(girder.NewHandler(getActions).RequireAuthentication(getUser).RequirePermission("project/:project").LogRequests())
-	Router().Path("/v1/project/{project}/actions").Methods("POST").Handler(girder.NewHandler(createAction).RequireAuthentication(getUser).RequirePermission("project/:project/admin").LogRequests())
+	Router().
+		Path("/v1/project/{project}/actions").
+		Methods("GET").
+		Handler(girder.NewHandler(getActions).
+			RequireAuthentication(getUser).
+			RequirePermission("project/:project").
+			LogRequests()).
+		Name("GET /project/{project}/actions")
+	Router().
+		Path("/v1/project/{project}/actions").
+		Methods("POST").
+		Handler(girder.NewHandler(createAction).
+			RequireAuthentication(getUser).
+			RequirePermission("project/:project/admin").
+			LogRequests()).
+		Name("POST /project/{project}/actions")
 
-	Router().Path("/v1/action/{action}").Methods("GET").Handler(girder.NewHandler(getAction).RequireAuthentication(getUser).LogRequests())
-	Router().Path("/v1/action/{action}").Methods("PUT").Handler(girder.NewHandler(updateAction).RequireAuthentication(getUser).LogRequests())
+	Router().
+		Path("/v1/action/{action}").
+		Methods("GET").
+		Handler(girder.NewHandler(getAction).
+			RequireAuthentication(getUser).
+			LogRequests()).
+		Name("GET /action/{action}")
+	Router().
+		Path("/v1/action/{action}").
+		Methods("PUT").
+		Handler(girder.NewHandler(updateAction).
+			RequireAuthentication(getUser).
+			LogRequests()).
+		Name("PUT /action/{action}")
 }
 
 func getActions(c *girder.Context) (interface{}, error) {

@@ -10,7 +10,11 @@ import (
 var startedAt = time.Now()
 
 func init() {
-	Router().Path("/v1/status").Methods("GET").Handler(girder.NewHandler(getStatus))
+	Router().
+		Path("/v1/status").
+		Methods("GET").
+		Handler(girder.NewHandler(getStatus)).
+		Name("GET /status")
 }
 
 func getStatus(c *girder.Context) (interface{}, error) {

@@ -104,7 +104,6 @@ func TestAuditLog(t *testing.T) {
 			Convey("GET", func() {
 				req, err := http.NewRequest("GET", fmt.Sprintf("%s/v1/audit/%s", ts.URL, entry.ID.Hex()), nil)
 				So(err, ShouldBeNil)
-				fmt.Print(req.URL)
 
 				Convey("When not signed in", func() {
 					res, err := http.DefaultClient.Do(req)

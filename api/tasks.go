@@ -8,19 +8,79 @@ import (
 )
 
 func init() {
-	Router().Path("/v1/tasks").Methods("GET").Handler(girder.NewHandler(getTasks).RequireAuthentication(getUser).RequirePermission("admin").LogRequests())
+	Router().
+		Path("/v1/tasks").Methods("GET").
+		Handler(girder.NewHandler(getTasks).
+			RequireAuthentication(getUser).
+			RequirePermission("admin").
+			LogRequests()).
+		Name("GET /tasks")
 
-	Router().Path("/v1/task/{task}").Methods("GET").Handler(girder.NewHandler(getTask).RequireAuthentication(getUser).LogRequests())
-	Router().Path("/v1/task/{task}/run").Methods("POST").Handler(girder.NewHandler(runTask).RequireAuthentication(getUser).LogRequests())
+	Router().
+		Path("/v1/task/{task}").Methods("GET").
+		Handler(girder.NewHandler(getTask).
+			RequireAuthentication(getUser).
+			LogRequests()).
+		Name("GET /task/{task}")
+	Router().
+		Path("/v1/task/{task}/run").Methods("POST").
+		Handler(girder.NewHandler(runTask).
+			RequireAuthentication(getUser).
+			LogRequests()).
+		Name("POST /task/{task}/run")
 
-	Router().Path("/v1/project/{project}/tasks").Methods("GET").Handler(girder.NewHandler(getProjectTasks).RequireAuthentication(getUser).RequirePermission("project/:project").LogRequests())
-	Router().Path("/v1/project/{project}/tasks/recent").Methods("GET").Handler(girder.NewHandler(getRecentProjectTasks).RequireAuthentication(getUser).RequirePermission("project/:project").LogRequests())
+	Router().
+		Path("/v1/project/{project}/tasks").
+		Methods("GET").
+		Handler(girder.NewHandler(getProjectTasks).
+			RequireAuthentication(getUser).
+			RequirePermission("project/:project").
+			LogRequests()).
+		Name("GET /project/{project}/tasks")
+	Router().
+		Path("/v1/project/{project}/tasks/recent").
+		Methods("GET").
+		Handler(girder.NewHandler(getRecentProjectTasks).
+			RequireAuthentication(getUser).
+			RequirePermission("project/:project").
+			LogRequests()).
+		Name("GET /project/{project}/tasks/recent")
 
-	Router().Path("/v1/action/{action}/tasks").Methods("GET").Handler(girder.NewHandler(getActionTasks).RequireAuthentication(getUser).LogRequests())
-	Router().Path("/v1/action/{action}/tasks").Methods("POST").Handler(girder.NewHandler(createTask).RequireAuthentication(getUser).LogRequests())
-	Router().Path("/v1/action/{action}/tasks/recent").Methods("GET").Handler(girder.NewHandler(getRecentActionTasks).RequireAuthentication(getUser).LogRequests())
-	Router().Path("/v1/action/{action}/task/latest").Methods("GET").Handler(girder.NewHandler(getLatestActionTask).RequireAuthentication(getUser).LogRequests())
-	Router().Path("/v1/action/{action}/task/latest/run").Methods("POST").Handler(girder.NewHandler(runLatestActionTask).RequireAuthentication(getUser).LogRequests())
+	Router().
+		Path("/v1/action/{action}/tasks").
+		Methods("GET").
+		Handler(girder.NewHandler(getActionTasks).
+			RequireAuthentication(getUser).
+			LogRequests()).
+		Name("GET /action/{action}/tasks")
+	Router().
+		Path("/v1/action/{action}/tasks").
+		Methods("POST").
+		Handler(girder.NewHandler(createTask).
+			RequireAuthentication(getUser).
+			LogRequests()).
+		Name("POST /action/{action}/tasks")
+	Router().
+		Path("/v1/action/{action}/tasks/recent").
+		Methods("GET").
+		Handler(girder.NewHandler(getRecentActionTasks).
+			RequireAuthentication(getUser).
+			LogRequests()).
+		Name("GET /action/{action}/tasks/recent")
+	Router().
+		Path("/v1/action/{action}/task/latest").
+		Methods("GET").
+		Handler(girder.NewHandler(getLatestActionTask).
+			RequireAuthentication(getUser).
+			LogRequests()).
+		Name("GET /action/{action}/task/latest")
+	Router().
+		Path("/v1/action/{action}/task/latest/run").
+		Methods("POST").
+		Handler(girder.NewHandler(runLatestActionTask).
+			RequireAuthentication(getUser).
+			LogRequests()).
+		Name("GET /action/{action}/task/latest/run")
 }
 
 func getTasks(c *girder.Context) (interface{}, error) {
