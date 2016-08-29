@@ -35,8 +35,8 @@ func TestCreateToken(t *testing.T) {
 		So(token, ShouldHaveLength, 32)
 
 		Convey("Updates database", func() {
-			tokens, _, err := GetUserTokens(&GetUserTokensRequest{
-				ID: user.ID,
+			tokens, _, err := GetTokens(&GetTokensRequest{
+				UserID: user.ID,
 			})
 			So(err, ShouldBeNil)
 			So(tokens, ShouldResemble, []string{token})

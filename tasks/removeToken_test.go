@@ -30,8 +30,8 @@ func TestRemoveToken(t *testing.T) {
 		So(audit.User, ShouldResemble, user.Summary())
 
 		Convey("Updates database", func() {
-			tokens, _, err := GetUserTokens(&GetUserTokensRequest{
-				ID: user.ID,
+			tokens, _, err := GetTokens(&GetTokensRequest{
+				UserID: user.ID,
 			})
 			So(err, ShouldBeNil)
 			So(tokens, ShouldNotBeNil)

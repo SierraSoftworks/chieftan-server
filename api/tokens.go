@@ -62,11 +62,11 @@ func init() {
 }
 
 func getTokens(c *girder.Context) (interface{}, error) {
-	req := tasks.GetUserTokensRequest{
-		ID: c.Vars["user"],
+	req := tasks.GetTokensRequest{
+		UserID: c.Vars["user"],
 	}
 
-	tokens, audit, err := tasks.GetUserTokens(&req)
+	tokens, audit, err := tasks.GetTokens(&req)
 	if err != nil {
 		return nil, errors.From(err)
 	}

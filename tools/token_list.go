@@ -23,20 +23,20 @@ var tokenList cli.Command = cli.Command{
 			return fmt.Errorf("expected you to provide the email address or unique ID of the user")
 		}
 
-		req := &tasks.GetUserTokensRequest{
-			ID: c.Args().Get(0),
+		req := &tasks.GetTokensRequest{
+			UserID: c.Args().Get(0),
 		}
 
-		if !models.IsValidUserID(req.ID) {
-			req.ID = models.DeriveID(req.ID)
+		if !models.IsValidUserID(req.UserID) {
+			req.UserID = models.DeriveID(req.UserID)
 		}
 
-		tokens, _, err := tasks.GetUserTokens(req)
+		tokens, _, err := tasks.GetTokens(req)
 		if err != nil {
 			return err
 		}
 
-		log.WithField("userID", req.ID).WithField("tokens", tokens).Infof("User Tokens for '%s'", req.ID)
+		log.WithField("userID", req.UserID).WithField("tokens", tokens).Infof("User Tokens for '%s'", req.UserID)
 
 		for _, token := range tokens {
 			log.Infoln(token)
