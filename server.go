@@ -47,7 +47,7 @@ var RunServer = cli.Command{
 			AllowedOrigins:   []string{"*"},
 			AllowedHeaders:   []string{"Authorization"},
 			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
-			Debug:            true,
+			Debug:            false,
 		}).Handler(mux))
 	},
 }
