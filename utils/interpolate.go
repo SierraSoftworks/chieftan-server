@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"log"
+	"reflect"
 
 	"github.com/aymerick/raymond"
 )
@@ -17,50 +17,105 @@ func NewInterpolator(context map[string]string) *Interpolator {
 }
 
 func (e *Interpolator) Run(item interface{}) (interface{}, error) {
-	switch item.(type) {
-	case string:
-		return e.interpolateString(item.(string))
+	v := reflect.ValueOf(item)
+	newV, err := e.interpolateReflectedValue(v)
+	if err != nil {
+		return nil, err
+	}
 
-	case map[string]interface{}:
-		return e.interpolateObject(item.(map[string]interface{}))
+	return newV.Interface(), nil
+}
 
-	case map[string]string:
-		return e.interpolateFlatMap(item.(map[string]string))
+func (e *Interpolator) interpolateReflectedValue(v reflect.Value) (*reflect.Value, error) {
+	switch v.Kind() {
+	case reflect.Interface:
+		val, err := e.interpolateReflectedValue(v.Elem())
+		if err != nil {
+			return nil, err
+		}
 
+		out := reflect.ValueOf(val.Interface())
+		return &out, nil
+	case reflect.Struct:
+		out := reflect.New(v.Type()).Elem()
+		n := v.NumField()
+		for i := 0; i < n; i++ {
+			newVal, err := e.interpolateReflectedValue(v.Field(i))
+			if err != nil {
+				return nil, err
+			}
+
+			if newVal != nil {
+				out.Field(i).Set(*newVal)
+			}
+		}
+
+		return &out, nil
+
+	case reflect.Map:
+		out := reflect.MakeMap(v.Type())
+		for _, key := range v.MapKeys() {
+			val, err := e.interpolateReflectedValue(v.MapIndex(key))
+			if err != nil {
+				return nil, err
+			}
+
+			out.SetMapIndex(key, *val)
+		}
+
+		return &out, nil
+
+	case reflect.Slice:
+		if v.IsNil() {
+			return &v, nil
+		}
+
+		out := reflect.MakeSlice(v.Type(), v.Len(), v.Cap())
+		n := v.Len()
+		for i := 0; i < n; i++ {
+			val := v.Index(i)
+			newVal, err := e.interpolateReflectedValue(val)
+			if err != nil {
+				return nil, err
+			}
+
+			if newVal != nil {
+				out.Index(i).Set(*newVal)
+			}
+		}
+
+		return &out, nil
+
+	case reflect.Array:
+		out := reflect.New(v.Type())
+		n := v.Len()
+		for i := 0; i < n; i++ {
+			val := v.Index(i)
+			newVal, err := e.interpolateReflectedValue(val)
+			if err != nil {
+				return nil, err
+			}
+
+			if newVal != nil {
+				out.Index(i).Set(*newVal)
+			}
+		}
+
+		return &out, nil
+
+	case reflect.String:
+		iStr, err := e.interpolateString(v.String())
+		if err != nil {
+			return nil, err
+		}
+
+		out := reflect.ValueOf(iStr)
+		return &out, nil
 	default:
-		log.Printf("Failed to interpolate %#v\n", item)
-		return item, nil
+		return &v, nil
 	}
 }
 
 func (e *Interpolator) interpolateString(item string) (string, error) {
 	return raymond.Render(item, e.Context)
-}
-
-func (e *Interpolator) interpolateFlatMap(item map[string]string) (map[string]string, error) {
-	result := make(map[string]string)
-
-	for k, v := range item {
-		val, err := e.interpolateString(v)
-		if err != nil {
-			return nil, err
-		}
-		result[k] = val
-	}
-
-	return result, nil
-}
-
-func (e *Interpolator) interpolateObject(item map[string]interface{}) (map[string]interface{}, error) {
-	result := make(map[string]interface{})
-
-	for k, v := range item {
-		val, err := e.Run(v)
-		if err != nil {
-			return nil, err
-		}
-		result[k] = val
-	}
-
-	return result, nil
 }
