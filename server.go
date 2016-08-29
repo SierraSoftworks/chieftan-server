@@ -45,7 +45,7 @@ var RunServer = cli.Command{
 		return http.ListenAndServe(listenOn, cors.New(cors.Options{
 			AllowCredentials: true,
 			AllowedOrigins:   []string{"*"},
-			AllowedHeaders:   []string{"Authorization"},
+			AllowedHeaders:   []string{"Authorization", "Content-Type"},
 			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
 			Debug:            false,
 		}).Handler(mux))
