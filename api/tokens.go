@@ -14,6 +14,9 @@ func init() {
 	Router().Path("/v1/user/{user}/tokens").Methods("GET").Handler(girder.NewHandler(getTokens).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
 	Router().Path("/v1/user/{user}/tokens").Methods("POST").Handler(girder.NewHandler(createToken).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
 	Router().Path("/v1/user/{user}/tokens").Methods("DELETE").Handler(girder.NewHandler(revokeAllTokensForUser).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
+
+	Router().Path("/v1/user/{user}/token/{token}").Methods("DELETE").Handler(girder.NewHandler(revokeToken).RequireAuthentication(getUser).RequirePermission("admin/users").LogRequests())
+
 }
 
 func getTokens(c *girder.Context) (interface{}, error) {

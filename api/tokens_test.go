@@ -243,5 +243,47 @@ func TestTokens(t *testing.T) {
 				})
 			})
 		})
+
+		Convey("/v1/{user}/token/{token}", func() {
+			url := fmt.Sprintf("%s/v1/user/%s/token/%s", ts.URL, user.ID, token)
+
+			Convey("DELETE", func() {
+				req, err := http.NewRequest("DELETE", url, nil)
+				So(err, ShouldBeNil)
+
+				Convey("When not signed in", func() {
+					res, err := http.DefaultClient.Do(req)
+					So(err, ShouldBeNil)
+					So(res.StatusCode, ShouldEqual, 401)
+				})
+
+				Convey("When signed in", func() {
+
+					req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+
+					Convey("Without admin/users permissions", func() {
+						res, err := http.DefaultClient.Do(req)
+						defer res.Body.Close()
+						So(err, ShouldBeNil)
+
+						So(res.StatusCode, ShouldEqual, 403)
+					})
+
+					Convey("With admin/users permissions", func() {
+						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+							UserID:      user.ID,
+							Permissions: []string{"admin/users"},
+						})
+						So(err, ShouldBeNil)
+
+						res, err := http.DefaultClient.Do(req)
+						defer res.Body.Close()
+						So(err, ShouldBeNil)
+
+						So(res.StatusCode, ShouldEqual, 200)
+					})
+				})
+			})
+		})
 	})
 }
