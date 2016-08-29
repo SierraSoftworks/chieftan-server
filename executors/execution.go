@@ -15,7 +15,8 @@ type Execution struct {
 	Options       *Options
 	Variables     map[string]string
 
-	StateChanged chan *models.Task
+	ExecutorProvider ExecutorProvider
+	StateChanged     chan *models.Task
 }
 
 type Executor interface {
@@ -37,21 +38,13 @@ func NewExecution(options *Options) (*Execution, error) {
 	}
 
 	return &Execution{
-		Task:          options.Task,
-		Action:        options.Action,
-		Configuration: options.Configuration,
-		Options:       options,
-		Variables:     options.MergeVariables(),
+		Task:             options.Task,
+		Action:           options.Action,
+		Configuration:    options.Configuration,
+		Options:          options,
+		Variables:        options.MergeVariables(),
+		ExecutorProvider: &DefaultExecutorProvider{},
 	}, nil
-}
-
-func (e *Execution) GetExecutors() []Executor {
-	executors := []Executor{}
-	if e.Action.HTTP != nil {
-		executors = append(executors, &HTTP{})
-	}
-
-	return executors
 }
 
 func (e *Execution) Start() <-chan *models.Task {
@@ -61,32 +54,33 @@ func (e *Execution) Start() <-chan *models.Task {
 		e.Task.State = models.TaskStateExecuting
 
 		if e.Configuration != nil {
-			e.WriteInfo("Running task in %s configuration", e.Options.Configuration.Name)
+			e.WriteInfo("msg=\"Running task\" configuration=\"%s\"", e.Options.Configuration.Name)
 		} else {
-			e.WriteInfo("Running task in default configuration")
+			e.WriteInfo("msg=\"Running task\" configuration=\"default\"")
 		}
 		e.PublishChanges()
 
 		executedSuccessfully := true
-		for _, executor := range e.GetExecutors() {
+		for _, executor := range e.ExecutorProvider.GetExecutors(e) {
 			startTime := time.Now()
-			e.WriteInfo("Starting %s executor...")
+			e.WriteInfo("msg=\"Starting\" executor=\"%s\"", executor.Name())
 			err := executor.Run(e)
 			if err != nil {
-				e.WriteError("%s executor failed in %dms", time.Now().Sub(startTime).Nanoseconds()/1e6)
-				e.WriteError(err.Error())
+				e.WriteError("msg=\"Failed\" executor=\"%s\" duration=\"%dms\" error=\"%s\"", executor.Name(), time.Now().Sub(startTime).Nanoseconds()/1e6, err.Error())
 				executedSuccessfully = false
 				break
 			} else {
-				e.WriteInfo("%s executor completed in %dms", time.Now().Sub(startTime).Nanoseconds()/1e6)
+				e.WriteInfo("msg=\"Completed\" executor=\"%s\" duration=\"%dms\"", executor.Name(), time.Now().Sub(startTime).Nanoseconds()/1e6)
 			}
 
 			e.PublishChanges()
 		}
 
 		if executedSuccessfully {
+			e.WriteInfo("msg=\"Completed\" duration=\"%dms\"", time.Now().Sub(e.Task.Executed).Nanoseconds()/1e6)
 			e.Task.State = models.TaskStatePassed
 		} else {
+			e.WriteError("msg=\"Failed\" duration=\"%dms\"", time.Now().Sub(e.Task.Executed).Nanoseconds()/1e6)
 			e.Task.State = models.TaskStateFailed
 		}
 
@@ -112,11 +106,11 @@ func (e *Execution) writeMessage(level, message string, args ...interface{}) {
 }
 
 func (e *Execution) WriteInfo(message string, args ...interface{}) {
-	e.writeMessage("info", message)
+	e.writeMessage("info", message, args...)
 }
 
 func (e *Execution) WriteError(message string, args ...interface{}) {
-	e.writeMessage("error", message)
+	e.writeMessage("error", message, args...)
 }
 
 func (e *Execution) PublishChanges() {

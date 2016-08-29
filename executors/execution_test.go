@@ -9,14 +9,16 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-type testExecution struct {
-	Execution
-
+type testExecutorProvider struct {
 	Executors []Executor
 }
 
-func (e *testExecution) GetExecutors() []Executor {
-	return e.Executors
+func (p *testExecutorProvider) GetExecutors(e *Execution) []Executor {
+	if p.Executors == nil {
+		return []Executor{}
+	}
+
+	return p.Executors
 }
 
 type testExecutor struct {
@@ -35,6 +37,7 @@ func TestExecution(t *testing.T) {
 	Convey("Execution", t, func() {
 
 		configuration := &models.ActionConfiguration{
+			Name:      "Test",
 			Variables: map[string]string{},
 		}
 
@@ -52,40 +55,52 @@ func TestExecution(t *testing.T) {
 
 		variables := map[string]string{}
 
-		Convey("With no options", func() {
-			_, err := NewExecution(nil)
-			So(err, ShouldNotBeNil)
-		})
-
-		Convey("With no action", func() {
-			_, err := NewExecution(&Options{
-				Task:          task,
-				Configuration: configuration,
-				Variables:     variables,
+		Convey("Constructor", func() {
+			Convey("With no options", func() {
+				_, err := NewExecution(nil)
+				So(err, ShouldNotBeNil)
 			})
-			So(err, ShouldNotBeNil)
-		})
 
-		Convey("With no task", func() {
-			_, err := NewExecution(&Options{
-				Action:        action,
-				Configuration: configuration,
-				Variables:     variables,
+			Convey("With no action", func() {
+				_, err := NewExecution(&Options{
+					Task:          task,
+					Configuration: configuration,
+					Variables:     variables,
+				})
+				So(err, ShouldNotBeNil)
 			})
-			So(err, ShouldNotBeNil)
-		})
 
-		Convey("With no configuration", func() {
-			_, err := NewExecution(&Options{
-				Action:    action,
-				Task:      task,
-				Variables: variables,
+			Convey("With no task", func() {
+				_, err := NewExecution(&Options{
+					Action:        action,
+					Configuration: configuration,
+					Variables:     variables,
+				})
+				So(err, ShouldNotBeNil)
 			})
-			So(err, ShouldBeNil)
+
+			Convey("With no configuration", func() {
+				_, err := NewExecution(&Options{
+					Action:    action,
+					Task:      task,
+					Variables: variables,
+				})
+				So(err, ShouldBeNil)
+			})
+
+			Convey("With a configuration", func() {
+				_, err := NewExecution(&Options{
+					Action:        action,
+					Task:          task,
+					Configuration: configuration,
+					Variables:     variables,
+				})
+				So(err, ShouldBeNil)
+			})
 		})
 
 		Convey("With a valid executor", func() {
-			exBase, err := NewExecution(&Options{
+			ex, err := NewExecution(&Options{
 				Action:        action,
 				Task:          task,
 				Configuration: configuration,
@@ -94,8 +109,7 @@ func TestExecution(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			hasExecuted := false
-			ex := &testExecution{
-				Execution: *exBase,
+			ex.ExecutorProvider = &testExecutorProvider{
 				Executors: []Executor{
 					&testExecutor{
 						RunHandler: func(ctx *Execution) error {
@@ -107,18 +121,15 @@ func TestExecution(t *testing.T) {
 				},
 			}
 
-			Convey("Should get the correct executors list", func() {
-				So(ex.GetExecutors(), ShouldResemble, ex.Executors)
-			})
-
 			Convey("Should correctly run the executor", func() {
 				stateChanged := ex.Start()
 				So(stateChanged, ShouldNotBeNil)
 
 				for _ = range stateChanged {
+
 				}
 
-				// So(hasExecuted, ShouldBeTrue)
+				So(hasExecuted, ShouldBeTrue)
 				So(ex.Task.Completed, ShouldNotResemble, time.Time{})
 				So(ex.Task.Output, ShouldNotBeEmpty)
 				So(ex.Task.State, ShouldEqual, models.TaskStatePassed)
