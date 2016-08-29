@@ -11,10 +11,12 @@ import (
 var router = mux.NewRouter()
 
 func init() {
-	router.NotFoundHandler = girder.NewHandler(func(c *girder.Context) (interface{}, error) {
-		return nil, errors.NotFound()
-	})
+	router.NotFoundHandler = notFoundHandler
 }
+
+var notFoundHandler = girder.NewHandler(func(c *girder.Context) (interface{}, error) {
+	return nil, errors.NotFound()
+})
 
 // Router returns the registered router for the API
 func Router() *mux.Router {
