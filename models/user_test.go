@@ -19,6 +19,23 @@ func TestUser(t *testing.T) {
 			So(user.ID, ShouldEqual, "c2d8df67421f13020b46dd5bdf18b36c")
 		})
 
+		Convey("Girder API", func() {
+			user := User{
+				ID: "c2d8df67421f13020b46dd5bdf18b36c",
+				Permissions: []string{
+					"test",
+				},
+			}
+
+			Convey("GetID", func() {
+				So(user.GetID(), ShouldEqual, "c2d8df67421f13020b46dd5bdf18b36c")
+			})
+
+			Convey("GetPermissions", func() {
+				So(user.GetPermissions(), ShouldResemble, []string{"test"})
+			})
+		})
+
 		Convey("Summary", func() {
 			user := User{
 				ID:    "c2d8df67421f13020b46dd5bdf18b36c",
