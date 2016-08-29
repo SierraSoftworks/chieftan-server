@@ -8,10 +8,10 @@ import (
 
 type TaskState int
 
-const TaskStateNotExecuted = 0
-const TaskStateExecuting = 1
-const TaskStateFailed = 2
-const TaskStatePassed = 3
+const TaskStateNotExecuted = TaskState(0)
+const TaskStateExecuting = TaskState(1)
+const TaskStateFailed = TaskState(2)
+const TaskStatePassed = TaskState(3)
 
 func (t *TaskState) String() string {
 	switch *t {

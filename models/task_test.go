@@ -43,5 +43,29 @@ func TestTask(t *testing.T) {
 				},
 			})
 		})
+
+		Convey("TaskState", func() {
+			Convey("String", func() {
+				Convey("Not Executed", func() {
+					state := TaskStateNotExecuted
+					So(state.String(), ShouldEqual, "Not Executed")
+				})
+
+				Convey("Executing", func() {
+					state := TaskStateExecuting
+					So(state.String(), ShouldEqual, "Executing")
+				})
+
+				Convey("Failed", func() {
+					state := TaskStateFailed
+					So(state.String(), ShouldEqual, "Failed")
+				})
+
+				Convey("Passed", func() {
+					state := TaskStatePassed
+					So(state.String(), ShouldEqual, "Passed")
+				})
+			})
+		})
 	})
 }
