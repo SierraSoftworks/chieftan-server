@@ -15,7 +15,7 @@ func GetProjectActions(req *GetProjectActionsRequest) ([]models.Action, error) {
 		return nil, errors.BadRequest()
 	}
 
-	var actions []models.Action
+	actions := []models.Action{}
 	err := models.DB().Actions().Find(&bson.M{
 		"project.id": bson.ObjectIdHex(req.ProjectID),
 	}).All(&actions)

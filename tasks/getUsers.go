@@ -9,7 +9,7 @@ type GetUsersRequest struct {
 }
 
 func GetUsers(req *GetUsersRequest) ([]models.User, error) {
-	var users []models.User
+	users := []models.User{}
 	err := models.DB().Users().Find(&bson.M{}).Select(&bson.M{
 		"tokens": 0,
 	}).All(&users)

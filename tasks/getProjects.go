@@ -9,7 +9,7 @@ type GetProjectsRequest struct {
 }
 
 func GetProjects(req *GetProjectsRequest) ([]models.Project, error) {
-	var projects []models.Project
+	projects := []models.Project{}
 	err := models.DB().Projects().Find(&bson.M{}).All(&projects)
 	if err != nil {
 		return nil, formatError(err)

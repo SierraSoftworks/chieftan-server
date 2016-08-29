@@ -9,6 +9,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"gopkg.in/mgo.v2/bson"
+
 	"github.com/SierraSoftworks/chieftan-server/models"
 	"github.com/SierraSoftworks/chieftan-server/tasks"
 	. "github.com/smartystreets/goconvey/convey"
@@ -60,6 +62,20 @@ func TestProjects(t *testing.T) {
 					res, err := http.DefaultClient.Do(req)
 					So(err, ShouldBeNil)
 					So(res.StatusCode, ShouldEqual, 200)
+
+					Convey("When there are no projects", func() {
+						_, err := models.DB().Projects().RemoveAll(&bson.M{})
+						So(err, ShouldBeNil)
+
+						res, err := http.DefaultClient.Do(req)
+						So(err, ShouldBeNil)
+						So(res.StatusCode, ShouldEqual, 200)
+
+						var projects []models.Project
+						So(json.NewDecoder(res.Body).Decode(&projects), ShouldBeNil)
+						So(projects, ShouldNotBeNil)
+						So(projects, ShouldHaveLength, 0)
+					})
 				})
 			})
 

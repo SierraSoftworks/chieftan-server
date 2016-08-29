@@ -42,7 +42,7 @@ func GetTasks(req *GetTasksRequest) ([]models.Task, error) {
 		q = q.Limit(req.Limit)
 	}
 
-	var tasks []models.Task
+	tasks := []models.Task{}
 	err := q.All(&tasks)
 	if err != nil {
 		return nil, formatError(err)
