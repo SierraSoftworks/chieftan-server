@@ -13,7 +13,7 @@
 			"importpath": "github.com/SierraSoftworks/gatekeeper",
 			"repository": "https://github.com/SierraSoftworks/gatekeeper",
 			"vcs": "git",
-			"revision": "a0afb5186db5eb2b17629b744267f165c434f163",
+			"revision": "c9a25dab7ddd1ad11e4bfc4d7b3d3077d9bee19f",
 			"branch": "master",
 			"notests": true
 		},
@@ -21,7 +21,7 @@
 			"importpath": "github.com/SierraSoftworks/girder",
 			"repository": "https://github.com/SierraSoftworks/girder",
 			"vcs": "git",
-			"revision": "29dc53fb582926758da5d173215441fa823a0c92",
+			"revision": "46ad10b37cda1db714aadf4aff8c59cba7907c6f",
 			"branch": "master",
 			"notests": true
 		},
@@ -94,8 +94,8 @@
 			"importpath": "github.com/gorilla/mux",
 			"repository": "https://github.com/gorilla/mux",
 			"vcs": "git",
-			"revision": "cf79e51a62d8219d52060dfc1b4e810414ba2d15",
-			"branch": "master",
+			"revision": "0eeaf8392f5b04950925b8a69fe70f110fa7cbfc",
+			"branch": "HEAD",
 			"notests": true
 		},
 		{
@@ -167,7 +167,7 @@
 			"importpath": "github.com/urfave/cli",
 			"repository": "https://github.com/urfave/cli",
 			"vcs": "git",
-			"revision": "168c95418e66e019fe17b8f4f5c45aa62ff80e23",
+			"revision": "33bb4c121333cd8eb7d8cc8d74474f4ec156f371",
 			"branch": "master",
 			"notests": true
 		},
@@ -175,7 +175,7 @@
 			"importpath": "github.com/zenazn/goji",
 			"repository": "https://github.com/zenazn/goji",
 			"vcs": "git",
-			"revision": "64eb34159fe53473206c2b3e70fe396a639452f2",
+			"revision": "4d7077956293261309684d3cf1af673f773c6819",
 			"branch": "master",
 			"notests": true
 		},
@@ -183,7 +183,7 @@
 			"importpath": "golang.org/x/net/context",
 			"repository": "https://go.googlesource.com/net",
 			"vcs": "git",
-			"revision": "7394c112eae4dba7e96bfcfe738e6373d61772b4",
+			"revision": "6250b412798208e6c90b03b7c4f226de5aa299e2",
 			"branch": "master",
 			"path": "/context",
 			"notests": true
@@ -201,7 +201,7 @@
 			"importpath": "gopkg.in/airbrake/gobrake.v2",
 			"repository": "https://gopkg.in/airbrake/gobrake.v2",
 			"vcs": "git",
-			"revision": "31c8ff1fb8b79a6947e6565e9a6df535f98a6b94",
+			"revision": "5d77bd50d083834501349f8be70197b26963674d",
 			"branch": "master",
 			"notests": true
 		},
@@ -217,7 +217,7 @@
 			"importpath": "gopkg.in/mgo.v2",
 			"repository": "https://gopkg.in/mgo.v2",
 			"vcs": "git",
-			"revision": "01084657862d7b12d3b10ffd0394357abf8f8bc2",
+			"revision": "3f83fa5005286a7fe593b055f0d7771a7dce4655",
 			"branch": "v2",
 			"notests": true
 		},
