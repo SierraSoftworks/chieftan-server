@@ -11,7 +11,7 @@ type GetAuditLogRequest struct {
 func GetAuditLog(req *GetAuditLogRequest) ([]models.AuditLog, error) {
 	entries := []models.AuditLog{}
 
-	if err := models.DB().AuditLogs().Find(&bson.M{}).All(&entries); err != nil {
+	if err := models.DB().AuditLogs().Find(&bson.M{}).Sort("-timestamp").All(&entries); err != nil {
 		return nil, formatError(err)
 	}
 
