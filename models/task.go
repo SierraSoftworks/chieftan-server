@@ -13,6 +13,21 @@ const TaskStateExecuting = 1
 const TaskStateFailed = 2
 const TaskStatePassed = 3
 
+func (t *TaskState) String() string {
+	switch *t {
+	case TaskStateNotExecuted:
+		return "Not Executed"
+	case TaskStateExecuting:
+		return "Executing"
+	case TaskStateFailed:
+		return "Failed"
+	case TaskStatePassed:
+		return "Passed"
+	default:
+		return "Unknown"
+	}
+}
+
 type TaskMetadata struct {
 	Description string `json:"description"`
 	URL         string `json:"url"`
