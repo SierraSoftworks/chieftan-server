@@ -44,7 +44,10 @@ var RunServer = cli.Command{
 		}).Infof("Listening on %s", listenOn)
 		return http.ListenAndServe(listenOn, cors.New(cors.Options{
 			AllowCredentials: true,
+			AllowedOrigins:   []string{"*"},
+			AllowedHeaders:   []string{"Authorization"},
 			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+			Debug:            true,
 		}).Handler(mux))
 	},
 }
