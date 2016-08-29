@@ -143,7 +143,7 @@ func TestTasks(t *testing.T) {
 				Convey("When signed in", func() {
 					req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
 
-					Convey("Without admin permissions", func() {
+					Convey("Without project/:project permissions", func() {
 						res, err := http.DefaultClient.Do(req)
 						defer res.Body.Close()
 						So(err, ShouldBeNil)
@@ -151,7 +151,65 @@ func TestTasks(t *testing.T) {
 						So(res.StatusCode, ShouldEqual, 403)
 					})
 
-					Convey("With admin permissions", func() {
+					Convey("With project/:project permissions", func() {
+						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+							UserID:      user.ID,
+							Permissions: []string{fmt.Sprintf("project/%s", project.ID.Hex())},
+						})
+						So(err, ShouldBeNil)
+
+						res, err := http.DefaultClient.Do(req)
+						So(err, ShouldBeNil)
+						So(res.StatusCode, ShouldEqual, 200)
+
+						var item models.Task
+						dec := json.NewDecoder(res.Body)
+						So(dec.Decode(&item), ShouldBeNil)
+
+						So(item, ShouldNotBeNil)
+						So(item.Metadata, ShouldResemble, task.Metadata)
+						So(item.Project, ShouldResemble, task.Project)
+						So(item.Action, ShouldResemble, task.Action)
+					})
+
+				})
+			})
+		})
+
+		Convey("/v1/task/{task}/run", func() {
+			url := fmt.Sprintf("%s/v1/task/%s/run", ts.URL, task.ID.Hex())
+
+			Convey("POST", func() {
+				reqBody := bytes.NewBuffer([]byte{})
+				reqBodyWriter := bufio.NewWriter(reqBody)
+				enc := json.NewEncoder(reqBodyWriter)
+				So(enc.Encode(&tasks.RunTaskRequest{
+					Configuration: "Config 2",
+					Variables:     map[string]string{},
+				}), ShouldBeNil)
+				reqBodyWriter.Flush()
+
+				req, err := http.NewRequest("POST", url, bufio.NewReader(reqBody))
+				So(err, ShouldBeNil)
+
+				Convey("When not signed in", func() {
+					res, err := http.DefaultClient.Do(req)
+					So(err, ShouldBeNil)
+					So(res.StatusCode, ShouldEqual, 401)
+				})
+
+				Convey("When signed in", func() {
+					req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+
+					Convey("Without project/:project permissions", func() {
+						res, err := http.DefaultClient.Do(req)
+						defer res.Body.Close()
+						So(err, ShouldBeNil)
+
+						So(res.StatusCode, ShouldEqual, 403)
+					})
+
+					Convey("With project/:project permissions", func() {
 						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
 							UserID:      user.ID,
 							Permissions: []string{fmt.Sprintf("project/%s", project.ID.Hex())},
@@ -434,6 +492,64 @@ func TestTasks(t *testing.T) {
 			Convey("GET", func() {
 
 				req, err := http.NewRequest("GET", url, nil)
+				So(err, ShouldBeNil)
+
+				Convey("When not signed in", func() {
+					res, err := http.DefaultClient.Do(req)
+					So(err, ShouldBeNil)
+					So(res.StatusCode, ShouldEqual, 401)
+				})
+
+				Convey("When signed in", func() {
+					req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+
+					Convey("Without project/:project permissions", func() {
+						res, err := http.DefaultClient.Do(req)
+						defer res.Body.Close()
+						So(err, ShouldBeNil)
+
+						So(res.StatusCode, ShouldEqual, 403)
+					})
+
+					Convey("With project/:project permissions", func() {
+						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+							UserID:      user.ID,
+							Permissions: []string{fmt.Sprintf("project/%s", project.ID.Hex())},
+						})
+						So(err, ShouldBeNil)
+
+						res, err := http.DefaultClient.Do(req)
+						So(err, ShouldBeNil)
+						So(res.StatusCode, ShouldEqual, 200)
+
+						var item models.Task
+						dec := json.NewDecoder(res.Body)
+						So(dec.Decode(&item), ShouldBeNil)
+
+						So(item, ShouldNotBeNil)
+						So(item.Metadata, ShouldResemble, task.Metadata)
+						So(item.Project, ShouldResemble, task.Project)
+						So(item.Action, ShouldResemble, task.Action)
+					})
+
+				})
+			})
+		})
+
+		Convey("/v1/action/{action}/task/latest/run", func() {
+			url := fmt.Sprintf("%s/v1/action/%s/task/latest/run", ts.URL, action.ID.Hex())
+
+			Convey("POST", func() {
+				reqBody := bytes.NewBuffer([]byte{})
+				reqBodyWriter := bufio.NewWriter(reqBody)
+				enc := json.NewEncoder(reqBodyWriter)
+				So(enc.Encode(&tasks.RunTaskRequest{
+					Configuration: "Config 2",
+					Variables:     map[string]string{},
+				}), ShouldBeNil)
+				reqBodyWriter.Flush()
+
+				req, err := http.NewRequest("POST", url, bufio.NewReader(reqBody))
 				So(err, ShouldBeNil)
 
 				Convey("When not signed in", func() {
