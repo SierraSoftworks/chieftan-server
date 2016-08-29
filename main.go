@@ -24,9 +24,8 @@ func main() {
 
 	app.Commands = cli.Commands{
 		RunServer,
-		tools.CreateUser,
-		tools.CreateToken,
-		tools.RemoveToken,
+		tools.User,
+		tools.Token,
 	}
 
 	app.Flags = []cli.Flag{

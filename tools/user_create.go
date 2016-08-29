@@ -9,10 +9,9 @@ import (
 	"github.com/urfave/cli"
 )
 
-var CreateUser cli.Command = cli.Command{
-	Name:        "create:user",
+var userCreate cli.Command = cli.Command{
+	Name:        "create",
 	Description: "Create a new user and return their unique ID",
-	Category:    "administration",
 	Flags: []cli.Flag{
 		cli.BoolFlag{
 			Name:   "admin",
@@ -24,7 +23,7 @@ var CreateUser cli.Command = cli.Command{
 	UsageText: "Create a new user and return their unique ID",
 	Action: func(c *cli.Context) error {
 		if c.NArg() < 2 {
-			cli.ShowCommandHelp(c, "create:user")
+			cli.ShowCommandHelp(c, "create")
 
 			return fmt.Errorf("expected you to provide both a name and email for the user")
 		}

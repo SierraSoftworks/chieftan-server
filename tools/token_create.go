@@ -10,16 +10,15 @@ import (
 	"github.com/urfave/cli"
 )
 
-var CreateToken cli.Command = cli.Command{
-	Name:        "create:token",
+var tokenCreate cli.Command = cli.Command{
+	Name:        "create",
 	Description: "Create a new access token for the given user",
-	Category:    "administration",
 	Flags:       []cli.Flag{},
 	Usage:       "USER",
 	UsageText:   "Provide the user's unique ID or email address",
 	Action: func(c *cli.Context) error {
 		if c.NArg() < 1 {
-			cli.ShowCommandHelp(c, "create:token")
+			cli.ShowCommandHelp(c, "token create")
 
 			return fmt.Errorf("expected you to provide either the user's ID or email address")
 		}
