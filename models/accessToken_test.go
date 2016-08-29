@@ -11,9 +11,18 @@ func TestAccessToken(t *testing.T) {
 		testSetup()
 
 		Convey("IsWellFormattedAccessToken", func() {
-			So(IsWellFormattedAccessToken("abc"), ShouldBeFalse)
-			So(IsWellFormattedAccessToken("x"), ShouldBeFalse)
-			So(IsWellFormattedAccessToken("0123456789abcdef0123456789abcdef"), ShouldBeTrue)
+			Convey("Too Short", func() {
+				So(IsWellFormattedAccessToken("abc"), ShouldBeFalse)
+				So(IsWellFormattedAccessToken("x"), ShouldBeFalse)
+			})
+
+			Convey("Invalid Character", func() {
+				So(IsWellFormattedAccessToken("x123456789abcdef0123456789abcdef"), ShouldBeFalse)
+			})
+
+			Convey("Valid", func() {
+				So(IsWellFormattedAccessToken("0123456789abcdef0123456789abcdef"), ShouldBeTrue)
+			})
 		})
 
 		Convey("GenerateAccessToken", func() {
