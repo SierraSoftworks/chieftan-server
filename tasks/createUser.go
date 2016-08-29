@@ -16,6 +16,10 @@ func CreateUser(req *CreateUserRequest) (*models.User, *models.AuditLogContext, 
 		Tokens:      []string{},
 	}
 
+	if user.Permissions == nil {
+		user.Permissions = []string{}
+	}
+
 	user.UpdateID()
 
 	if err := models.DB().Users().Insert(&user); err != nil {
