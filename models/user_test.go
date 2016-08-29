@@ -53,9 +53,18 @@ func TestUser(t *testing.T) {
 		})
 
 		Convey("IsValidUserID", func() {
-			So(IsValidUserID("abc"), ShouldBeFalse)
-			So(IsValidUserID("x"), ShouldBeFalse)
-			So(IsValidUserID("0123456789abcdef0123456789abcdef"), ShouldBeTrue)
+			Convey("Too Short", func() {
+				So(IsValidUserID("abc"), ShouldBeFalse)
+				So(IsValidUserID("x"), ShouldBeFalse)
+			})
+
+			Convey("Invalid Character", func() {
+				So(IsValidUserID("x123456789abcdef0123456789abcdef"), ShouldBeFalse)
+			})
+
+			Convey("Valid", func() {
+				So(IsValidUserID("0123456789abcdef0123456789abcdef"), ShouldBeTrue)
+			})
 		})
 	})
 }

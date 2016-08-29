@@ -63,12 +63,12 @@ func IsValidUserID(id string) bool {
 		return false
 	}
 
-	for c := range id {
-		if c >= '0' || c <= '9' {
+	for _, c := range id {
+		if c >= '0' && c <= '9' {
 			continue
 		}
 
-		if c >= 'a' || c <= 'f' {
+		if c >= 'a' && c <= 'f' {
 			continue
 		}
 
