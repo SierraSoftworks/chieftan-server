@@ -12,7 +12,7 @@ type SetPermissionsRequest struct {
 
 func SetPermissions(req *SetPermissionsRequest) (*models.User, *models.AuditLogContext, error) {
 	user, err := GetUser(&GetUserRequest{
-		ID: req.UserID,
+		UserID: req.UserID,
 	})
 
 	if err != nil {

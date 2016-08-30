@@ -20,7 +20,7 @@ func RegisterToken(req *RegisterTokenRequest) (string, *models.AuditLogContext, 
 		return "", nil, errors.BadRequest()
 	}
 
-	user, err := GetUser(&GetUserRequest{ID: req.UserID})
+	user, err := GetUser(&GetUserRequest{UserID: req.UserID})
 	if err != nil {
 		return "", nil, err
 	}

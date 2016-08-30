@@ -70,7 +70,7 @@ func init() {
 
 func getUserByID(c *girder.Context) (interface{}, error) {
 	req := tasks.GetUserRequest{
-		ID: c.Vars["user"],
+		UserID: c.Vars["user"],
 	}
 
 	user, err := tasks.GetUser(&req)
@@ -83,7 +83,7 @@ func getUserByID(c *girder.Context) (interface{}, error) {
 
 func getUserCurrent(c *girder.Context) (interface{}, error) {
 	req := tasks.GetUserRequest{
-		ID: c.User.GetID(),
+		UserID: c.User.GetID(),
 	}
 
 	user, err := tasks.GetUser(&req)

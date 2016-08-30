@@ -15,7 +15,7 @@ func CreateToken(req *CreateTokenRequest) (string, *models.AuditLogContext, erro
 		return "", nil, errors.BadRequest()
 	}
 
-	user, err := GetUser(&GetUserRequest{ID: req.UserID})
+	user, err := GetUser(&GetUserRequest{UserID: req.UserID})
 	if err != nil {
 		return "", nil, err
 	}

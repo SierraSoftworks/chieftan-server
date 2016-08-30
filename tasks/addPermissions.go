@@ -12,7 +12,7 @@ type AddPermissionsRequest struct {
 
 func AddPermissions(req *AddPermissionsRequest) (*models.User, *models.AuditLogContext, error) {
 	user, err := GetUser(&GetUserRequest{
-		ID: req.UserID,
+		UserID: req.UserID,
 	})
 
 	if err != nil {
@@ -31,7 +31,7 @@ func AddPermissions(req *AddPermissionsRequest) (*models.User, *models.AuditLogC
 	}
 
 	user, err = GetUser(&GetUserRequest{
-		ID: req.UserID,
+		UserID: req.UserID,
 	})
 
 	if err != nil {

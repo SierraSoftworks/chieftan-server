@@ -31,7 +31,7 @@ func TestAddPermissions(t *testing.T) {
 
 		Convey("Updates database", func() {
 			user, err := GetUser(&GetUserRequest{
-				ID: models.DeriveID("test@test.com"),
+				UserID: models.DeriveID("test@test.com"),
 			})
 			So(err, ShouldBeNil)
 			So(user, ShouldNotBeNil)

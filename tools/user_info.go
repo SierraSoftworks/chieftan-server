@@ -24,16 +24,16 @@ var userInfo cli.Command = cli.Command{
 		}
 
 		req := &tasks.GetUserRequest{
-			ID: c.Args().Get(0),
+			UserID: c.Args().Get(0),
 		}
 
-		if !models.IsValidUserID(req.ID) {
-			req.ID = models.DeriveID(req.ID)
+		if !models.IsValidUserID(req.UserID) {
+			req.UserID = models.DeriveID(req.UserID)
 		}
 
 		log.WithFields(log.Fields{
-			"UserID": req.ID,
-		}).Infof("Looking for user '%s'", req.ID)
+			"UserID": req.UserID,
+		}).Infof("Looking for user '%s'", req.UserID)
 
 		user, err := tasks.GetUser(req)
 

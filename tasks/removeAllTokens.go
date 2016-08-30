@@ -19,7 +19,7 @@ func RemoveAllTokens(req *RemoveAllTokensRequest) (*models.AuditLogContext, erro
 	if req.UserID != "" {
 		query["_id"] = req.UserID
 
-		user, err := GetUser(&GetUserRequest{ID: req.UserID})
+		user, err := GetUser(&GetUserRequest{UserID: req.UserID})
 		if err != nil {
 			return nil, err
 		}

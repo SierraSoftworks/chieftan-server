@@ -18,7 +18,7 @@ func TestGetUser(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		user, err := GetUser(&GetUserRequest{
-			ID: newUser.ID,
+			UserID: newUser.ID,
 		})
 
 		So(err, ShouldBeNil)

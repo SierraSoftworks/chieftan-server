@@ -12,7 +12,7 @@ type RemovePermissionsRequest struct {
 
 func RemovePermissions(req *RemovePermissionsRequest) (*models.User, *models.AuditLogContext, error) {
 	user, err := GetUser(&GetUserRequest{
-		ID: req.UserID,
+		UserID: req.UserID,
 	})
 
 	if err != nil {
@@ -29,7 +29,7 @@ func RemovePermissions(req *RemovePermissionsRequest) (*models.User, *models.Aud
 	}
 
 	user, err = GetUser(&GetUserRequest{
-		ID: req.UserID,
+		UserID: req.UserID,
 	})
 
 	if err != nil {

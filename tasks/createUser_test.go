@@ -33,7 +33,7 @@ func TestCreateUser(t *testing.T) {
 
 		Convey("Updates database", func() {
 			user, err := GetUser(&GetUserRequest{
-				ID: user.ID,
+				UserID: user.ID,
 			})
 			So(err, ShouldBeNil)
 			So(user, ShouldNotBeNil)

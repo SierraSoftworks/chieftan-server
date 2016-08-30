@@ -6,8 +6,8 @@ import (
 )
 
 type GetUserRequest struct {
-	ID    string `json:"user"`
-	Token string `json:"token"`
+	UserID string `json:"user"`
+	Token  string `json:"token"`
 }
 
 func GetUser(req *GetUserRequest) (*models.User, error) {
@@ -15,8 +15,8 @@ func GetUser(req *GetUserRequest) (*models.User, error) {
 
 	query := bson.M{}
 
-	if req.ID != "" {
-		query["_id"] = req.ID
+	if req.UserID != "" {
+		query["_id"] = req.UserID
 	}
 
 	if req.Token != "" {
