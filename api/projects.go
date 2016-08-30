@@ -1,6 +1,8 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/SierraSoftworks/chieftan-server/models"
 	"github.com/SierraSoftworks/chieftan-server/tasks"
 	"github.com/SierraSoftworks/girder"
@@ -70,6 +72,17 @@ func createProject(c *girder.Context) (interface{}, error) {
 		User:    c.User.(*models.User).Summary(),
 		Token:   c.GetAuthToken().Value,
 		Context: audit,
+	})
+	if err != nil {
+		return nil, errors.From(err)
+	}
+
+	_, _, err = tasks.AddPermissions(&tasks.AddPermissionsRequest{
+		UserID: c.User.GetID(),
+		Permissions: []string{
+			fmt.Sprintf("project/%s", project.ID.Hex()),
+			fmt.Sprintf("project/%s/admin", project.ID.Hex()),
+		},
 	})
 	if err != nil {
 		return nil, errors.From(err)

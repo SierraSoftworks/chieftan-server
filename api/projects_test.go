@@ -111,6 +111,15 @@ func TestProjects(t *testing.T) {
 					So(dec.Decode(&project), ShouldBeNil)
 
 					So(project.ID, ShouldNotBeEmpty)
+
+					Convey("Grants user project permissions", func() {
+						user, err := tasks.GetUser(&tasks.GetUserRequest{
+							UserID: user.ID,
+						})
+						So(err, ShouldBeNil)
+						So(user.Permissions, ShouldContain, fmt.Sprintf("project/%s", project.ID.Hex()))
+						So(user.Permissions, ShouldContain, fmt.Sprintf("project/%s/admin", project.ID.Hex()))
+					})
 				})
 			})
 		})
