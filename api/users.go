@@ -58,6 +58,14 @@ func init() {
 			RequirePermission("admin/users").
 			LogRequests()).
 		Name("PUT /user/{user}/permissions")
+	Router().
+		Path("/v1/user/{user}/permissions").
+		Methods("DELETE").
+		Handler(girder.NewHandler(removeUserPermissions).
+			RequireAuthentication(getUser).
+			RequirePermission("admin/users").
+			LogRequests()).
+		Name("PUT /user/{user}/permissions")
 }
 
 func getUserByID(c *girder.Context) (interface{}, error) {
@@ -167,6 +175,33 @@ func setUserPermissions(c *girder.Context) (interface{}, error) {
 		Token:   c.GetAuthToken().Value,
 		User:    c.User.(*models.User).Summary(),
 		Type:    "user.permissions.update",
+		Context: audit,
+	})
+	if err != nil {
+		return nil, errors.From(err)
+	}
+
+	return user, nil
+}
+
+func removeUserPermissions(c *girder.Context) (interface{}, error) {
+	req := tasks.RemovePermissionsRequest{}
+
+	if err := c.ReadBody(&req); err != nil {
+		return nil, errors.From(err)
+	}
+
+	req.UserID = c.Vars["user"]
+
+	user, audit, err := tasks.RemovePermissions(&req)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = tasks.CreateAuditLogEntry(&tasks.CreateAuditLogEntryRequest{
+		Token:   c.GetAuthToken().Value,
+		User:    c.User.(*models.User).Summary(),
+		Type:    "user.permissions.remove",
 		Context: audit,
 	})
 	if err != nil {
