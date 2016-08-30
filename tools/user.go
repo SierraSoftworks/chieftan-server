@@ -8,7 +8,6 @@ var User cli.Command = cli.Command{
 	Flags:       []cli.Flag{},
 	Subcommands: []cli.Command{
 		userCreate,
-		userSetPermissions,
 		userRemove,
 	},
 }
