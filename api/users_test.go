@@ -58,7 +58,7 @@ func TestUsers(t *testing.T) {
 					})
 
 					Convey("With admin/users permissions", func() {
-						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						_, _, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
 							UserID:      user.ID,
 							Permissions: []string{"admin/users"},
 						})
@@ -118,7 +118,7 @@ func TestUsers(t *testing.T) {
 					})
 
 					Convey("With admin/users permissions", func() {
-						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						_, _, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
 							UserID:      user.ID,
 							Permissions: []string{"admin/users"},
 						})
@@ -174,7 +174,7 @@ func TestUsers(t *testing.T) {
 					})
 
 					Convey("With admin/users permissions", func() {
-						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						_, _, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
 							UserID:      user.ID,
 							Permissions: []string{"admin/users"},
 						})
@@ -226,6 +226,66 @@ func TestUsers(t *testing.T) {
 					dec := json.NewDecoder(res.Body)
 					So(dec.Decode(&u), ShouldBeNil)
 					So(u.ID, ShouldEqual, user.ID)
+				})
+			})
+		})
+
+		Convey("/v1/user/{user}/permissions", func() {
+			url := fmt.Sprintf("%s/v1/user/%s/permissions", ts.URL, user.ID)
+
+			Convey("PUT", func() {
+				reqBodyBuf := bytes.NewBuffer([]byte{})
+				reqBody := bufio.NewWriter(reqBodyBuf)
+				enc := json.NewEncoder(reqBody)
+				So(enc.Encode(tasks.SetPermissionsRequest{
+					Permissions: []string{"test"},
+				}), ShouldBeNil)
+				So(reqBody.Flush(), ShouldBeNil)
+
+				req, err := http.NewRequest("PUT", url, bufio.NewReader(reqBodyBuf))
+				So(err, ShouldBeNil)
+
+				Convey("When not signed in", func() {
+					res, err := http.DefaultClient.Do(req)
+					So(err, ShouldBeNil)
+					So(res.StatusCode, ShouldEqual, 401)
+				})
+
+				Convey("When signed in", func() {
+					token, _, err := tasks.CreateToken(&tasks.CreateTokenRequest{
+						UserID: user.ID,
+					})
+					So(err, ShouldBeNil)
+
+					req.Header.Set("Authorization", fmt.Sprintf("Token %s", token))
+
+					Convey("Without admin/users permissions", func() {
+						res, err := http.DefaultClient.Do(req)
+						defer res.Body.Close()
+						So(err, ShouldBeNil)
+
+						So(res.StatusCode, ShouldEqual, 403)
+					})
+
+					Convey("With admin/users permissions", func() {
+						_, _, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+							UserID:      user.ID,
+							Permissions: []string{"admin/users"},
+						})
+						So(err, ShouldBeNil)
+
+						res, err := http.DefaultClient.Do(req)
+						defer res.Body.Close()
+						So(err, ShouldBeNil)
+
+						So(res.StatusCode, ShouldEqual, 200)
+
+						var u models.User
+						dec := json.NewDecoder(res.Body)
+						So(dec.Decode(&u), ShouldBeNil)
+						So(u.ID, ShouldEqual, user.ID)
+						So(u.Permissions, ShouldResemble, []string{"test"})
+					})
 				})
 			})
 		})

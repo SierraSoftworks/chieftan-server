@@ -73,7 +73,7 @@ func TestAuditLog(t *testing.T) {
 					})
 
 					Convey("With admin permissions", func() {
-						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						_, _, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
 							UserID:      user.ID,
 							Permissions: []string{"admin"},
 						})
@@ -140,7 +140,7 @@ func TestAuditLog(t *testing.T) {
 					})
 
 					Convey("With admin permissions", func() {
-						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						_, _, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
 							UserID:      user.ID,
 							Permissions: []string{"admin"},
 						})

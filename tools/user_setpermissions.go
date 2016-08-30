@@ -47,12 +47,14 @@ var userSetPermissions cli.Command = cli.Command{
 
 		req.Permissions = append(req.Permissions, c.Args()[1:]...)
 
-		log.WithFields(log.Fields{
-			"UserID":      req.UserID,
-			"Permissions": req.Permissions,
-		}).Infof("Updating permissions for '%s'", req.UserID)
+		user, _, err := tasks.SetPermissions(req)
 
-		_, err := tasks.SetPermissions(req)
+		log.WithFields(log.Fields{
+			"userID":      req.UserID,
+			"name":        user.Name,
+			"email":       user.Email,
+			"permissions": req.Permissions,
+		}).Infof("Updated permissions for '%s' (%s)", user.Name, user.Email)
 
 		return err
 	},

@@ -89,7 +89,7 @@ func TestActions(t *testing.T) {
 					})
 
 					Convey("With project/:project permissions", func() {
-						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						_, _, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
 							UserID:      user.ID,
 							Permissions: []string{fmt.Sprintf("project/%s", project.ID.Hex())},
 						})
@@ -155,7 +155,7 @@ func TestActions(t *testing.T) {
 					})
 
 					Convey("With project/:project/admin permissions", func() {
-						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						_, _, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
 							UserID:      user.ID,
 							Permissions: []string{fmt.Sprintf("project/%s/admin", project.ID.Hex())},
 						})
@@ -200,7 +200,7 @@ func TestActions(t *testing.T) {
 					})
 
 					Convey("With project/:project permissions", func() {
-						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						_, _, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
 							UserID:      user.ID,
 							Permissions: []string{fmt.Sprintf("project/%s", project.ID.Hex())},
 						})
@@ -252,7 +252,7 @@ func TestActions(t *testing.T) {
 					})
 
 					Convey("With project/:project/admin permissions", func() {
-						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						_, _, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
 							UserID:      user.ID,
 							Permissions: []string{fmt.Sprintf("project/%s/admin", project.ID.Hex())},
 						})

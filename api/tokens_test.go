@@ -56,7 +56,7 @@ func TestTokens(t *testing.T) {
 					})
 
 					Convey("With admin permissions", func() {
-						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						_, _, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
 							UserID:      user.ID,
 							Permissions: []string{"admin"},
 						})
@@ -98,7 +98,7 @@ func TestTokens(t *testing.T) {
 					})
 
 					Convey("With admin/users permissions", func() {
-						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						_, _, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
 							UserID:      user.ID,
 							Permissions: []string{"admin/users"},
 						})
@@ -140,7 +140,7 @@ func TestTokens(t *testing.T) {
 					})
 
 					Convey("With admin/users permissions", func() {
-						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						_, _, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
 							UserID:      user.ID,
 							Permissions: []string{"admin/users"},
 						})
@@ -183,7 +183,7 @@ func TestTokens(t *testing.T) {
 					})
 
 					Convey("With admin/users permissions", func() {
-						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						_, _, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
 							UserID:      user.ID,
 							Permissions: []string{"admin/users"},
 						})
@@ -228,7 +228,7 @@ func TestTokens(t *testing.T) {
 					})
 
 					Convey("With admin/users permissions", func() {
-						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						_, _, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
 							UserID:      user.ID,
 							Permissions: []string{"admin/users"},
 						})
@@ -270,7 +270,7 @@ func TestTokens(t *testing.T) {
 					})
 
 					Convey("With admin/users permissions", func() {
-						_, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
+						_, _, err = tasks.SetPermissions(&tasks.SetPermissionsRequest{
 							UserID:      user.ID,
 							Permissions: []string{"admin/users"},
 						})

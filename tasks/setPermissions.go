@@ -10,13 +10,13 @@ type SetPermissionsRequest struct {
 	Permissions []string `json:"permissions"`
 }
 
-func SetPermissions(req *SetPermissionsRequest) (*models.AuditLogContext, error) {
+func SetPermissions(req *SetPermissionsRequest) (*models.User, *models.AuditLogContext, error) {
 	user, err := GetUser(&GetUserRequest{
 		ID: req.UserID,
 	})
 
 	if err != nil {
-		return nil, formatError(err)
+		return nil, nil, formatError(err)
 	}
 
 	err = models.DB().Users().UpdateId(req.UserID, &bson.M{
@@ -26,10 +26,12 @@ func SetPermissions(req *SetPermissionsRequest) (*models.AuditLogContext, error)
 	})
 
 	if err != nil {
-		return nil, formatError(err)
+		return nil, nil, formatError(err)
 	}
 
-	return &models.AuditLogContext{
+	user.Permissions = req.Permissions
+
+	return user, &models.AuditLogContext{
 		User:    user.Summary(),
 		Request: req,
 	}, nil

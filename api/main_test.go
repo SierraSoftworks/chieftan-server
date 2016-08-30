@@ -98,7 +98,7 @@ func TestAuthentication(t *testing.T) {
 			})
 
 			Convey("With permission", func() {
-				_, err := tasks.SetPermissions(&tasks.SetPermissionsRequest{
+				_, _, err := tasks.SetPermissions(&tasks.SetPermissionsRequest{
 					UserID:      user.ID,
 					Permissions: []string{"test"},
 				})

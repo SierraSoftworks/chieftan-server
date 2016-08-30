@@ -18,11 +18,13 @@ func TestSetPermissions(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(user, ShouldNotBeNil)
 
-		audit, err := SetPermissions(&SetPermissionsRequest{
+		user, audit, err := SetPermissions(&SetPermissionsRequest{
 			UserID:      user.ID,
 			Permissions: []string{"test"},
 		})
 		So(err, ShouldBeNil)
+		So(user, ShouldNotBeNil)
+		So(user.Permissions, ShouldResemble, []string{"test"})
 		So(audit, ShouldNotBeNil)
 		So(audit.User, ShouldResemble, user.Summary())
 

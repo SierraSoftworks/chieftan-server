@@ -32,6 +32,7 @@ func init() {
 			RequireAuthentication(getUser).
 			LogRequests()).
 		Name("GET /user")
+
 	Router().
 		Path("/v1/user/{user}").
 		Methods("GET").
@@ -40,6 +41,15 @@ func init() {
 			RequirePermission("admin/users").
 			LogRequests()).
 		Name("GET /user/{user}")
+
+	Router().
+		Path("/v1/user/{user}/permissions").
+		Methods("PUT").
+		Handler(girder.NewHandler(setUserPermissions).
+			RequireAuthentication(getUser).
+			RequirePermission("admin/users").
+			LogRequests()).
+		Name("PUT /user/{user}/permissions")
 }
 
 func getUserByID(c *girder.Context) (interface{}, error) {
@@ -95,6 +105,33 @@ func createUser(c *girder.Context) (interface{}, error) {
 		Token:   c.GetAuthToken().Value,
 		User:    c.User.(*models.User).Summary(),
 		Type:    "user.create",
+		Context: audit,
+	})
+	if err != nil {
+		return nil, errors.From(err)
+	}
+
+	return user, nil
+}
+
+func setUserPermissions(c *girder.Context) (interface{}, error) {
+	req := tasks.SetPermissionsRequest{}
+
+	if err := c.ReadBody(&req); err != nil {
+		return nil, errors.From(err)
+	}
+
+	req.UserID = c.Vars["user"]
+
+	user, audit, err := tasks.SetPermissions(&req)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = tasks.CreateAuditLogEntry(&tasks.CreateAuditLogEntryRequest{
+		Token:   c.GetAuthToken().Value,
+		User:    c.User.(*models.User).Summary(),
+		Type:    "user.permissions.update",
 		Context: audit,
 	})
 	if err != nil {
