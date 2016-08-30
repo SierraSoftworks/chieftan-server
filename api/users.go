@@ -31,7 +31,7 @@ func init() {
 		Handler(girder.NewHandler(getUserCurrent).
 			RequireAuthentication(getUser).
 			LogRequests()).
-		Name("POST /user")
+		Name("GET /user")
 	Router().
 		Path("/v1/user/{user}").
 		Methods("GET").
@@ -39,7 +39,7 @@ func init() {
 			RequireAuthentication(getUser).
 			RequirePermission("admin/users").
 			LogRequests()).
-		Name("POST /user/{user}")
+		Name("GET /user/{user}")
 }
 
 func getUserByID(c *girder.Context) (interface{}, error) {
