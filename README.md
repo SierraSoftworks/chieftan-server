@@ -30,6 +30,12 @@ access to your data nodes nonetheless.
 chieftan user create --admin "Benjamin Pannell" admin@sierrasoftworks.com
 ```
 
+#### Get a User's Details
+
+```sh
+chieftan user info admin@sierrasoftworks.com
+```
+
 #### Removing a User
 
 ```sh
