@@ -284,7 +284,7 @@ func TestUsers(t *testing.T) {
 						dec := json.NewDecoder(res.Body)
 						So(dec.Decode(&u), ShouldBeNil)
 						So(u.ID, ShouldEqual, user.ID)
-						So(u.Permissions, ShouldResemble, []string{"test"})
+						So(u.Permissions, ShouldResemble, []string{"admin/users", "test"})
 					})
 				})
 			})
