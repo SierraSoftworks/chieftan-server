@@ -26,6 +26,7 @@ func main() {
 		RunServer,
 		tools.User,
 		tools.Token,
+		tools.Permission,
 	}
 
 	app.Flags = []cli.Flag{

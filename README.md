@@ -30,16 +30,30 @@ access to your data nodes nonetheless.
 chieftan user create --admin "Benjamin Pannell" admin@sierrasoftworks.com
 ```
 
-#### Changing a User's Permissions
-
-```sh
-chieftan user set-permissions admin@sierrasoftworks.com project/:project project/:project/admin admin admin/users
-```
-
 #### Removing a User
 
 ```sh
 chieftan user remove admin@sierrasoftworks.com
+```
+
+### Permissions
+
+#### Changing a User's Permissions
+
+```sh
+chieftan permissions set admin@sierrasoftworks.com project/:project project/:project/admin admin admin/users
+```
+
+#### Granting a User Permissions
+
+```sh
+chieftan permissions add admin@sierrasoftworks.com admin admin/users
+```
+
+#### Removing a User's Permissions
+
+```sh
+chieftan permissions remove admin@sierrasoftworks.com project/:project
 ```
 
 ### Access Tokens
