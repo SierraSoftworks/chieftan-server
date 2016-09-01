@@ -1,6 +1,10 @@
 # Chieftan
 **A task automation framework driven through an HTTP API**
 
+**DEPRECATION WARNING** This project has been deprecated in favour of the Go implementation
+which provides superior performance, is more extensively tested and offers a more fully featured
+command set.
+
 Chieftan was designed to simplify the process of creating, managing and triggering tasks
 on your infrastructure. It is driven through an HTTP API, making it trivially easy to
 automate and consume - while the simple API ensures you won't be left reading docs.
