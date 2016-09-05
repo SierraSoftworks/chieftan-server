@@ -21,7 +21,7 @@
 			"importpath": "github.com/SierraSoftworks/girder",
 			"repository": "https://github.com/SierraSoftworks/girder",
 			"vcs": "git",
-			"revision": "46ad10b37cda1db714aadf4aff8c59cba7907c6f",
+			"revision": "9a5e850f9228c403af624c37548557727a30c259",
 			"branch": "master",
 			"notests": true
 		},
@@ -54,6 +54,14 @@
 			"repository": "https://github.com/codegangsta/negroni",
 			"vcs": "git",
 			"revision": "6edff56736fa7bd546812f149e8cdaae61e5a38f",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/getsentry/raven-go",
+			"repository": "https://github.com/getsentry/raven-go",
+			"vcs": "git",
+			"revision": "c9d3cc542ad199f62c0264286be537f9bce6063c",
 			"branch": "master",
 			"notests": true
 		},

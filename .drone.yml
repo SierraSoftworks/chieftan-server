@@ -14,7 +14,7 @@ pipeline:
             - go get -u github.com/FiloSottile/gvt
             - gvt restore
             - go test ./ ./api ./executors ./models ./tasks ./tools ./utils
-            - "CGO_ENABLED=0 GOOS=linux go build -o bin/chieftan -a -installsuffix cgo -ldflags '-s -X main.version=${DRONE_TAG=v1.0.0}-${DRONE_BRANCH}.${DRONE_COMMIT:0:6}'"
+            - "CGO_ENABLED=0 GOOS=linux go build -o bin/chieftan -a -installsuffix cgo -ldflags '-s -X main.version=${DRONE_TAG=v1.0.0}-${DRONE_BRANCH}.${DRONE_COMMIT:0:6}"
 
     docker:
         repo: chieftan/server

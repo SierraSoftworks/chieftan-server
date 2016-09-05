@@ -9,10 +9,20 @@ import (
 
 	"github.com/SierraSoftworks/chieftan-server/models"
 	log "github.com/Sirupsen/logrus"
+	"github.com/getsentry/raven-go"
 	"github.com/urfave/cli"
 )
 
 func main() {
+
+	if envDSN := os.Getenv("SENTRY_DSN"); envDSN != "" {
+		raven.SetDSN(envDSN)
+	} else if sentry_dsn != "" {
+		raven.SetDSN(sentry_dsn)
+	}
+
+	raven.SetRelease(version)
+
 	app := cli.NewApp()
 	app.Name = "Chieftan"
 	app.Usage = "Manage your Chieftan instance"
