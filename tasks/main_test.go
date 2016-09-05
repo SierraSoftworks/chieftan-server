@@ -8,7 +8,7 @@ import (
 )
 
 func testSetup() {
-	models.Connect("mongodb://localhost/chieftan_test")
+	So(models.Connect("mongodb://localhost/chieftan_test"), ShouldBeNil)
 
 	_, err := models.DB().Users().RemoveAll(&bson.M{})
 	So(err, ShouldBeNil)

@@ -6,7 +6,7 @@ import (
 )
 
 func testSetup() {
-	Connect("mongodb://localhost/chieftan_test")
+	So(Connect("mongodb://localhost/chieftan_test"), ShouldBeNil)
 
 	_, err := DB().Users().RemoveAll(&bson.M{})
 	So(err, ShouldBeNil)

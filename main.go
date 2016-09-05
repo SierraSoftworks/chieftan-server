@@ -69,10 +69,19 @@ func main() {
 			}
 		}
 
-		models.Connect(c.String("mongodb"))
+		err := models.Connect(c.String("mongodb"))
+		if err != nil {
+			return err
+		}
 
 		return nil
 	}
 
-	app.Run(os.Args)
+	err := app.Run(os.Args)
+	if err != nil {
+		raven.CaptureErrorAndWait(err, nil)
+		os.Exit(1)
+	}
+
+	os.Exit(0)
 }
