@@ -128,5 +128,5 @@ flags to embed version information in the binary, specifically the git commit an
 semantic version of the release.
 
 ```sh
-go build -o chieftan "-X main.version=$(git describe --abbrev=0 --tags)" "-X main.sentry_dsn=$SENTRY_DSN"
+go build -o chieftan -ldflags "-X main.version=$(git describe --abbrev=0 --tags)-$(git log --pretty=format:'%h' -n 1) -X main.sentry_dsn=$SENTRY_DSN"
 ```
