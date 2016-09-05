@@ -1,4 +1,4 @@
-# Chieftan
+# Chieftan [![Build Status](https://drone.sierrasoftworks.com/api/badges/SierraSoftworks/chieftan-server/status.svg)](https://drone.sierrasoftworks.com/SierraSoftworks/chieftan-server)
 **A task automation framework driven through an HTTP API**
 
 Chieftan was designed to simplify the process of creating, managing and triggering tasks
