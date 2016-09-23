@@ -1,4 +1,4 @@
-FROM alpine:3
+FROM alpine
 ADD bin/chieftan /bin/chieftan
 
 ENV MONGODB_URL="mongodb://localhost:27017/chieftan"
