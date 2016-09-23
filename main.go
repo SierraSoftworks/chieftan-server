@@ -71,7 +71,7 @@ func main() {
 
 		err := models.Connect(c.String("mongodb"))
 		if err != nil {
-			return err
+			return fmt.Errorf("mongodb connection to '%s' failed: %s", c.String("mongodb"), err)
 		}
 
 		return nil
