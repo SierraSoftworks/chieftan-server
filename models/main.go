@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"strings"
 
+	log "github.com/Sirupsen/logrus"
 	"gopkg.in/mgo.v2"
 )
 
@@ -20,6 +21,7 @@ func Connect(mongodbURL string) error {
 		return fmt.Errorf("failed to parse url: %s", err)
 	}
 
+	log.WithField("URL", urlInfo.Host).Debug("connecting");
 	session, err := mgo.Dial(urlInfo.Host)
 	if err != nil {
 		return fmt.Errorf("failed to connect: %s", err)
