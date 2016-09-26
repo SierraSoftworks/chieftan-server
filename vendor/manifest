@@ -61,7 +61,7 @@
 			"importpath": "github.com/getsentry/raven-go",
 			"repository": "https://github.com/getsentry/raven-go",
 			"vcs": "git",
-			"revision": "c9d3cc542ad199f62c0264286be537f9bce6063c",
+			"revision": "379f8d0a68ca237cf8893a1cdfd4f574125e2c51",
 			"branch": "master",
 			"notests": true
 		},
