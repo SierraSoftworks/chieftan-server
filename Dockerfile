@@ -12,6 +12,6 @@ EXPOSE $PORT
 ARG VERSION="development"
 LABEL VERSION=$VERSION
 
-WORKDIR /
+WORKDIR /bin
 ENTRYPOINT /bin/chieftan
-CMD ["chieftan","server"]
+CMD ["chieftan","server", "--log-level", "DEBUG"]
