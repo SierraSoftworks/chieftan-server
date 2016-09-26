@@ -43,7 +43,7 @@ func main() {
 		cli.StringFlag{
 			Name:  "log-level",
 			Usage: "DEBUG|INFO|WARN|ERROR",
-			Value: "INFO"
+			Value: "INFO",
 		},
 		cli.StringFlag{
 			Name:   "mongodb",
