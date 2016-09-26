@@ -43,30 +43,35 @@ func main() {
 		cli.StringFlag{
 			Name:  "log-level",
 			Usage: "DEBUG|INFO|WARN|ERROR",
+			Value: "INFO"
 		},
 		cli.StringFlag{
 			Name:   "mongodb",
 			EnvVar: "MONGODB_URL",
-			Usage:  "mongodb://localhost:27017/chieftan",
+			Usage:  "MongoDB server URL",
 			Value:  "mongodb://localhost:27017/chieftan",
 		},
 	}
 
 	app.Before = func(c *cli.Context) error {
-		if c.IsSet("log-level") {
-			logLevel := c.String("log-level")
-			switch strings.ToUpper(logLevel) {
-			case "DEBUG":
-				log.SetLevel(log.DebugLevel)
-			case "INFO":
-				log.SetLevel(log.InfoLevel)
-			case "WARN":
-				log.SetLevel(log.WarnLevel)
-			case "ERROR":
-				log.SetLevel(log.ErrorLevel)
-			default:
-				log.SetLevel(log.InfoLevel)
-			}
+		log.WithFields(log.Fields{
+			"log-level": c.String("log-leve"),
+			"mongodb": c.String("mongodb"),
+			"flags": c.FlagNames(),
+		}).Info("Starting")
+
+		logLevel := c.String("log-level")
+		switch strings.ToUpper(logLevel) {
+		case "DEBUG":
+			log.SetLevel(log.DebugLevel)
+		case "INFO":
+			log.SetLevel(log.InfoLevel)
+		case "WARN":
+			log.SetLevel(log.WarnLevel)
+		case "ERROR":
+			log.SetLevel(log.ErrorLevel)
+		default:
+			log.SetLevel(log.InfoLevel)
 		}
 
 		err := models.Connect(c.String("mongodb"))
