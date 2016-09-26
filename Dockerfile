@@ -1,6 +1,6 @@
 FROM alpine
 
-apk add --update tini
+RUN apk add --update tini
 ENTRYPOINT ["/sbin/tini", "--"]
 
 ADD bin/chieftan /bin/chieftan
