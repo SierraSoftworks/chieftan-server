@@ -55,7 +55,7 @@ func main() {
 
 	app.Before = func(c *cli.Context) error {
 		log.WithFields(log.Fields{
-			"log-level": c.GlobalString("log-leve"),
+			"log-level": c.GlobalString("log-level"),
 			"mongodb":   c.GlobalString("mongodb"),
 		}).Info("Starting")
 
