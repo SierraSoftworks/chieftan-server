@@ -13,5 +13,4 @@ ARG VERSION="development"
 LABEL VERSION=$VERSION
 
 WORKDIR /bin
-ENTRYPOINT /bin/chieftan
 CMD ["chieftan","server", "--log-level", "DEBUG"]
