@@ -55,12 +55,11 @@ func main() {
 
 	app.Before = func(c *cli.Context) error {
 		log.WithFields(log.Fields{
-			"log-level": c.String("log-leve"),
-			"mongodb":   c.String("mongodb"),
-			"flags":     c.FlagNames(),
+			"log-level": c.GlobalString("log-leve"),
+			"mongodb":   c.GlobalString("mongodb"),
 		}).Info("Starting")
 
-		logLevel := c.String("log-level")
+		logLevel := c.GlobalString("log-level")
 		switch strings.ToUpper(logLevel) {
 		case "DEBUG":
 			log.SetLevel(log.DebugLevel)
@@ -74,7 +73,7 @@ func main() {
 			log.SetLevel(log.InfoLevel)
 		}
 
-		err := models.Connect(c.String("mongodb"))
+		err := models.Connect(c.GlobalString("mongodb"))
 		if err != nil {
 			return err
 		}
