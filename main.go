@@ -29,7 +29,7 @@ func main() {
 
 	app.Author = "Benjamin Pannell"
 	app.Email = "admin@sierrasoftworks.com"
-	app.Copyright = "Sierra Softworks © 2016"
+	app.Copyright = "Sierra Softworks © 2017"
 	app.Version = version
 
 	app.Commands = cli.Commands{
